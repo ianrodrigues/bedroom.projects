@@ -1,0 +1,13 @@
+{
+  "apps": [{
+    "name": "bedroom.projects-proto-2",
+    "script": "npm run serve",
+    "cwd": ".",
+    "instances": 1,
+    "env": {
+      "NODE_ENV": "production",
+      "APP_ENV": "production",
+      "PORT": 3000
+    }
+  }]
+}

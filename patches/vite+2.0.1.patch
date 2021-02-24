@@ -1,0 +1,13 @@
+diff --git a/node_modules/vite/client.d.ts b/node_modules/vite/client.d.ts
+index ef8e158..25253b6 100644
+--- a/node_modules/vite/client.d.ts
++++ b/node_modules/vite/client.d.ts
+@@ -126,7 +126,7 @@ declare module '*.gif' {
+   export default src
+ }
+ declare module '*.svg' {
+-  const src: string
++  const src: React.ComponentType<React.SVGProps<SVGSVGElement>>
+   export default src
+ }
+ declare module '*.ico' {
