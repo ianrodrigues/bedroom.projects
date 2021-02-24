@@ -4,11 +4,17 @@ import Aw2Cover from 'images/aw2-cover.jpg';
 import Aw3Cover from 'images/aw3-cover.jpg';
 
 import drawCoverFitImage from 'services/drawCoverFitImage';
+import { useAnimationFrame, useEventListener } from 'hooks';
 
 import { Canvas, HomeContainer } from './styled';
 
 
 type MouseSide = null | 'L' | 'R';
+
+type MouseData = {
+  side: MouseSide;
+  proximity: null | 'middle' | 'edge';
+}
 
 // Load images
 const sources = [Aw2Cover, Aw3Cover];
@@ -16,23 +22,33 @@ const images: HTMLImageElement[] = [];
 
 const Home: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [mouseSide, setMouseSide] = React.useState<MouseSide>(null);
-  const [_, setMediaLoaded] = React.useState({
-    amount: 0,
-    done: false,
+  const [mouseData, setMouseData] = React.useState<MouseData>({
+    side: null,
+    proximity: null,
   });
 
-  function drawPreviews(side: MouseSide = null, widthPct = 0.5) {
+  useAnimationFrame((({ time }) => {
     const canvas = canvasRef.current as HTMLCanvasElement;
     const ctx = canvas.getContext('2d');
 
     ctx!.clearRect(0, 0, canvas.width, canvas.height);
 
     const widths = [canvas.width, canvas.width * 0.5];
+    let widthPct = 0.5;
 
-    if (side === 'L') {
+    if (mouseData.proximity === 'middle') {
+      widthPct = 0.75;
+    } else if (mouseData.proximity === 'edge') {
+      if (mouseData.side === 'R') {
+        widthPct = 0.5;
+      } else {
+        widthPct = 1;
+      }
+    }
+
+    if (mouseData.side === 'L') {
       widths[1] = canvas.width * widthPct;
-    } else if (side === 'R') {
+    } else if (mouseData.side === 'R') {
       widths[1] = canvas.width * (0.5 - (1 - widthPct));
     }
 
@@ -47,56 +63,49 @@ const Home: React.FC = () => {
         0,
       );
     }
-  }
+  }), [mouseData]);
 
-  function onMouseMove(e: MouseEvent) {
+  // Add mouseover events
+  const onMouseMove = React.useCallback((e: MouseEvent) => {
     // Left side
     if (e.clientX < canvasRef.current!.width / 2) {
-      if (e.clientX < 50) {
-        drawPreviews('L', 1);
-      } else {
-        drawPreviews('L', 0.75);
-      }
+      setMouseData({
+        side: 'L',
+        proximity: e.clientX < 50 ? 'edge' : 'middle',
+      });
     // Right side
     } else {
-      if (e.clientX > canvasRef.current!.width - 50) {
-        drawPreviews('R', 0.5);
-      } else {
-        drawPreviews('R', 0.75);
-      }
+      setMouseData({
+        side: 'R',
+        proximity: e.clientX > canvasRef.current!.width - 50 ? 'edge' : 'middle',
+      });
     }
-  }
+  }, [setMouseData]);
 
-  function onMouseLeave(e: MouseEvent) {
-    drawPreviews();
-  }
+  useEventListener('mousemove', onMouseMove);
 
-  function draw() {
-    drawPreviews();
-  }
+  const onMouseLeave = React.useCallback((e: MouseEvent) => {
+    setMouseData({
+      side: null,
+      proximity: null,
+    });
+  }, [setMouseData]);
 
+  useEventListener('mouseleave', onMouseLeave);
+
+
+  // Init component
   React.useEffect(() => {
     for (let i = 0; i < sources.length; i++) {
       const img = new Image();
       img.src = sources[i];
 
-      img.addEventListener('load', () => {
-        setMediaLoaded((prev) => {
-          const amount = prev.amount + 1;
-          const done = amount === images.length;
-
-          if (done) {
-            draw();
-          }
-
-          return { amount, done };
-        });
-      });
-
       images.push(img);
     }
   }, []);
 
+
+  // Init canvas
   React.useEffect(() => {
     if (!canvasRef.current) {
       return;
@@ -108,10 +117,6 @@ const Home: React.FC = () => {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    // Add mouseover events
-    canvas.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('mouseleave', onMouseLeave);
-
     // Draw shit
     const ctx = canvas.getContext('2d');
 
@@ -120,17 +125,11 @@ const Home: React.FC = () => {
     }
 
     ctx.imageSmoothingEnabled = false;
-
-    requestAnimationFrame(draw);
-
-    return function cleanup() {
-      canvas.removeEventListener('mousemove', onMouseMove);
-      canvas.removeEventListener('mouseleave', onMouseLeave);
-    };
   }, [canvasRef]);
 
   return (
     <HomeContainer>
+      <span>mouse position: {mouseData.side}, {mouseData.proximity}</span>
       <Canvas ref={canvasRef} />
     </HomeContainer>
   );
