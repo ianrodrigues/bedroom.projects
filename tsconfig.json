@@ -19,10 +19,12 @@
     "paths": {
       "common/*": ["components/common/*"],
       "ducks/*": ["ducks/*"],
+      "hooks": ["services/hooks/index"],
       "images/*": ["static/images/*"],
       "modules/*": ["components/modules/*"],
       "pages/*": ["components/pages/*"],
       "vectors/*": ["static/vectors/*"],
+      "services/*": ["services/*"],
       "styles/*": ["styles/*"],
       "types": ["types/index"]
     }
