@@ -185,11 +185,6 @@ const Home: React.FC = () => {
 
   return (
     <HomeContainer>
-      <span>
-        mouse position: {mousePos.side}, {mousePos.proximity}
-        -- anim start time: {startTime}
-        -- divider pos: {dividerPos}
-      </span>
       <Canvas ref={canvasRef} />
     </HomeContainer>
   );
