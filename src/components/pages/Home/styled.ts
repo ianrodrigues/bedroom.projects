@@ -5,6 +5,3 @@ export const HomeContainer = styled.div`
   height: 100vh;
   background-color: #000;
 `;
-
-export const Canvas = styled.canvas`
-`;

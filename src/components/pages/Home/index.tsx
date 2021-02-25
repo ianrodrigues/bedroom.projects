@@ -5,7 +5,7 @@ import Aw2Cover from 'images/aw2-cover.jpg';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 
-import { Canvas, HomeContainer } from './styled';
+import { HomeContainer } from './styled';
 
 
 type MouseSide = null | 'L' | 'R';
@@ -117,16 +117,16 @@ const Home: React.FC = () => {
     const canvas = canvasRef.current as HTMLCanvasElement;
 
     // Left side
-    if (e.clientX < canvas.width * 0.25) {
+    if (e.clientX < canvas.width * 0.33) {
       setMousePos({
         side: 'L',
-        proximity: e.clientX < 100 ? 'edge' : 'middle',
+        proximity: e.clientX < canvas.width * 0.075 ? 'edge' : 'middle',
       });
     // Right side
-    } else if (e.clientX > canvas.width * 0.75) {
+    } else if (e.clientX > canvas.width * 0.67) {
       setMousePos({
         side: 'R',
-        proximity: e.clientX > canvas.width - 100 ? 'edge' : 'middle',
+        proximity: e.clientX > canvas.width * 0.925 ? 'edge' : 'middle',
       });
     } else {
       setMousePos({
@@ -188,7 +188,7 @@ const Home: React.FC = () => {
 
   return (
     <HomeContainer>
-      <Canvas ref={canvasRef} />
+      <canvas ref={canvasRef} />
     </HomeContainer>
   );
 };
