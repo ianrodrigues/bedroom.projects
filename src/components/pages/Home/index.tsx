@@ -1,9 +1,8 @@
 import React from 'react';
 
 import Aw2Cover from 'images/aw2-cover.jpg';
-import Aw3Cover from 'images/aw3-cover.jpg';
 
-import drawCoverFitImage from 'services/drawCoverFitImage';
+import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { useAnimationFrame, useEventListener } from 'hooks';
 
 import { Canvas, HomeContainer } from './styled';
@@ -17,9 +16,16 @@ type MouseData = {
   animate: boolean;
 }
 
+type Media = {
+  photo?: HTMLImageElement;
+  video?: HTMLVideoElement;
+}
+
 // Load images
-const sources = [Aw2Cover, Aw3Cover];
-const images: HTMLImageElement[] = [];
+const sources = [
+  'https://bedroom.sandervispoel.com/static/beabadoobee__worth_it.mov',
+  Aw2Cover,
+];
 
 const Home: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -29,6 +35,10 @@ const Home: React.FC = () => {
     side: null,
     proximity: null,
     animate: false,
+  });
+  const [media, setMedia] = React.useState<Media>({
+    photo: undefined,
+    video: undefined,
   });
 
   useAnimationFrame(((props) => {
@@ -86,18 +96,22 @@ const Home: React.FC = () => {
       }
     }
 
-    for (let i = 0; i < images.length; i++) {
+    if (media.video) {
+      drawCoverFitVideo(ctx, media.video);
+    }
+
+    if (media.photo) {
       drawCoverFitImage(
         ctx,
-        images[i],
+        media.photo,
         0,
         0,
-        !i ? canvas.width : nextDividerPos,
+        nextDividerPos,
         canvas.height,
         0,
       );
     }
-  }), [mouseData, setMouseData, setStartTime, startTime, dividerPos, setDividerPos]);
+  }), [mouseData, setMouseData, setStartTime, startTime, dividerPos, setDividerPos, media]);
 
   // Add mouseover events
   const onMouseMove = React.useCallback((e: MouseEvent) => {
@@ -131,12 +145,24 @@ const Home: React.FC = () => {
 
   // Init component
   React.useEffect(() => {
-    for (let i = 0; i < sources.length; i++) {
-      const img = new Image();
-      img.src = sources[i];
+    const video = document.createElement('video');
+    video.src = sources[0];
+    video.autoplay = true;
+    video.loop = true;
+    video.muted = true;
+    video.oncanplaythrough = () => {
+      setMedia((prev) => ({
+        ...prev,
+        video,
+      }));
+    };
 
-      images.push(img);
-    }
+    const img = new Image();
+    img.src = sources[1];
+    img.onload = () => setMedia((prev) => ({
+      ...prev,
+      photo: img,
+    }));
   }, []);
 
 

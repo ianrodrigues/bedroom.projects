@@ -1,4 +1,4 @@
-function drawCoverFitImage(
+export function drawCoverFitImage(
   ctx: CanvasRenderingContext2D, img: HTMLImageElement,
   x = 0, y = 0,
   w = 0, h = 0,
@@ -44,5 +44,3 @@ function drawCoverFitImage(
   // fill image in dest. rectangle
   ctx.drawImage(img, cx, cy, cw, ch,  x, y, w, h);
 }
-
-export default drawCoverFitImage;
