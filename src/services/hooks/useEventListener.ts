@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 
-export function useEventListener<K extends keyof HTMLElementEventMap>(eventName: K, handler: (e: HTMLElementEventMap[K]) => void, element = window): void {
+export function useEventListener<K extends keyof HTMLElementEventMap>(eventName: K, handler: (e: HTMLElementEventMap[K]) => void, element: HTMLElement | Window = window): void {
   // Create a ref that stores handler
   const savedHandler = useRef<any>();
 

@@ -14,6 +14,7 @@ type MouseSide = null | 'L' | 'R';
 type MouseData = {
   side: MouseSide;
   proximity: null | 'middle' | 'edge';
+  animate: boolean;
 }
 
 // Load images
@@ -22,62 +23,105 @@ const images: HTMLImageElement[] = [];
 
 const Home: React.FC = () => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [startTime, setStartTime] = React.useState(0);
+  const [dividerPos, setDividerPos] = React.useState(0);
   const [mouseData, setMouseData] = React.useState<MouseData>({
     side: null,
     proximity: null,
+    animate: false,
   });
 
-  useAnimationFrame((({ time }) => {
+  useAnimationFrame(((props) => {
+    const timestamp = props.time;
     const canvas = canvasRef.current as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
-    ctx!.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    const widths = [canvas.width, canvas.width * 0.5];
     let widthPct = 0.5;
+    let nextDividerPos = dividerPos;
 
     if (mouseData.proximity === 'middle') {
-      widthPct = 0.75;
+      if (mouseData.side === 'L') {
+        widthPct = 0.75;
+      } else if (mouseData.side === 'R') {
+        widthPct = 0.25;
+      }
     } else if (mouseData.proximity === 'edge') {
-      if (mouseData.side === 'R') {
-        widthPct = 0.5;
-      } else {
+      if (mouseData.side === 'L') {
         widthPct = 1;
+      } else if (mouseData.side === 'R') {
+        widthPct = 0;
       }
     }
 
-    if (mouseData.side === 'L') {
-      widths[1] = canvas.width * widthPct;
-    } else if (mouseData.side === 'R') {
-      widths[1] = canvas.width * (0.5 - (1 - widthPct));
+    if (mouseData.animate) {
+      if (!startTime) {
+        setStartTime(timestamp);
+      }
+
+      const duration = 1.25;
+      const targetPos = canvas.width * widthPct;
+      const start_time = startTime || timestamp;
+      const runtime = timestamp - start_time;
+      const relativeProgress = Math.min(runtime / duration, 1);
+      const distance = targetPos - dividerPos;
+      const relativeDistance = relativeProgress * Math.abs(dividerPos - targetPos);
+
+      if (distance >= 0) {
+        nextDividerPos += relativeDistance;
+      } else {
+        nextDividerPos -= relativeDistance;
+      }
+
+      setDividerPos(nextDividerPos);
+
+      if (relativeProgress === 1) {
+        setMouseData((prev) => ({
+          ...prev,
+          animate: false,
+        }));
+
+        setStartTime(0);
+      }
     }
 
     for (let i = 0; i < images.length; i++) {
       drawCoverFitImage(
-        ctx!,
+        ctx,
         images[i],
         0,
         0,
-        widths[i],
+        !i ? canvas.width : nextDividerPos,
         canvas.height,
         0,
       );
     }
-  }), [mouseData]);
+  }), [mouseData, setMouseData, setStartTime, startTime, dividerPos, setDividerPos]);
 
   // Add mouseover events
   const onMouseMove = React.useCallback((e: MouseEvent) => {
+    const canvas = canvasRef.current as HTMLCanvasElement;
+
     // Left side
-    if (e.clientX < canvasRef.current!.width / 2) {
+    if (e.clientX < canvas.width * 0.25) {
       setMouseData({
         side: 'L',
-        proximity: e.clientX < 50 ? 'edge' : 'middle',
+        proximity: e.clientX < 100 ? 'edge' : 'middle',
+        animate: true,
       });
     // Right side
-    } else {
+    } else if (e.clientX > canvas.width * 0.75) {
       setMouseData({
         side: 'R',
-        proximity: e.clientX > canvasRef.current!.width - 50 ? 'edge' : 'middle',
+        proximity: e.clientX > canvas.width - 100 ? 'edge' : 'middle',
+        animate: true,
+      });
+    } else {
+      setMouseData({
+        side: null,
+        proximity: null,
+        animate: true,
       });
     }
   }, [setMouseData]);
@@ -88,10 +132,11 @@ const Home: React.FC = () => {
     setMouseData({
       side: null,
       proximity: null,
+      animate: true,
     });
   }, [setMouseData]);
 
-  useEventListener('mouseleave', onMouseLeave);
+  useEventListener('mouseleave', onMouseLeave, canvasRef.current!);
 
 
   // Init component
@@ -125,6 +170,8 @@ const Home: React.FC = () => {
     }
 
     ctx.imageSmoothingEnabled = false;
+
+    setDividerPos(canvas.width * 0.5);
   }, [canvasRef]);
 
   return (
