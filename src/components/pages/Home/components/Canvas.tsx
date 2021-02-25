@@ -1,9 +1,8 @@
 import React from 'react';
 
-import Aw2Cover from 'images/aw2-cover.jpg';
-
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
+import useStore from 'state';
 
 type MouseSide = null | 'L' | 'R';
 
@@ -17,18 +16,13 @@ type Media = {
   video?: HTMLVideoElement;
 }
 
-// Load images
-const sources = [
-  'https://bedroom.sandervispoel.com/static/beabadoobee__worth_it.mov',
-  Aw2Cover,
-];
-
 // React setState can't keep up with high screen refresh rates
 // We also don't need these variables to fire renders
 let dividerPos = 0;
 let startTime = 0;
 
-const Canvas: React.VFC<Props> = (props) => {
+const Canvas: React.VFC = () => {
+  const state = useStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const [mousePos, setMousePos] = React.useState<MouseData>({
     side: null,
@@ -149,7 +143,7 @@ const Canvas: React.VFC<Props> = (props) => {
   // Init component
   React.useEffect(() => {
     const video = document.createElement('video');
-    video.src = sources[0];
+    video.src = state.video.src;
     video.autoplay = true;
     video.loop = true;
     video.muted = true;
@@ -161,7 +155,7 @@ const Canvas: React.VFC<Props> = (props) => {
     };
 
     const img = new Image();
-    img.src = sources[1];
+    img.src = state.photo.src;
     img.onload = () => setMedia((prev) => ({
       ...prev,
       photo: img,
@@ -195,10 +189,6 @@ const Canvas: React.VFC<Props> = (props) => {
   return (
     <canvas ref={canvasRef} />
   );
-};
-
-export type Props = {
-
 };
 
 export default Canvas;
