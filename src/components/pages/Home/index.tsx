@@ -48,10 +48,11 @@ const Home: React.FC = () => {
     const canvas = canvasRef.current as HTMLCanvasElement;
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
 
+    // Clear all canvas pixels
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+    // Start in the middle
     let dividerOffset = 0.5;
-    let nextDividerPos = dividerPos;
 
     if (mousePos.proximity === 'middle') {
       if (mousePos.side === 'L') {
@@ -67,10 +68,12 @@ const Home: React.FC = () => {
       }
     }
 
+    // Animation start
     if (mousePos.proximity !== prevMousePos.proximity || mousePos.side !== prevMousePos.side) {
       startTime = timestamp;
     }
 
+    // Animate position of divider
     if (startTime > 0) {
       const duration = 1.25;
       const targetPos = canvas.width * dividerOffset;
@@ -80,13 +83,12 @@ const Home: React.FC = () => {
       const relativeDistance = relativeProgress * Math.abs(dividerPos - targetPos);
 
       if (distance >= 0) {
-        nextDividerPos += relativeDistance;
+        dividerPos += relativeDistance;
       } else {
-        nextDividerPos -= relativeDistance;
+        dividerPos -= relativeDistance;
       }
 
-      dividerPos = nextDividerPos;
-
+      // Done
       if (relativeProgress === 1) {
         startTime = 0;
       }
@@ -102,8 +104,9 @@ const Home: React.FC = () => {
         media.photo,
         0,
         0,
-        nextDividerPos,
+        Math.min(dividerPos, window.innerWidth),
         canvas.height,
+        0,
         0,
       );
     }

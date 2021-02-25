@@ -1,46 +1,52 @@
 export function drawCoverFitImage(
-  ctx: CanvasRenderingContext2D, img: HTMLImageElement,
+  ctx: CanvasRenderingContext2D,
+  img: HTMLImageElement,
   x = 0, y = 0,
-  w = 0, h = 0,
+  width = 0, height = 0,
   offsetX = 0.5, offsetY = 0.5,
 ): void {
-  if (arguments.length === 2) {
-    w = ctx.canvas.width;
-    h = ctx.canvas.height;
+  if (!width && !height) {
+    width = ctx.canvas.width;
+    height = ctx.canvas.height;
   }
 
-  // keep bounds [0.0, 1.0]
+  // Keep bounds [0.0, 1.0]
   if (offsetX < 0) offsetX = 0;
   if (offsetY < 0) offsetY = 0;
   if (offsetX > 1) offsetX = 1;
   if (offsetY > 1) offsetY = 1;
 
-  const iw = img.width;
-  const ih = img.height;
-  const r = Math.min(w / iw, h / ih);
-  let nw = iw * r;   // new prop. width
-  let nh = ih * r;   // new prop. height
-  let cx, cy, cw, ch, ar = 1;
+  // New size
+  const scale = Math.min(width / img.width, height / img.height);
+  let nw = img.width * scale;
+  let nh = img.height * scale;
+  let cx, cy, cw, ch, scale2 = 1;
 
-  // decide which gap to fill
-  if (nw < w) ar = w / nw;
-  if (Math.abs(ar - 1) < 1e-14 && nh < h) ar = h / nh;  // updated
-  nw *= ar;
-  nh *= ar;
+  // Decide which gap to fill
+  if (nw < width) {
+    scale2 = width / nw;
+  }
 
-  // calc source rectangle
-  cw = iw / (nw / w);
-  ch = ih / (nh / h);
+  if (Math.abs(scale2 - 1) < 1e-14 && nh < height) {
+    scale2 = height / nh;
+  }
 
-  cx = (iw - cw) * offsetX;
-  cy = (ih - ch) * offsetY;
+  nw *= scale2;
+  nh *= scale2;
 
-  // make sure source rectangle is valid
+  // Calc source rectangle
+  cw = img.width / (nw / width);
+  ch = img.height / (nh / height);
+
+  cx = (img.width - cw) * offsetX;
+  cy = (img.height - ch) * offsetY;
+
+  // Make sure source rectangle is valid
   if (cx < 0) cx = 0;
   if (cy < 0) cy = 0;
-  if (cw > iw) cw = iw;
-  if (ch > ih) ch = ih;
+  if (cw > img.width) cw = img.width;
+  if (ch > img.height) ch = img.height;
 
-  // fill image in dest. rectangle
-  ctx.drawImage(img, cx, cy, cw, ch,  x, y, w, h);
+  // Draw on canvas
+  ctx.drawImage(img, cx, cy, cw, ch, x, y, width, height);
 }
