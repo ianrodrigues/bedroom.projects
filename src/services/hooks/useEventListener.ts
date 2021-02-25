@@ -1,8 +1,11 @@
 import { useEffect, useRef } from 'react';
 
-export function useEventListener<K extends keyof HTMLElementEventMap>(eventName: K, handler: (e: HTMLElementEventMap[K]) => void, element: HTMLElement | Window = window): void {
+export function useEventListener<K extends keyof HTMLElementEventMap>(
+  eventName: K,
+  handler: (e: HTMLElementEventMap[K]) => void, element: HTMLElement | Window = window,
+): void {
   // Create a ref that stores handler
-  const savedHandler = useRef<any>();
+  const savedHandler = useRef<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // Update ref.current value if handler changes.
   // This allows our effect below to always get latest handler ...
@@ -18,7 +21,7 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(eventName:
     if (!isSupported) return;
 
     // Create event listener that calls handler function stored in ref
-    const eventListener = (event: any) => savedHandler.current(event);
+    const eventListener = (event: any) => savedHandler.current(event); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Add event listener
     element.addEventListener(eventName, eventListener);
