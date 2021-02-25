@@ -133,7 +133,17 @@ const Canvas: React.VFC<Props> = (props) => {
     }
   }, [setMousePos]);
 
+  const setCanvasSize = React.useCallback(() => {
+    const canvas = canvasRef.current;
+
+    if (canvas) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+  }, []);
+
   useEventListener('mousemove', onMouseMove);
+  useEventListener('resize', setCanvasSize);
 
 
   // Init component
@@ -168,8 +178,7 @@ const Canvas: React.VFC<Props> = (props) => {
     const canvas = canvasRef.current;
 
     // Set canvas size
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    setCanvasSize();
 
     // Draw shit
     const ctx = canvas.getContext('2d');
