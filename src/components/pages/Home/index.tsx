@@ -128,16 +128,6 @@ const Home: React.FC = () => {
 
   useEventListener('mousemove', onMouseMove);
 
-  const onMouseLeave = React.useCallback((e: MouseEvent) => {
-    setMouseData({
-      side: null,
-      proximity: null,
-      animate: true,
-    });
-  }, [setMouseData]);
-
-  useEventListener('mouseleave', onMouseLeave, canvasRef.current!);
-
 
   // Init component
   React.useEffect(() => {
