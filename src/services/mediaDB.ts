@@ -18,7 +18,7 @@ const mediaDb = {
       src: GucciCover,
     },
     {
-      title: 'Phug Autumn/Winter 2020',
+      title: 'PHUG Autumn/Winter 2020',
       src: AW2Cover,
     },
   ],

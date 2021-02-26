@@ -3,6 +3,7 @@ import React from 'react';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import useStore from 'state';
+import mediaDb from 'services/mediaDB';
 
 type MouseSide = null | 'L' | 'R';
 
@@ -144,17 +145,24 @@ const Canvas: React.VFC = () => {
 
   // Init component
   React.useEffect(() => {
-    const video = document.createElement('video');
-    video.src = state.video.src;
-    video.autoplay = true;
-    video.loop = true;
-    video.muted = true;
-    video.oncanplaythrough = () => {
-      setMedia((prev) => ({
-        ...prev,
-        video,
-      }));
-    };
+    for (let i = 0; i < mediaDb.videos.length; i++) {
+      const videoData = mediaDb.videos[i];
+      const video = document.createElement('video');
+      video.id = videoData.title;
+      video.src = videoData.src;
+      video.autoplay = true;
+      video.loop = true;
+      video.muted = true;
+
+      if (i === 0) {
+        video.oncanplaythrough = () => {
+          setMedia((prev) => ({
+            ...prev,
+            video,
+          }));
+        };
+      }
+    }
 
     const img = new Image();
     img.src = state.photo.src;

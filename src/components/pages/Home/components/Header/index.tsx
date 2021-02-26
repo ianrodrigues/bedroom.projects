@@ -3,7 +3,7 @@ import mediaDb from 'services/mediaDB';
 
 import useStore, { MediaData, MediaType } from 'state';
 
-import { HeaderContainer, List, ListItem, Nav } from './styled';
+import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled';
 
 
 const Header: React.VFC = () => {
@@ -16,28 +16,33 @@ const Header: React.VFC = () => {
   return (
     <HeaderContainer>
       <Nav>
-        <List>
-          <ListItem>Photos</ListItem>
-          {mediaDb.photos.map((photo) => (
-            <ListItem
-              key={photo.title}
-              onMouseEnter={() => onMouseEnter('photo', photo)}
-            >
-              {photo.title}
-            </ListItem>
-          ))}
-        </List>
-        <List>
-          <ListItem>Videos</ListItem>
-          {mediaDb.videos.map((video) => (
-            <ListItem
-              key={video.title}
-              onMouseEnter={() => onMouseEnter('video', video)}
-            >
-              {video.title}
-            </ListItem>
-          ))}
-        </List>
+        <NavContainer>
+          <H2>Photo</H2>
+          <List>
+            {mediaDb.photos.map((photo) => (
+              <ListItem
+                key={photo.title}
+                onMouseEnter={() => onMouseEnter('photo', photo)}
+              >
+                {photo.title}
+              </ListItem>
+            ))}
+          </List>
+        </NavContainer>
+
+        <NavContainer>
+          <H2>Film</H2>
+          <List>
+            {mediaDb.videos.map((video) => (
+              <ListItem
+                key={video.title}
+                onMouseEnter={() => onMouseEnter('video', video)}
+              >
+                {video.title}
+              </ListItem>
+            ))}
+          </List>
+        </NavContainer>
       </Nav>
     </HeaderContainer>
   );
