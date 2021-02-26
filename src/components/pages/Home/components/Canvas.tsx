@@ -111,16 +111,16 @@ const Canvas: React.VFC = () => {
     const canvas = canvasRef.current as HTMLCanvasElement;
 
     // Left side
-    if (e.clientX < canvas.width * 0.33) {
+    if (e.clientX < canvas.width * 0.4) {
       setMousePos({
         side: 'L',
-        proximity: e.clientX < canvas.width * 0.075 ? 'edge' : 'middle',
+        proximity: e.clientX < canvas.width * 0.2 ? 'edge' : 'middle',
       });
     // Right side
-    } else if (e.clientX > canvas.width * 0.67) {
+    } else if (e.clientX > canvas.width * 0.6) {
       setMousePos({
         side: 'R',
-        proximity: e.clientX > canvas.width * 0.925 ? 'edge' : 'middle',
+        proximity: e.clientX > canvas.width * 0.8 ? 'edge' : 'middle',
       });
     } else {
       setMousePos({
@@ -184,6 +184,14 @@ const Canvas: React.VFC = () => {
       media.video.src = state.video.src;
     }
   }, [state.video]);
+
+  React.useEffect(() => {
+    if (mousePos.proximity === 'edge' && state.showName) {
+      state.setShowName(false);
+    } else if (mousePos.proximity !== 'edge' && !state.showName) {
+      state.setShowName(true);
+    }
+  }, [mousePos.proximity]);
 
 
   // Init canvas
