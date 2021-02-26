@@ -1,5 +1,7 @@
 import styled from 'styled-components';
 
+import useStore from 'state';
+
 export const HeaderContainer = styled.header`
   position: absolute;
   top: 15px;
@@ -8,6 +10,17 @@ export const HeaderContainer = styled.header`
   margin: auto;
   width: 100vw;
   height: 100vh;
+`;
+
+export const Nav = styled.nav`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 20px;
+  mix-blend-mode: difference;
+  font-family: 'Roboto', sans-serif;
 `;
 
 function getAnimations() {
@@ -26,15 +39,17 @@ function getAnimations() {
   return str;
 }
 
-export const Nav = styled.nav`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  max-width: 1600px;
-  margin: 0 auto;
-  padding: 0 20px;
-  mix-blend-mode: difference;
-  font-family: 'Roboto', sans-serif;
+export const NavContainer = styled.div.attrs({
+  onMouseEnter: () => useStore.getState().setShowName(false),
+  onMouseLeave: () => useStore.getState().setShowName(true),
+})`
+  &:hover {
+    ${getAnimations()}
+  }
+
+  &:last-of-type {
+    text-align: right;
+  }
 `;
 
 export const List = styled.ul`
@@ -61,14 +76,4 @@ export const H2 = styled.h2`
   margin: 0;
   padding: 0;
   color: #fff;
-`;
-
-export const NavContainer = styled.div`
-  &:hover {
-    ${getAnimations()}
-  }
-
-  &:last-of-type {
-    text-align: right;
-  }
 `;

@@ -5,6 +5,9 @@ interface AppState extends State {
   photo: MediaData;
   video: MediaData;
   setMedia: (type: MediaType, media: MediaData) => void;
+
+  showName: boolean;
+  setShowName: (showName: boolean) => void;
 }
 
 export type MediaData = {
@@ -20,6 +23,11 @@ const useStore = create<AppState>((set) => ({
   video: mediaDb.videos[0],
   setMedia: (type, media) => set(() => ({
     [type]: media,
+  })),
+
+  showName: true,
+  setShowName: (showName) => set(() => ({
+    showName,
   })),
 }));
 

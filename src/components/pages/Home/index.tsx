@@ -1,14 +1,18 @@
 import React from 'react';
 
-import { HomeContainer } from './styled';
+import useStore from 'state';
 
 import Canvas from './components/Canvas';
 import Header from './components/Header';
+import { HomeContainer, Name } from './styled';
 
 
 const Home: React.VFC = () => {
+  const state = useStore();
+
   return (
     <HomeContainer>
+      <Name show={state.showName}>BEDROOM</Name>
       <Header />
       <Canvas />
     </HomeContainer>
