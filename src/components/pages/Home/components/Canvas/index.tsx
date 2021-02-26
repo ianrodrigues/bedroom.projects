@@ -14,15 +14,24 @@ type MouseData = {
   proximity: null | 'middle' | 'edge';
 }
 
-type Media = {
-  photo?: HTMLImageElement;
-  video?: HTMLVideoElement;
+type Media<T extends HTMLVideoElement | HTMLImageElement> = {
+  [title: string]: {
+    title: string;
+    src: string;
+    element: T;
+  }
 }
 
-// React setState can't keep up with high screen refresh rates
+// React setState can't keep up with high screen refresh rates or quick changes to heavy objects
 // We also don't need these variables to fire renders
 let dividerPos = 0;
 let startTime = 0;
+
+// We keep all videos and photos in memory with these objects for super fast switching between
+// different photos/films
+const videos: Media<HTMLVideoElement> = {};
+const photos: Media<HTMLImageElement> = {};
+
 
 const Canvas: React.VFC = () => {
   const state = useStore();
@@ -32,10 +41,6 @@ const Canvas: React.VFC = () => {
     proximity: null,
   });
   const prevMousePos = usePrevious(mousePos);
-  const [media, setMedia] = React.useState<Media>({
-    photo: undefined,
-    video: undefined,
-  });
 
   useAnimationFrame(((props) => {
     const timestamp = props.time;
@@ -90,14 +95,16 @@ const Canvas: React.VFC = () => {
       }
     }
 
-    if (media.video) {
-      drawCoverFitVideo(ctx, media.video);
+    const video = videos[state.video.title];
+    if (video) {
+      drawCoverFitVideo(ctx, video.element);
     }
 
-    if (media.photo) {
+    const photo = photos[state.photo.title];
+    if (photo) {
       drawCoverFitImage(
         ctx,
-        media.photo,
+        photo.element,
         0,
         0,
         Math.min(dividerPos, window.innerWidth),
@@ -106,7 +113,7 @@ const Canvas: React.VFC = () => {
         0,
       );
     }
-  }), [mousePos, setMousePos, media]);
+  }), [mousePos, setMousePos]);
 
   // Add mouseover events
   const onMouseMove = React.useCallback((e: MouseEvent) => {
@@ -149,43 +156,33 @@ const Canvas: React.VFC = () => {
   React.useEffect(() => {
     for (let i = 0; i < mediaDb.videos.length; i++) {
       const videoData = mediaDb.videos[i];
-      const video = document.createElement('video');
-      video.id = videoData.title;
-      video.src = videoData.src;
-      video.autoplay = true;
-      video.loop = true;
-      video.muted = true;
 
-      if (i === 0) {
-        video.oncanplaythrough = () => {
-          setMedia((prev) => ({
-            ...prev,
-            video,
-          }));
+      if (videoData) {
+        const video = document.createElement('video');
+        video.id = videoData.title;
+        video.src = videoData.src;
+        video.autoplay = true;
+        video.loop = true;
+        video.muted = true;
+
+        videos[videoData.title] = {
+          ...videoData,
+          element: video,
+        };
+      }
+
+      const photoData = mediaDb.photos[i];
+      if (photoData) {
+        const img = document.createElement('img');
+        img.src = photoData.src;
+
+        photos[photoData.title] = {
+          ...photoData,
+          element: img,
         };
       }
     }
-
-    const img = new Image();
-    img.src = state.photo.src;
-    img.onload = () => setMedia((prev) => ({
-      ...prev,
-      photo: img,
-    }));
   }, []);
-
-
-  React.useEffect(() => {
-    if (media.photo) {
-      media.photo.src = state.photo.src;
-    }
-  }, [state.photo]);
-
-  React.useEffect(() => {
-    if (media.video) {
-      media.video.src = state.video.src;
-    }
-  }, [state.video]);
 
   React.useEffect(() => {
     if (mousePos.proximity === 'edge' && state.showName) {
