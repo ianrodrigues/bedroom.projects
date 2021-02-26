@@ -8,6 +8,7 @@ export const TitleContainer = styled.div`
   bottom: 10px;
   margin: auto;
   padding: 0;
+  pointer-events: none;
 `;
 
 export const TitleInner = styled.div`
