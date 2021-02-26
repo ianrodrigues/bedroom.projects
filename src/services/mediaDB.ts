@@ -2,6 +2,7 @@ import AlfieCover from 'images/alfie-cover.jpg';
 import CareCover from 'images/care-cover.jpg';
 import GucciCover from 'images/gucci-tnf-cover.jpg';
 import AW2Cover from 'images/aw2-cover.jpg';
+import The1975Cover from 'images/1975-cover.jpg';
 
 const mediaDb = {
   photos: [
@@ -16,6 +17,10 @@ const mediaDb = {
     {
       title: 'Gucci x The North Face',
       src: GucciCover,
+    },
+    {
+      title: 'The 1975 - Me & You Together Song BTS',
+      src: The1975Cover,
     },
     {
       title: 'PHUG Autumn/Winter 2020',
