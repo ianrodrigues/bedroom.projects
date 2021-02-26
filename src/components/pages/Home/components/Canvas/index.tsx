@@ -47,6 +47,7 @@ const Canvas: React.VFC = () => {
   const tempPrevPhoto = usePrevious(state.photo);
   const tempPrevVideo = usePrevious(state.video);
 
+  // Omega ugly but works for now :)
   const mediaTransition = React.useCallback(
     (ctx: CanvasRenderingContext2D, mediaType: MediaType, timestamp: number) => {
       const collection = mediaType === 'photo' ? photos : videos;
@@ -153,7 +154,8 @@ const Canvas: React.VFC = () => {
 
     const video = videos[state.video.id];
 
-    if (video && !prevPhoto) {
+    // Don't render video if photo is fullscreen
+    if (video && dividerPos !== window.innerWidth) {
       if (prevVideo) {
         mediaTransition(ctx, 'video', timestamp);
       }
@@ -163,7 +165,8 @@ const Canvas: React.VFC = () => {
 
     const photo = photos[state.photo.id];
 
-    if (photo) {
+    // Don't render photo if video is fullscreen
+    if (photo && dividerPos !== 0) {
       if (prevPhoto) {
         mediaTransition(ctx, 'photo', timestamp);
       }
