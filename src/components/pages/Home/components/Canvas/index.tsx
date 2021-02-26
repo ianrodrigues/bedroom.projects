@@ -1,6 +1,6 @@
 import React from 'react';
 
-import useStore from 'state';
+import useStore, { MediaData, MediaType } from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import mediaDb from 'services/mediaDB';
@@ -9,13 +9,13 @@ import { MediaTitle, TitleContainer, TitleInner } from './styled';
 
 type MouseSide = null | 'L' | 'R';
 
-type MouseData = {
+interface MouseData {
   side: MouseSide;
   proximity: null | 'middle' | 'edge';
 }
 
-type Media<T extends HTMLVideoElement | HTMLImageElement> = {
-  [title: string]: {
+interface Media<T extends HTMLVideoElement | HTMLImageElement> {
+  [title: string]: MediaData & {
     title: string;
     src: string;
     element: T;
@@ -26,6 +26,9 @@ type Media<T extends HTMLVideoElement | HTMLImageElement> = {
 // We also don't need these variables to fire renders
 let dividerPos = 0;
 let startTime = 0;
+let transitionStartTime = 0;
+let prevPhoto: MediaData | undefined;
+let prevVideo: MediaData | undefined;
 
 // We keep all videos and photos in memory with these objects for super fast switching between
 // different photos/films
@@ -41,11 +44,64 @@ const Canvas: React.VFC = () => {
     proximity: null,
   });
   const prevMousePos = usePrevious(mousePos);
+  const tempPrevPhoto = usePrevious(state.photo);
+  const tempPrevVideo = usePrevious(state.video);
+
+  const mediaTransition = React.useCallback(
+    (ctx: CanvasRenderingContext2D, mediaType: MediaType, timestamp: number) => {
+      const collection = mediaType === 'photo' ? photos : videos;
+      const media = mediaType === 'photo' ? photos[state.photo.title] : videos[state.video.title];
+      const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
+
+      if (transitionStartTime === 0 && prevMedia!.id !== media.id) {
+        transitionStartTime = timestamp;
+      }
+
+      if (transitionStartTime > 0) {
+        const duration = .4;
+        const runtime = timestamp - transitionStartTime;
+        const relativeProgress = Math.min(runtime / duration, 1);
+        const alpha1 = 1 - relativeProgress;
+        const alpha2 = relativeProgress;
+
+        ctx.globalAlpha = alpha1;
+
+        if (mediaType === 'video') {
+          drawCoverFitVideo(
+            ctx,
+            collection[prevMedia!.title].element as HTMLVideoElement,
+          );
+        } else {
+          drawCoverFitImage(
+            ctx,
+            collection[prevMedia!.title].element as HTMLImageElement,
+            0,
+            0,
+            Math.min(dividerPos, window.innerWidth),
+            ctx.canvas.height,
+            0,
+            0,
+          );
+        }
+
+        ctx.globalAlpha = alpha2;
+
+        if (relativeProgress === 1) {
+          transitionStartTime = 0;
+          prevVideo = undefined;
+          prevPhoto = undefined;
+        }
+      }
+    }, [state.photo, state.video]);
 
   useAnimationFrame(((props) => {
     const timestamp = props.time;
-    const canvas = canvasRef.current as HTMLCanvasElement;
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext('2d');
+
+    if (!canvas || !ctx) {
+      return;
+    }
 
     // Clear all canvas pixels
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -96,12 +152,22 @@ const Canvas: React.VFC = () => {
     }
 
     const video = videos[state.video.title];
-    if (video) {
+
+    if (video && !prevPhoto) {
+      if (prevVideo) {
+        mediaTransition(ctx, 'video', timestamp);
+      }
+
       drawCoverFitVideo(ctx, video.element);
     }
 
     const photo = photos[state.photo.title];
+
     if (photo) {
+      if (prevPhoto) {
+        mediaTransition(ctx, 'photo', timestamp);
+      }
+
       drawCoverFitImage(
         ctx,
         photo.element,
@@ -154,7 +220,7 @@ const Canvas: React.VFC = () => {
 
   // Init component
   React.useEffect(() => {
-    for (let i = 0; i < mediaDb.videos.length; i++) {
+    for (let i = 0; i < Math.max(mediaDb.videos.length, mediaDb.photos.length); i++) {
       const videoData = mediaDb.videos[i];
 
       if (videoData) {
@@ -192,6 +258,13 @@ const Canvas: React.VFC = () => {
     }
   }, [mousePos.proximity]);
 
+  React.useEffect(() => {
+    prevPhoto = tempPrevPhoto;
+  }, [state.photo]);
+
+  React.useEffect(() => {
+    prevVideo = tempPrevVideo;
+  }, [state.video]);
 
   // Init canvas
   React.useEffect(() => {
@@ -200,20 +273,17 @@ const Canvas: React.VFC = () => {
     }
 
     const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
 
     // Set canvas size
     setCanvasSize();
-
-    // Draw shit
-    const ctx = canvas.getContext('2d');
+    dividerPos = canvas.width * 0.5;
 
     if (!ctx) {
       return;
     }
 
     ctx.imageSmoothingEnabled = false;
-
-    dividerPos = canvas.width * 0.5;
   }, [canvasRef]);
 
   return (

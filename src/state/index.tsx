@@ -10,7 +10,8 @@ interface AppState extends State {
   setShowName: (showName: boolean) => void;
 }
 
-export type MediaData = {
+export interface MediaData {
+  id: number;
   title: string;
   src: string;
 }
