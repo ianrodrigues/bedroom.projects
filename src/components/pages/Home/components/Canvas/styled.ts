@@ -3,9 +3,9 @@ import styled, { css } from 'styled-components';
 
 export const TitleContainer = styled.div`
   position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 10px;
+  left: 20px;
+  right: 20px;
+  bottom: 30px;
   margin: auto;
   padding: 0;
   pointer-events: none;
@@ -16,7 +16,7 @@ export const TitleInner = styled.div`
   display: flex;
   justify-content: space-between;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
   width: 100%;
   max-width: 1600px;
 `;
@@ -24,6 +24,7 @@ export const TitleInner = styled.div`
 export const MediaTitle = styled.h3<MediaTitleProps>((props) => `
   position: absolute;
   bottom: 0;
+  margin: 0;
   width: 50%;
   max-width: 800px;
   font-size: 100px;
