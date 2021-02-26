@@ -1,9 +1,11 @@
 import React from 'react';
 
-import { drawCoverFitImage, drawCoverFitVideo } from 'services';
-import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import useStore from 'state';
+import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
+import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import mediaDb from 'services/mediaDB';
+
+import { MediaTitle, TitleContainer, TitleInner } from './styled';
 
 type MouseSide = null | 'L' | 'R';
 
@@ -218,7 +220,19 @@ const Canvas: React.VFC = () => {
   }, [canvasRef]);
 
   return (
-    <canvas ref={canvasRef} />
+    <>
+      <canvas ref={canvasRef} />
+      <TitleContainer>
+        <TitleInner>
+          <MediaTitle show={mousePos.proximity === 'edge' && mousePos.side === 'L'}>
+            {state.photo.title}
+          </MediaTitle>
+          <MediaTitle show={mousePos.proximity === 'edge' && mousePos.side === 'R'}>
+            {state.video.title}
+          </MediaTitle>
+        </TitleInner>
+      </TitleContainer>
+    </>
   );
 };
 

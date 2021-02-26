@@ -12,7 +12,7 @@ const Home: React.VFC = () => {
 
   return (
     <HomeContainer>
-      <Name show={state.showName}>BEDROOM</Name>
+      <Name show={state.showName}>bedroom</Name>
       <Header />
       <Canvas />
     </HomeContainer>

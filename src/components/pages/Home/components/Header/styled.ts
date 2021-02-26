@@ -1,7 +1,5 @@
 import styled from 'styled-components';
 
-import useStore from 'state';
-
 export const HeaderContainer = styled.header`
   position: absolute;
   top: 15px;
@@ -16,6 +14,7 @@ export const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
   width: 100%;
+  height: 100%;
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px;
@@ -39,10 +38,7 @@ function getAnimations() {
   return str;
 }
 
-export const NavContainer = styled.div.attrs({
-  onMouseEnter: () => useStore.getState().setShowName(false),
-  onMouseLeave: () => useStore.getState().setShowName(true),
-})`
+export const NavContainer = styled.div`
   &:hover {
     ${getAnimations()}
   }
