@@ -15,7 +15,7 @@ interface MouseData {
 }
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
-  [title: string]: MediaData & {
+  [id: number]: MediaData & {
     title: string;
     src: string;
     element: T;
@@ -50,7 +50,7 @@ const Canvas: React.VFC = () => {
   const mediaTransition = React.useCallback(
     (ctx: CanvasRenderingContext2D, mediaType: MediaType, timestamp: number) => {
       const collection = mediaType === 'photo' ? photos : videos;
-      const media = mediaType === 'photo' ? photos[state.photo.title] : videos[state.video.title];
+      const media = mediaType === 'photo' ? photos[state.photo.id] : videos[state.video.id];
       const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
 
       if (transitionStartTime === 0 && prevMedia!.id !== media.id) {
@@ -69,12 +69,12 @@ const Canvas: React.VFC = () => {
         if (mediaType === 'video') {
           drawCoverFitVideo(
             ctx,
-            collection[prevMedia!.title].element as HTMLVideoElement,
+            collection[prevMedia!.id].element as HTMLVideoElement,
           );
         } else {
           drawCoverFitImage(
             ctx,
-            collection[prevMedia!.title].element as HTMLImageElement,
+            collection[prevMedia!.id].element as HTMLImageElement,
             0,
             0,
             Math.min(dividerPos, window.innerWidth),
@@ -151,7 +151,7 @@ const Canvas: React.VFC = () => {
       }
     }
 
-    const video = videos[state.video.title];
+    const video = videos[state.video.id];
 
     if (video && !prevPhoto) {
       if (prevVideo) {
@@ -161,7 +161,7 @@ const Canvas: React.VFC = () => {
       drawCoverFitVideo(ctx, video.element);
     }
 
-    const photo = photos[state.photo.title];
+    const photo = photos[state.photo.id];
 
     if (photo) {
       if (prevPhoto) {
@@ -231,7 +231,7 @@ const Canvas: React.VFC = () => {
         video.loop = true;
         video.muted = true;
 
-        videos[videoData.title] = {
+        videos[videoData.id] = {
           ...videoData,
           element: video,
         };
@@ -242,7 +242,7 @@ const Canvas: React.VFC = () => {
         const img = document.createElement('img');
         img.src = photoData.src;
 
-        photos[photoData.title] = {
+        photos[photoData.id] = {
           ...photoData,
           element: img,
         };
