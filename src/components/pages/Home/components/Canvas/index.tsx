@@ -7,7 +7,7 @@ import mediaDb from 'services/mediaDB';
 
 import { MediaTitle, TitleContainer, TitleInner } from './styled';
 
-type MouseSide = null | 'L' | 'R';
+export type MouseSide = null | 'L' | 'R';
 
 interface MouseData {
   side: MouseSide;
@@ -189,13 +189,13 @@ const Canvas: React.VFC = () => {
     if (e.clientX < canvas.width * 0.4) {
       setMousePos({
         side: 'L',
-        proximity: e.clientX < canvas.width * 0.2 ? 'edge' : 'middle',
+        proximity: (e.clientX < canvas.width * 0.2 || state.sideFullscreen) ? 'edge' : 'middle',
       });
     // Right side
     } else if (e.clientX > canvas.width * 0.6) {
       setMousePos({
         side: 'R',
-        proximity: e.clientX > canvas.width * 0.8 ? 'edge' : 'middle',
+        proximity: (e.clientX > canvas.width * 0.8 || state.sideFullscreen) ? 'edge' : 'middle',
       });
     } else {
       setMousePos({
@@ -203,7 +203,7 @@ const Canvas: React.VFC = () => {
         proximity: null,
       });
     }
-  }, [setMousePos]);
+  }, [setMousePos, state.sideFullscreen]);
 
   const setCanvasSize = React.useCallback(() => {
     const canvas = canvasRef.current;

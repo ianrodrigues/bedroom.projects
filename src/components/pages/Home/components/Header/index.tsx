@@ -18,7 +18,10 @@ const Header: React.VFC = () => {
       <Nav>
         <NavContainer>
           <H2>Photo</H2>
-          <List>
+          <List
+            onMouseEnter={() => state.setSideFullscreen('L')}
+            onMouseLeave={() => state.setSideFullscreen(null)}
+          >
             {mediaDb.photos.map((photo) => (
               <ListItem
                 key={photo.title}
@@ -32,7 +35,10 @@ const Header: React.VFC = () => {
 
         <NavContainer>
           <H2>Film</H2>
-          <List>
+          <List
+            onMouseEnter={() => state.setSideFullscreen('R')}
+            onMouseLeave={() => state.setSideFullscreen(null)}
+          >
             {mediaDb.videos.map((video) => (
               <ListItem
                 key={video.title}
