@@ -60,8 +60,10 @@ const Canvas: React.VFC = () => {
     }
 
     // Animation start
-    if (mousePos.proximity !== prevMousePos.proximity || mousePos.side !== prevMousePos.side) {
-      startTime = timestamp;
+    if (prevMousePos) {
+      if (mousePos.proximity !== prevMousePos.proximity || mousePos.side !== prevMousePos.side) {
+        startTime = timestamp;
+      }
     }
 
     // Animate position of divider
@@ -161,6 +163,19 @@ const Canvas: React.VFC = () => {
       photo: img,
     }));
   }, []);
+
+
+  React.useEffect(() => {
+    if (media.photo) {
+      media.photo.src = state.photo.src;
+    }
+  }, [state.photo]);
+
+  React.useEffect(() => {
+    if (media.video) {
+      media.video.src = state.video.src;
+    }
+  }, [state.video]);
 
 
   // Init canvas

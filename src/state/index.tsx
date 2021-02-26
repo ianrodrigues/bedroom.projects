@@ -1,29 +1,25 @@
-import create from 'zustand';
+import mediaDb from 'services/mediaDB';
+import create, { State } from 'zustand';
 
-import Aw2Cover from 'images/aw2-cover.jpg';
-
-type State = {
-  photo: Media;
-  video: Media;
-  setMedia: (media: 'photo' | 'video', title: string, src: string) => void;
+interface AppState extends State {
+  photo: MediaData;
+  video: MediaData;
+  setMedia: (type: MediaType, media: MediaData) => void;
 }
 
-type Media = {
+export type MediaData = {
   title: string;
   src: string;
 }
 
-const useStore = create<State>((set) => ({
-  photo: {
-    title: 'AW 20/21 drop 2',
-    src: Aw2Cover,
-  },
-  video: {
-    title: 'Beabadoobee - Worth It',
-    src: 'https://bedroom.sandervispoel.com/static/beabadoobee__worth_it.mov',
-  },
-  setMedia: (media, title, src) => set(() => ({
-    [media]: { title, src },
+export type MediaType = 'photo' | 'video';
+
+
+const useStore = create<AppState>((set) => ({
+  photo: mediaDb.photos[0],
+  video: mediaDb.videos[0],
+  setMedia: (type, media) => set(() => ({
+    [type]: media,
   })),
 }));
 
