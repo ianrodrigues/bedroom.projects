@@ -1,4 +1,4 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 export const HeaderContainer = styled.header`
   position: absolute;
@@ -22,15 +22,19 @@ export const Nav = styled.nav`
   font-family: 'Roboto', sans-serif;
 `;
 
-function getAnimations() {
+function setListAnimations(props: NavContainerProps) {
+  const MAX = 10;
+  const DELAY = 30;
   let str = '';
 
-  for (let i = 1; i < 10; i++) {
+  for (let i = 0; i < MAX; i++) {
+    const delay = props.isOpen
+      ? DELAY * i
+      : DELAY * MAX - (i * DELAY);
+
     str += `
-      li:nth-child(${i}) {
-        opacity: 0.5;
-        transform: translate3d(0, 0, 0);
-        transition-delay: ${30 * i}ms;
+      li:nth-child(${i + 1}) {
+        transition-delay: ${delay}ms;
       }
     `;
   }
@@ -38,20 +42,31 @@ function getAnimations() {
   return str;
 }
 
-export const NavContainer = styled.div`
-  &:hover {
-    ${getAnimations()}
-  }
+export const NavContainer = styled.div<NavContainerProps>`
+  ${(props) => setListAnimations(props)};
 
   &:last-of-type {
     text-align: right;
   }
+
+  ${(props) => props.isOpen && css`
+    li {
+      pointer-events: auto;
+      transform: translate3d(0, 0, 0);
+      opacity: .5;
+    }
+  `}
 `;
+
+interface NavContainerProps {
+  isOpen: boolean;
+}
 
 export const List = styled.ul`
   margin: 0;
   padding: 3px 0;
   list-style: none;
+  pointer-events: none;
 `;
 
 export const ListItem = styled.li`
