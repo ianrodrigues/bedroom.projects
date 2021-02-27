@@ -175,8 +175,20 @@ const Canvas: React.VFC = () => {
     }
   }), [sideSize]);
 
+  // Add window resize events
+  const setCanvasSize = React.useCallback(() => {
+    const canvas = canvasRef.current;
+
+    if (canvas) {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+  }, []);
+
+  useEventListener('resize', setCanvasSize);
+
   // Add mouseover events
-  const onMouseMove = React.useCallback((e: MouseEvent) => {
+  useEventListener('mousemove', React.useCallback((e: MouseEvent) => {
     const canvas = canvasRef.current as HTMLCanvasElement;
 
     // Left side
@@ -197,19 +209,7 @@ const Canvas: React.VFC = () => {
         R: null,
       });
     }
-  }, [setSideSize, state.isFullscreen]);
-
-  const setCanvasSize = React.useCallback(() => {
-    const canvas = canvasRef.current;
-
-    if (canvas) {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-  }, []);
-
-  useEventListener('mousemove', onMouseMove);
-  useEventListener('resize', setCanvasSize);
+  }, [setSideSize, state.isFullscreen]));
 
 
   // Init component
