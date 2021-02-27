@@ -7,17 +7,13 @@ import mediaDb from 'services/mediaDB';
 
 import { MediaTitle, TitleContainer, TitleInner } from './styled';
 
-export type MouseSide = null | 'L' | 'R';
+type Side = 'L' | 'R';
+export type MouseSide = null | Side;
 
-interface MouseData {
-  side: MouseSide;
-  proximity: null | 'middle' | 'edge';
-}
+type SizeData = Record<Side, null | 'large' | 'full'>
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
   [id: number]: MediaData & {
-    title: string;
-    src: string;
     element: T;
   }
 }
@@ -39,11 +35,11 @@ const photos: Media<HTMLImageElement> = {};
 const Canvas: React.VFC = () => {
   const state = useStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [mousePos, setMousePos] = React.useState<MouseData>({
-    side: null,
-    proximity: null,
+  const [sideSize, setSideSize] = React.useState<SizeData>({
+    L: null,
+    R: null,
   });
-  const prevMousePos = usePrevious(mousePos);
+  const prevSideSize = usePrevious(sideSize);
   const tempPrevPhoto = usePrevious(state.photo);
   const tempPrevVideo = usePrevious(state.video);
 
@@ -110,23 +106,18 @@ const Canvas: React.VFC = () => {
     // Start in the middle
     let dividerOffset = 0.5;
 
-    if (mousePos.proximity === 'middle') {
-      if (mousePos.side === 'L') {
-        dividerOffset = 0.75;
-      } else if (mousePos.side === 'R') {
-        dividerOffset = 0.25;
-      }
-    } else if (mousePos.proximity === 'edge') {
-      if (mousePos.side === 'L') {
-        dividerOffset = 1;
-      } else if (mousePos.side === 'R') {
-        dividerOffset = 0;
-      }
+    switch (sideSize.L) {
+      case 'large': dividerOffset = 0.75; break;
+      case 'full': dividerOffset = 1; break;
+    }
+    switch (sideSize.R) {
+      case 'large': dividerOffset = 0.25; break;
+      case 'full': dividerOffset = 0; break;
     }
 
     // Animation start
-    if (prevMousePos) {
-      if (mousePos.proximity !== prevMousePos.proximity || mousePos.side !== prevMousePos.side) {
+    if (prevSideSize) {
+      if (sideSize.L !== prevSideSize.L || sideSize.R !== prevSideSize.R) {
         startTime = timestamp;
       }
     }
@@ -182,31 +173,31 @@ const Canvas: React.VFC = () => {
         0,
       );
     }
-  }), [mousePos, setMousePos]);
+  }), [sideSize]);
 
   // Add mouseover events
   const onMouseMove = React.useCallback((e: MouseEvent) => {
     const canvas = canvasRef.current as HTMLCanvasElement;
 
     // Left side
-    if (e.clientX < canvas.width * 0.4) {
-      setMousePos({
-        side: 'L',
-        proximity: (e.clientX < canvas.width * 0.2 || state.sideFullscreen) ? 'edge' : 'middle',
-      });
+    if (e.clientX < canvas.width * 0.3) {
+      setSideSize((prev) => ({
+        ...prev,
+        L: state.isFullscreen ? 'full' : 'large',
+      }));
     // Right side
-    } else if (e.clientX > canvas.width * 0.6) {
-      setMousePos({
-        side: 'R',
-        proximity: (e.clientX > canvas.width * 0.8 || state.sideFullscreen) ? 'edge' : 'middle',
-      });
+    } else if (e.clientX > canvas.width * 0.7) {
+      setSideSize((prev) => ({
+        ...prev,
+        R: state.isFullscreen ? 'full' : 'large',
+      }));
     } else {
-      setMousePos({
-        side: null,
-        proximity: null,
+      setSideSize({
+        L: null,
+        R: null,
       });
     }
-  }, [setMousePos, state.sideFullscreen]);
+  }, [setSideSize, state.isFullscreen]);
 
   const setCanvasSize = React.useCallback(() => {
     const canvas = canvasRef.current;
@@ -241,6 +232,7 @@ const Canvas: React.VFC = () => {
       }
 
       const photoData = mediaDb.photos[i];
+
       if (photoData) {
         const img = document.createElement('img');
         img.src = photoData.src;
@@ -254,12 +246,9 @@ const Canvas: React.VFC = () => {
   }, []);
 
   React.useEffect(() => {
-    if (mousePos.proximity === 'edge' && state.showName) {
-      state.setShowName(false);
-    } else if (mousePos.proximity !== 'edge' && !state.showName) {
-      state.setShowName(true);
-    }
-  }, [mousePos.proximity]);
+    const showName = !state.isFullscreen && !state.showName;
+    state.setShowName(showName);
+  }, [state.isFullscreen]);
 
   React.useEffect(() => {
     prevPhoto = tempPrevPhoto;
@@ -294,10 +283,10 @@ const Canvas: React.VFC = () => {
       <canvas ref={canvasRef} />
       <TitleContainer>
         <TitleInner>
-          <MediaTitle show={mousePos.proximity === 'edge' && mousePos.side === 'L'}>
+          <MediaTitle show={state.isFullscreen && sideSize.L === 'full'}>
             {state.photo.title}
           </MediaTitle>
-          <MediaTitle show={mousePos.proximity === 'edge' && mousePos.side === 'R'}>
+          <MediaTitle show={state.isFullscreen && sideSize.R === 'full'}>
             {state.video.title}
           </MediaTitle>
         </TitleInner>

@@ -1,7 +1,6 @@
 import create, { State } from 'zustand';
 
 import mediaDb from 'services/mediaDB';
-import { MouseSide } from 'pages/Home/components/Canvas';
 
 interface AppState extends State {
   photo: MediaData;
@@ -11,8 +10,8 @@ interface AppState extends State {
   showName: boolean;
   setShowName: (showName: boolean) => void;
 
-  sideFullscreen: MouseSide;
-  setSideFullscreen: (side: MouseSide) => void;
+  isFullscreen: boolean;
+  setSideFullscreen: (bool: boolean) => void;
 }
 
 export interface MediaData {
@@ -36,9 +35,9 @@ const useStore = create<AppState>((set) => ({
     showName,
   })),
 
-  sideFullscreen: null,
-  setSideFullscreen: (side) => set(() => ({
-    sideFullscreen: side,
+  isFullscreen: false,
+  setSideFullscreen: (bool) => set(() => ({
+    isFullscreen: bool,
   })),
 }));
 
