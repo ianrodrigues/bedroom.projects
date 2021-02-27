@@ -246,8 +246,11 @@ const Canvas: React.VFC = () => {
   }, []);
 
   React.useEffect(() => {
-    const showName = !state.isFullscreen && !state.showName;
-    state.setShowName(showName);
+    if (state.isFullscreen && state.showName) {
+      state.setShowName(false);
+    } else if (!state.isFullscreen && !state.showName) {
+      state.setShowName(true);
+    }
   }, [state.isFullscreen]);
 
   React.useEffect(() => {

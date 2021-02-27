@@ -11,7 +11,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       <GlobalStyle />
       <React.Suspense fallback={<span>loading</span>}>
         <Switch>
-          <Route path="/" component={Home} exact />
+          <Route path="/" component={Home} />
         </Switch>
       </React.Suspense>
     </main>

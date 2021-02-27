@@ -1,15 +1,16 @@
 import React from 'react';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
+import { Switch, Route, useRouteMatch } from 'react-router-dom';
 
-import useStore from 'state';
-
-import Canvas from './components/Canvas';
 import Header from './components/Header';
-import { HomeContainer, Name } from './styled';
+import PhotoFilmPreview from './components/PhotoFilmPreview';
+import PhotoFilmDetail from './components/PhotoFilmDetail';
+
+import { HomeContainer } from './styled';
 
 
 const Home: React.VFC = () => {
-  const state = useStore();
+  const match = useRouteMatch();
 
   React.useEffect(() => {
     const body = document.querySelector('body');
@@ -27,9 +28,11 @@ const Home: React.VFC = () => {
 
   return (
     <HomeContainer>
-      <Name show={state.showName}>bedroom</Name>
       <Header />
-      <Canvas />
+      <Switch>
+        <Route path={match.path} exact component={PhotoFilmPreview} />
+        <Route path={`${match.path}:id`} exact component={PhotoFilmDetail} />
+      </Switch>
     </HomeContainer>
   );
 };
