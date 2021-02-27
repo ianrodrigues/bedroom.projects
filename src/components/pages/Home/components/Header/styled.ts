@@ -55,13 +55,18 @@ export const List = styled.ul`
 `;
 
 export const ListItem = styled.li`
-  color: #fff;
-  font-size: 20px;
   padding: 3px 0;
   opacity: 0;
   transform: translate3d(0, -5px, 0);
   transition: opacity 100ms, transform 100ms;
   cursor: default;
+
+  a {
+    display: block;
+    color: #fff;
+    font-size: 20px;
+    text-decoration: none;
+  }
 
   &:hover {
     opacity: 1 !important;

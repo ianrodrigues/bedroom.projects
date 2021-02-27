@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useRouteMatch } from 'react-router-dom';
 import mediaDb from 'services/mediaDB';
 
 import useStore, { MediaData, MediaType } from 'state';
@@ -7,6 +8,7 @@ import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled
 
 
 const Header: React.VFC = () => {
+  const match = useRouteMatch();
   const state = useStore();
 
   function onMouseEnter(type: MediaType, media: MediaData) {
@@ -29,10 +31,12 @@ const Header: React.VFC = () => {
           <List onMouseEnter={setFullscreen} onMouseLeave={setNotFullscreen}>
             {mediaDb.photos.map((photo) => (
               <ListItem
-                key={photo.title}
+                key={photo.id}
                 onMouseEnter={() => onMouseEnter('photo', photo)}
               >
-                {photo.title}
+                <Link to={`${match.path}${photo.slug}`}>
+                  {photo.title}
+                </Link>
               </ListItem>
             ))}
           </List>
@@ -43,10 +47,12 @@ const Header: React.VFC = () => {
           <List onMouseEnter={setFullscreen} onMouseLeave={setNotFullscreen}>
             {mediaDb.videos.map((video) => (
               <ListItem
-                key={video.title}
+                key={video.id}
                 onMouseEnter={() => onMouseEnter('video', video)}
               >
-                {video.title}
+                <Link to={`${match.path}${video.slug}`}>
+                  {video.title}
+                </Link>
               </ListItem>
             ))}
           </List>
