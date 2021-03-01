@@ -17,14 +17,14 @@ export function drawCoverFitImage(
   if (offsetY > 1) offsetY = 1;
 
   // New size
-  const scale = Math.min(width / img.width, height / img.height);
+  const scale = Math.min(ctx.canvas.width / img.width, height / img.height);
   let nw = img.width * scale;
   let nh = img.height * scale;
   let cx, cy, cw, ch, scale2 = 1;
 
   // Decide which gap to fill
-  if (nw < width) {
-    scale2 = width / nw;
+  if (nw < ctx.canvas.width) {
+    scale2 = ctx.canvas.width / nw;
   }
 
   if (Math.abs(scale2 - 1) < 1e-14 && nh < height) {
@@ -37,7 +37,6 @@ export function drawCoverFitImage(
   // Calc source rectangle
   cw = img.width / (nw / width);
   ch = img.height / (nh / height);
-
   cx = (img.width - cw) * offsetX;
   cy = (img.height - ch) * offsetY;
 
