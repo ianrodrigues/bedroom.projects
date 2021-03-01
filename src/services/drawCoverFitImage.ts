@@ -1,9 +1,9 @@
 export function drawCoverFitImage(
   ctx: CanvasRenderingContext2D,
   img: HTMLImageElement,
-  x = 0, y = 0,
   width = 0, height = 0,
-  offsetX = 0.5, offsetY = 0.5,
+  x = 0, y = 0,
+  offsetX = 0, offsetY = 0,
 ): void {
   if (!width && !height) {
     width = ctx.canvas.width;

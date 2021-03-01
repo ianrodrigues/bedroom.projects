@@ -72,12 +72,8 @@ const Canvas: React.VFC = () => {
           drawCoverFitImage(
             ctx,
             collection[prevMedia!.id].element as HTMLImageElement,
-            0,
-            0,
             Math.min(dividerPos, window.innerWidth),
             ctx.canvas.height,
-            0,
-            0,
           );
         }
 
@@ -165,12 +161,8 @@ const Canvas: React.VFC = () => {
       drawCoverFitImage(
         ctx,
         photo.element,
-        0,
-        0,
         Math.min(dividerPos, window.innerWidth),
         canvas.height,
-        0,
-        0,
       );
     }
   }), [sideSize]);
