@@ -4,6 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import useStore from 'state';
 
+import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
 import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled';
 
 
@@ -25,19 +26,19 @@ const Header: React.VFC = () => {
   }, [location.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.APIMediaObject) {
-    if (window.location.pathname === '/') {
+    if (location.pathname === '/') {
       state.setMedia(type, media);
     }
   }
 
   function onMouseEnterList() {
-    state.setSideFullscreen(true);
+    state.setFullscreen(true);
   }
 
   function onMouseLeaveList() {
-    state.setSideFullscreen(false);
+    state.setFullscreen(false);
 
-    if (window.location.pathname !== '/') {
+    if (location.pathname !== '/') {
       setIsMenuOpen({
         L: false,
         R: false,
@@ -46,7 +47,7 @@ const Header: React.VFC = () => {
   }
 
   function onMouseEnterNav(tag: 'container' | 'title', side: 'L' | 'R') {
-    if (tag === 'title' || (tag === 'container' && window.location.pathname === '/')) {
+    if (tag === 'title' || (tag === 'container' && location.pathname === '/')) {
       setIsMenuOpen((prev) => ({
         ...prev,
         [side]: true,
@@ -63,6 +64,7 @@ const Header: React.VFC = () => {
 
   return (
     <HeaderContainer>
+      {location.pathname !== '/' && <FullscreenCanvas />}
       <Nav>
         <NavContainer
           isOpen={isMenuOpen.L}

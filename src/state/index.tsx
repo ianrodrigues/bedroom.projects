@@ -22,7 +22,7 @@ const useStore = create<i.AppState>(log((set) => ({
   })),
 
   isFullscreen: false,
-  setSideFullscreen: (bool) => set(() => ({
+  setFullscreen: (bool) => set(() => ({
     isFullscreen: bool,
   })),
 })));

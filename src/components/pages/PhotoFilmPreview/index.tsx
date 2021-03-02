@@ -3,8 +3,8 @@ import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import useStore from 'state';
 
-import Canvas from './Canvas';
-import { Name, PhotoFilmPreviewContainer } from './styled';
+import RenderCanvas from 'common/presentation/RenderCanvas';
+import { Name, PhotoFilmPreviewContainer, TitleContainer, TitleInner, MediaTitle } from './styled';
 
 
 const PhotoFilmPreview: React.VFC = () => {
@@ -27,7 +27,20 @@ const PhotoFilmPreview: React.VFC = () => {
   return (
     <PhotoFilmPreviewContainer>
       <Name show={state.showName}>bedroom</Name>
-      <Canvas />
+      <RenderCanvas>
+        {((props) => (
+          <TitleContainer>
+            <TitleInner>
+              <MediaTitle show={state.isFullscreen && props.sizeData.L === 'full'}>
+                {state.photo?.title}
+              </MediaTitle>
+              <MediaTitle show={state.isFullscreen && props.sizeData.R === 'full'}>
+                {state.video?.title}
+              </MediaTitle>
+            </TitleInner>
+          </TitleContainer>
+        ))}
+      </RenderCanvas>
     </PhotoFilmPreviewContainer>
   );
 };

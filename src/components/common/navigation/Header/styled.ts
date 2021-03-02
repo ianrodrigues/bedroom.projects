@@ -8,6 +8,11 @@ export const HeaderContainer = styled.header`
   margin: auto;
   width: 100vw;
   height: 100vh;
+
+  canvas {
+    position: absolute;
+    top: -15px;
+  }
 `;
 
 export const Nav = styled.nav`

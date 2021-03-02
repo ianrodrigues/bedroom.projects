@@ -12,7 +12,7 @@ export interface AppState extends State {
   setShowName: (showName: boolean) => void;
 
   isFullscreen: boolean;
-  setSideFullscreen: (bool: boolean) => void;
+  setFullscreen: (bool: boolean) => void;
 }
 
 export type MediaType = 'photo' | 'video';

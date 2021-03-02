@@ -6,11 +6,9 @@ import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { isVideo, isPhoto } from 'services/typeguards';
 
-import { MediaTitle, TitleContainer, TitleInner } from './styled';
+import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
 
 type Side = 'L' | 'R';
-export type MouseSide = null | Side;
-
 type SizeData = Record<Side, null | 'large' | 'full'>
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
@@ -32,16 +30,17 @@ let prevVideo: i.APIMediaObject | undefined;
 const videos: Media<HTMLVideoElement> = {};
 const photos: Media<HTMLImageElement> = {};
 
-const Canvas: React.VFC = () => {
+
+const Canvas: React.FC<Props> = (props) => {
   const state = useStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const [sideSize, setSideSize] = React.useState<SizeData>({
+  const tempPrevPhoto = usePrevious(state.photo);
+  const tempPrevVideo = usePrevious(state.video);
+  const [sizeData, setSizeData] = React.useState<SizeData>({
     L: null,
     R: null,
   });
-  const prevSideSize = usePrevious(sideSize);
-  const tempPrevPhoto = usePrevious(state.photo);
-  const tempPrevVideo = usePrevious(state.video);
+  const prevSideSize = usePrevious(sizeData);
 
   // Omega ugly but works for now :)
   const mediaTransition = React.useCallback(
@@ -77,10 +76,16 @@ const Canvas: React.VFC = () => {
             collection[prevMedia!.id]!.element as HTMLVideoElement,
           );
         } else {
+          let width = Math.min(dividerPos, window.innerWidth);
+
+          if (props.fullscreen === 'photo') {
+            width = window.innerWidth;
+          }
+
           drawCoverFitImage(
             ctx,
             collection[prevMedia!.id]!.element as HTMLImageElement,
-            Math.min(dividerPos, window.innerWidth),
+            width,
             ctx.canvas.height,
           );
         }
@@ -95,8 +100,8 @@ const Canvas: React.VFC = () => {
       }
     }, [state.photo, state.video]);
 
-  useAnimationFrame(((props) => {
-    const timestamp = props.time;
+  useAnimationFrame(((animProps) => {
+    const timestamp = animProps.time;
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
 
@@ -110,18 +115,18 @@ const Canvas: React.VFC = () => {
     // Start in the middle
     let dividerOffset = 0.5;
 
-    switch (sideSize.L) {
+    switch (sizeData.L) {
       case 'large': dividerOffset = 0.75; break;
       case 'full': dividerOffset = 1; break;
     }
-    switch (sideSize.R) {
+    switch (sizeData.R) {
       case 'large': dividerOffset = 0.25; break;
       case 'full': dividerOffset = 0; break;
     }
 
     // Animation start
     if (prevSideSize) {
-      if (sideSize.L !== prevSideSize.L || sideSize.R !== prevSideSize.R) {
+      if (sizeData.L !== prevSideSize.L || sizeData.R !== prevSideSize.R) {
         startTime = timestamp;
       }
     }
@@ -147,7 +152,7 @@ const Canvas: React.VFC = () => {
       }
     }
 
-    if (state.video) {
+    if (state.video && props.fullscreen !== 'photo') {
       const video = videos[state.video.id];
 
       // Don't render video if photo is fullscreen
@@ -160,7 +165,7 @@ const Canvas: React.VFC = () => {
       }
     }
 
-    if (state.photo) {
+    if (state.photo && props.fullscreen !== 'video') {
       const photo = photos[state.photo.id];
 
       // Don't render photo if video is fullscreen
@@ -169,54 +174,51 @@ const Canvas: React.VFC = () => {
           mediaTransition(ctx, 'photo', timestamp);
         }
 
+        let width = Math.min(dividerPos, window.innerWidth);
+
+        if (props.fullscreen === 'photo') {
+          width = window.innerWidth;
+        }
+
         drawCoverFitImage(
           ctx,
           photo.element,
-          Math.min(dividerPos, window.innerWidth),
+          width,
           canvas.height,
         );
       }
     }
-  }), [sideSize, state.photo, state.video]);
-
-  // Add window resize events
-  const setCanvasSize = React.useCallback(() => {
-    const canvas = canvasRef.current;
-
-    if (canvas) {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-  }, []);
-
-  useEventListener('resize', setCanvasSize);
+  }), [sizeData, state.photo, state.video, props.fullscreen]);
 
   // Add mouseover events
   useEventListener('mousemove', React.useCallback((e: MouseEvent) => {
+    if (props.fullscreen) {
+      return;
+    }
+
     const canvas = canvasRef.current as HTMLCanvasElement;
 
     // Left side
     if (e.clientX < canvas.width * 0.3) {
-      setSideSize((prev) => ({
+      setSizeData((prev) => ({
         ...prev,
         L: state.isFullscreen ? 'full' : 'large',
       }));
     // Right side
     } else if (e.clientX > canvas.width * 0.7) {
-      setSideSize((prev) => ({
+      setSizeData((prev) => ({
         ...prev,
         R: state.isFullscreen ? 'full' : 'large',
       }));
     } else {
-      setSideSize({
+      setSizeData({
         L: null,
         R: null,
       });
     }
-  }, [setSideSize, state.isFullscreen]));
+  }, [setSizeData, state.isFullscreen]));
 
-
-  // Init component
+  // Init photo/video into memory
   React.useEffect(() => {
     if (!state.allMedia) {
       return;
@@ -260,6 +262,7 @@ const Canvas: React.VFC = () => {
     }
   }, [state.allMedia]);
 
+  // Show "bedroom" title
   React.useEffect(() => {
     if (state.isFullscreen && state.showName) {
       state.setShowName(false);
@@ -268,6 +271,7 @@ const Canvas: React.VFC = () => {
     }
   }, [state.isFullscreen]);
 
+  // Used for transitions between media
   React.useEffect(() => {
     prevPhoto = tempPrevPhoto;
   }, [state.photo]);
@@ -276,41 +280,28 @@ const Canvas: React.VFC = () => {
     prevVideo = tempPrevVideo;
   }, [state.video]);
 
-  // Init canvas
+  // Init divider position
   React.useEffect(() => {
-    if (!canvasRef.current) {
-      return;
-    }
-
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-
-    // Set canvas size
-    setCanvasSize();
-    dividerPos = canvas.width * 0.5;
-
-    if (!ctx) {
-      return;
-    }
-
-    ctx.imageSmoothingEnabled = false;
+    dividerPos = canvasRef.current!.width * 0.5;
   }, [canvasRef]);
 
   return (
     <>
-      <canvas ref={canvasRef} />
-      <TitleContainer>
-        <TitleInner>
-          <MediaTitle show={state.isFullscreen && sideSize.L === 'full'}>
-            {state.photo?.title}
-          </MediaTitle>
-          <MediaTitle show={state.isFullscreen && sideSize.R === 'full'}>
-            {state.video?.title}
-          </MediaTitle>
-        </TitleInner>
-      </TitleContainer>
+      <FullscreenCanvas ref={canvasRef} />
+      {props.children && props.children({
+        sizeData,
+      })}
     </>
   );
 };
+
+interface RenderProps {
+  sizeData: SizeData;
+}
+
+interface Props {
+  children?: (props: RenderProps) => void;
+  fullscreen?: 'photo' | 'video';
+}
 
 export default Canvas;
