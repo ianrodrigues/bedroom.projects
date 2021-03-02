@@ -32,7 +32,6 @@ let prevVideo: i.APIMediaObject | undefined;
 const videos: Media<HTMLVideoElement> = {};
 const photos: Media<HTMLImageElement> = {};
 
-
 const Canvas: React.VFC = () => {
   const state = useStore();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -223,9 +222,13 @@ const Canvas: React.VFC = () => {
       return;
     }
 
+    if (Object.keys(videos).length > 0 || Object.keys(photos).length > 0) {
+      return;
+    }
+
     for (let i = 0; i < Math.max(state.allMedia.video.length, state.allMedia.photo.length); i++) {
       const videoData = state.allMedia.video[i];
-      const videoMedia = videoData?.media[0];
+      const videoMedia = videoData?.media_cover;
 
       if (videoData && isVideo(videoMedia)) {
         const video = document.createElement('video');
@@ -242,11 +245,12 @@ const Canvas: React.VFC = () => {
       }
 
       const photoData = state.allMedia.photo[i];
-      const photoMedia = photoData?.media[0];
+      const photoMedia = photoData?.media_cover;
 
       if (photoData && isPhoto(photoMedia)) {
         const img = document.createElement('img');
-        img.src = CMS_URL + photoMedia.formats.large.url;
+        const format = photoMedia.formats.large || photoMedia.formats.medium || photoMedia.formats.small;
+        img.src = CMS_URL + format.url;
 
         photos[photoData.id] = {
           ...photoData,

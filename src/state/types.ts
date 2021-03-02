@@ -68,8 +68,8 @@ interface SmallFormat {
 
 interface Formats {
   thumbnail: Thumbnail;
-  large: LargeFormat;
-  medium: MediumFormat;
+  large?: LargeFormat;
+  medium?: MediumFormat;
   small: SmallFormat;
 }
 
@@ -123,5 +123,6 @@ export interface APIMediaObject {
   created_at: Date;
   updated_at: Date;
   media: PhotoMedia[] | VideoMedia[];
+  media_cover: PhotoMedia | VideoMedia;
   full_video?: VideoMedia[];
 }
