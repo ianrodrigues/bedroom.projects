@@ -3,15 +3,20 @@ import { Switch, Route, withRouter, RouteComponentProps } from 'react-router-dom
 
 import GlobalStyle from 'styles';
 
-const Home = React.lazy(() => import('pages/Home'));
+import Header from 'common/navigation/Header';
+const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
+const PhotoFilmPreview = React.lazy(() => import('pages/PhotoFilmPreview'));
 
 const App: React.VFC<RouteComponentProps> = () => {
   return (
     <main>
       <GlobalStyle />
-      <React.Suspense fallback={<span>loading</span>}>
+      <Header />
+      <React.Suspense fallback={<div />}>
         <Switch>
-          <Route path="/" component={Home} />
+          <Route path="/" component={PhotoFilmPreview} exact />
+          <Route path="/photos/:slug" component={PhotoDetail} />
+          {/* <Route path="/film/:slug" component={PhotoDetail} /> */}
         </Switch>
       </React.Suspense>
     </main>

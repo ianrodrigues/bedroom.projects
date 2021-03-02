@@ -1,5 +1,11 @@
 import styled, { css } from 'styled-components';
 
+export const PhotoFilmPreviewContainer = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-color: #000;
+`;
+
 export const Name = styled.h1<NameProps>((props) => `
   position: absolute;
   top: 50%;

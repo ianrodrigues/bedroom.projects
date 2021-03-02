@@ -1,6 +1,6 @@
 import * as i from 'types';
 import React from 'react';
-import { Link, useLocation, useRouteMatch } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
 import useStore from 'state';
 
@@ -13,7 +13,6 @@ const Header: React.VFC = () => {
     R: false,
   });
   const location = useLocation();
-  const match = useRouteMatch();
   const state = useStore();
 
   React.useEffect(() => {
@@ -81,7 +80,7 @@ const Header: React.VFC = () => {
                 key={photo.id}
                 onMouseEnter={() => onMouseEnter('photo', photo)}
               >
-                <Link to={`${match.path}${photo.slug}`}>
+                <Link to={`/photos/${photo.slug}`}>
                   {photo.title}
                 </Link>
               </ListItem>
@@ -105,7 +104,7 @@ const Header: React.VFC = () => {
                 key={video.id}
                 onMouseEnter={() => onMouseEnter('video', video)}
               >
-                <Link to={`${match.path}${video.slug}`}>
+                <Link to={`/film/${video.slug}`}>
                   {video.title}
                 </Link>
               </ListItem>

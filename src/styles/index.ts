@@ -1,6 +1,10 @@
 import { createGlobalStyle } from 'styled-components';
 
 const globalStyle = createGlobalStyle`
+  body {
+    background-color: #000;
+  }
+  
   html {
     box-sizing: border-box;
     min-height: 100%;
