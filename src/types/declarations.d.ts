@@ -4,6 +4,7 @@ declare const __DEV__: boolean;
 declare const __PROD__: boolean;
 declare const __ACC__: boolean;
 declare const __TEST__: boolean;
+declare const CMS_URL: string;
 
 // extend window object
 interface Window {

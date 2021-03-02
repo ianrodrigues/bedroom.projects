@@ -1,8 +1,8 @@
+import * as i from 'types';
 import React from 'react';
 import { Link, useLocation, useRouteMatch } from 'react-router-dom';
-import mediaDb from 'services/mediaDB';
 
-import useStore, { MediaData, MediaType } from 'state';
+import useStore from 'state';
 
 import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled';
 
@@ -25,7 +25,7 @@ const Header: React.VFC = () => {
     }
   }, [location.pathname]);
 
-  function onMouseEnter(type: MediaType, media: MediaData) {
+  function onMouseEnter(type: i.MediaType, media: i.APIMediaObject) {
     if (window.location.pathname === '/') {
       state.setMedia(type, media);
     }
@@ -76,7 +76,7 @@ const Header: React.VFC = () => {
             Photo
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {mediaDb.photos.map((photo) => (
+            {state.allMedia && state.allMedia.photo.map((photo) => (
               <ListItem
                 key={photo.id}
                 onMouseEnter={() => onMouseEnter('photo', photo)}
@@ -100,7 +100,7 @@ const Header: React.VFC = () => {
             Film
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {mediaDb.videos.map((video) => (
+            {state.allMedia && state.allMedia.video.map((video) => (
               <ListItem
                 key={video.id}
                 onMouseEnter={() => onMouseEnter('video', video)}

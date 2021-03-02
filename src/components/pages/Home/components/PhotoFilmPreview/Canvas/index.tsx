@@ -1,9 +1,10 @@
+import * as i from 'types';
 import React from 'react';
 
-import useStore, { MediaData, MediaType } from 'state';
+import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
-import mediaDb from 'services/mediaDB';
+import { isVideo, isPhoto } from 'services/typeguards';
 
 import { MediaTitle, TitleContainer, TitleInner } from './styled';
 
@@ -13,7 +14,7 @@ export type MouseSide = null | Side;
 type SizeData = Record<Side, null | 'large' | 'full'>
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
-  [id: number]: MediaData & {
+  [id: number]: i.APIMediaObject & {
     element: T;
   }
 }
@@ -23,8 +24,8 @@ interface Media<T extends HTMLVideoElement | HTMLImageElement> {
 let dividerPos = 0;
 let startTime = 0;
 let transitionStartTime = 0;
-let prevPhoto: MediaData | undefined;
-let prevVideo: MediaData | undefined;
+let prevPhoto: i.APIMediaObject | undefined;
+let prevVideo: i.APIMediaObject | undefined;
 
 // We keep all videos and photos in memory with these objects for super fast switching between
 // different photos/films
@@ -45,10 +46,18 @@ const Canvas: React.VFC = () => {
 
   // Omega ugly but works for now :)
   const mediaTransition = React.useCallback(
-    (ctx: CanvasRenderingContext2D, mediaType: MediaType, timestamp: number) => {
+    (ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) => {
+      if (!state.photo || !state.video) {
+        return;
+      }
+
       const collection = mediaType === 'photo' ? photos : videos;
       const media = mediaType === 'photo' ? photos[state.photo.id] : videos[state.video.id];
       const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
+
+      if (!media) {
+        return;
+      }
 
       if (transitionStartTime === 0 && prevMedia!.id !== media.id) {
         transitionStartTime = timestamp;
@@ -66,12 +75,12 @@ const Canvas: React.VFC = () => {
         if (mediaType === 'video') {
           drawCoverFitVideo(
             ctx,
-            collection[prevMedia!.id].element as HTMLVideoElement,
+            collection[prevMedia!.id]!.element as HTMLVideoElement,
           );
         } else {
           drawCoverFitImage(
             ctx,
-            collection[prevMedia!.id].element as HTMLImageElement,
+            collection[prevMedia!.id]!.element as HTMLImageElement,
             Math.min(dividerPos, window.innerWidth),
             ctx.canvas.height,
           );
@@ -139,33 +148,37 @@ const Canvas: React.VFC = () => {
       }
     }
 
-    const video = videos[state.video.id];
+    if (state.video) {
+      const video = videos[state.video.id];
 
-    // Don't render video if photo is fullscreen
-    if (video && dividerPos !== window.innerWidth) {
-      if (prevVideo) {
-        mediaTransition(ctx, 'video', timestamp);
+      // Don't render video if photo is fullscreen
+      if (video && dividerPos !== window.innerWidth) {
+        if (prevVideo) {
+          mediaTransition(ctx, 'video', timestamp);
+        }
+
+        drawCoverFitVideo(ctx, video.element);
       }
-
-      drawCoverFitVideo(ctx, video.element);
     }
 
-    const photo = photos[state.photo.id];
+    if (state.photo) {
+      const photo = photos[state.photo.id];
 
-    // Don't render photo if video is fullscreen
-    if (photo && dividerPos !== 0) {
-      if (prevPhoto) {
-        mediaTransition(ctx, 'photo', timestamp);
+      // Don't render photo if video is fullscreen
+      if (photo && dividerPos !== 0) {
+        if (prevPhoto) {
+          mediaTransition(ctx, 'photo', timestamp);
+        }
+
+        drawCoverFitImage(
+          ctx,
+          photo.element,
+          Math.min(dividerPos, window.innerWidth),
+          canvas.height,
+        );
       }
-
-      drawCoverFitImage(
-        ctx,
-        photo.element,
-        Math.min(dividerPos, window.innerWidth),
-        canvas.height,
-      );
     }
-  }), [sideSize]);
+  }), [sideSize, state.photo, state.video]);
 
   // Add window resize events
   const setCanvasSize = React.useCallback(() => {
@@ -206,13 +219,18 @@ const Canvas: React.VFC = () => {
 
   // Init component
   React.useEffect(() => {
-    for (let i = 0; i < Math.max(mediaDb.videos.length, mediaDb.photos.length); i++) {
-      const videoData = mediaDb.videos[i];
+    if (!state.allMedia) {
+      return;
+    }
 
-      if (videoData) {
+    for (let i = 0; i < Math.max(state.allMedia.video.length, state.allMedia.photo.length); i++) {
+      const videoData = state.allMedia.video[i];
+      const videoMedia = videoData?.media[0];
+
+      if (videoData && isVideo(videoMedia)) {
         const video = document.createElement('video');
         video.id = videoData.title;
-        video.src = videoData.src;
+        video.src = CMS_URL + videoMedia.url;
         video.autoplay = true;
         video.loop = true;
         video.muted = true;
@@ -223,11 +241,12 @@ const Canvas: React.VFC = () => {
         };
       }
 
-      const photoData = mediaDb.photos[i];
+      const photoData = state.allMedia.photo[i];
+      const photoMedia = photoData?.media[0];
 
-      if (photoData) {
+      if (photoData && isPhoto(photoMedia)) {
         const img = document.createElement('img');
-        img.src = photoData.src;
+        img.src = CMS_URL + photoMedia.formats.large.url;
 
         photos[photoData.id] = {
           ...photoData,
@@ -235,7 +254,7 @@ const Canvas: React.VFC = () => {
         };
       }
     }
-  }, []);
+  }, [state.allMedia]);
 
   React.useEffect(() => {
     if (state.isFullscreen && state.showName) {
@@ -279,10 +298,10 @@ const Canvas: React.VFC = () => {
       <TitleContainer>
         <TitleInner>
           <MediaTitle show={state.isFullscreen && sideSize.L === 'full'}>
-            {state.photo.title}
+            {state.photo?.title}
           </MediaTitle>
           <MediaTitle show={state.isFullscreen && sideSize.R === 'full'}>
-            {state.video.title}
+            {state.video?.title}
           </MediaTitle>
         </TitleInner>
       </TitleContainer>

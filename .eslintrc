@@ -21,10 +21,11 @@
   },
   "ignorePatterns": ["**/dist/**/*.js"],
   "globals": {
-    "__DEV__": false,
-    "__TEST__": false,
-    "__ACC__": false,
-    "__PROD__": false
+    "__DEV__": "readonly",
+    "__TEST__": "readonly",
+    "__ACC__": "readonly",
+    "__PROD__": "readonly",
+    "CMS_URL": "readonly"
   },
   "rules": {
     "array-bracket-spacing": ["error", "never"],

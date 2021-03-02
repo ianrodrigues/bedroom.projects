@@ -1,31 +1,17 @@
-import create, { State } from 'zustand';
+import * as i from 'types';
+import create from 'zustand';
 
-import mediaDb from 'services/mediaDB';
-
-interface AppState extends State {
-  photo: MediaData;
-  video: MediaData;
-  setMedia: (type: MediaType, media: MediaData) => void;
-
-  showName: boolean;
-  setShowName: (showName: boolean) => void;
-
-  isFullscreen: boolean;
-  setSideFullscreen: (bool: boolean) => void;
-}
-
-export interface MediaData {
-  id: number;
-  title: string;
-  src: string;
-}
-
-export type MediaType = 'photo' | 'video';
+import { log } from 'services';
 
 
-const useStore = create<AppState>((set) => ({
-  photo: mediaDb.photos[0],
-  video: mediaDb.videos[0],
+const useStore = create<i.AppState>(log((set) => ({
+  allMedia: undefined,
+  setAllMedia: (media) => set(() => ({
+    allMedia: media,
+  })),
+
+  photo: undefined,
+  video: undefined,
   setMedia: (type, media) => set(() => ({
     [type]: media,
   })),
@@ -39,6 +25,38 @@ const useStore = create<AppState>((set) => ({
   setSideFullscreen: (bool) => set(() => ({
     isFullscreen: bool,
   })),
-}));
+})));
+
+function fetchMedia(): void {
+  fetch(`${CMS_URL}/bedroom-medias`)
+    .then((res) => res.json())
+    .then((data: i.APIMediaObject[]) => {
+      const photos = [];
+      const videos = [];
+
+      for (const media of data) {
+        if (media.video_url || media.full_video) {
+          videos.push(media);
+        } else {
+          photos.push(media);
+        }
+      }
+
+      useStore.getState().setAllMedia({
+        photo: photos,
+        video: videos,
+      });
+
+      if (photos[0]) {
+        useStore.getState().setMedia('photo', photos[0]);
+      }
+
+      if (videos[0]) {
+        useStore.getState().setMedia('video', videos[0]);
+      }
+    });
+}
+
+fetchMedia();
 
 export default useStore;
