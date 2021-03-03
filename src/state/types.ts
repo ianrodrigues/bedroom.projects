@@ -1,3 +1,4 @@
+import * as i from 'types';
 import { State } from 'zustand';
 
 export interface AppState extends State {
@@ -6,17 +7,20 @@ export interface AppState extends State {
 
   photo?: APIMediaObject;
   video?: APIMediaObject;
-  setMedia: (type: MediaType, media: APIMediaObject) => void;
+  setMedia: (type: i.MediaType, media: APIMediaObject) => void;
 
   showName: boolean;
   setShowName: (showName: boolean) => void;
 
   isFullscreen: boolean;
   setFullscreen: (bool: boolean) => void;
+
+  isMenuOpen: Record<i.Side, boolean>;
+  setMenuOpen: (side: i.Side, open: boolean) => void;
+  closeMenus: () => void;
 }
 
-export type MediaType = 'photo' | 'video';
-export type AllMedia = Record<MediaType, APIMediaObject[]>;
+export type AllMedia = Record<i.MediaType, APIMediaObject[]>;
 
 interface Thumbnail {
   name: string;

@@ -1,15 +1,14 @@
 import * as i from 'types';
 import React from 'react';
+import { Route, Switch, useLocation } from 'react-router';
 
 import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { isVideo, isPhoto } from 'services/typeguards';
 
+import MediaOverlay from 'pages/Home/components/MediaOverlay';
 import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
-
-type Side = 'L' | 'R';
-type SizeData = Record<Side, null | 'large' | 'full'>
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
   [id: number]: i.APIMediaObject & {
@@ -31,12 +30,13 @@ const videos: Media<HTMLVideoElement> = {};
 const photos: Media<HTMLImageElement> = {};
 
 
-const Canvas: React.FC<Props> = (props) => {
+const RenderCanvas: React.VFC<Props> = (props) => {
   const state = useStore();
+  const location = useLocation();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const tempPrevPhoto = usePrevious(state.photo);
   const tempPrevVideo = usePrevious(state.video);
-  const [sizeData, setSizeData] = React.useState<SizeData>({
+  const [sizeData, setSizeData] = React.useState<i.SizeData>({
     L: null,
     R: null,
   });
@@ -105,7 +105,7 @@ const Canvas: React.FC<Props> = (props) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
 
-    if (!canvas || !ctx) {
+    if (!props.show || !canvas || !ctx) {
       return;
     }
 
@@ -188,7 +188,7 @@ const Canvas: React.FC<Props> = (props) => {
         );
       }
     }
-  }), [sizeData, state.photo, state.video, props.fullscreen]);
+  }), [sizeData, state.photo, state.video, props.fullscreen, props.show]);
 
   // Add mouseover events
   useEventListener('mousemove', React.useCallback((e: MouseEvent) => {
@@ -283,25 +283,29 @@ const Canvas: React.FC<Props> = (props) => {
   // Init divider position
   React.useEffect(() => {
     dividerPos = canvasRef.current!.width * 0.5;
-  }, [canvasRef]);
+  }, [canvasRef, location.pathname]);
 
   return (
     <>
-      <FullscreenCanvas ref={canvasRef} />
-      {props.children && props.children({
-        sizeData,
-      })}
+      <FullscreenCanvas ref={canvasRef} show={props.show} />
+      <Switch>
+        <Route
+          path="/"
+          exact
+          render={(props) => <MediaOverlay {...props} sizeData={sizeData} />}
+        />
+      </Switch>
     </>
   );
 };
 
-interface RenderProps {
-  sizeData: SizeData;
-}
+RenderCanvas.defaultProps = {
+  show: true,
+};
 
 interface Props {
-  children?: (props: RenderProps) => void;
   fullscreen?: 'photo' | 'video';
+  show?: boolean;
 }
 
-export default Canvas;
+export default RenderCanvas;

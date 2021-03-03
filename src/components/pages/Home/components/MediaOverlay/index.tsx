@@ -1,13 +1,13 @@
+import * as i from 'types';
 import React from 'react';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import useStore from 'state';
 
-import RenderCanvas from 'common/presentation/RenderCanvas';
 import { Name, PhotoFilmPreviewContainer, TitleContainer, TitleInner, MediaTitle } from './styled';
 
 
-const PhotoFilmPreview: React.VFC = () => {
+const MediaOverlay: React.VFC<Props> = (props) => {
   const state = useStore();
 
   React.useEffect(() => {
@@ -27,22 +27,22 @@ const PhotoFilmPreview: React.VFC = () => {
   return (
     <PhotoFilmPreviewContainer>
       <Name show={state.showName}>bedroom</Name>
-      <RenderCanvas>
-        {((props) => (
-          <TitleContainer>
-            <TitleInner>
-              <MediaTitle show={state.isFullscreen && props.sizeData.L === 'full'}>
-                {state.photo?.title}
-              </MediaTitle>
-              <MediaTitle show={state.isFullscreen && props.sizeData.R === 'full'}>
-                {state.video?.title}
-              </MediaTitle>
-            </TitleInner>
-          </TitleContainer>
-        ))}
-      </RenderCanvas>
+      <TitleContainer>
+        <TitleInner>
+          <MediaTitle show={state.isFullscreen && props.sizeData.L === 'full'}>
+            {state.photo?.title}
+          </MediaTitle>
+          <MediaTitle show={state.isFullscreen && props.sizeData.R === 'full'}>
+            {state.video?.title}
+          </MediaTitle>
+        </TitleInner>
+      </TitleContainer>
     </PhotoFilmPreviewContainer>
   );
 };
 
-export default PhotoFilmPreview;
+interface Props {
+  sizeData: i.SizeData;
+}
+
+export default MediaOverlay;

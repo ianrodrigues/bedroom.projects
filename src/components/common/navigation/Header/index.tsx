@@ -4,31 +4,20 @@ import { Link, useLocation } from 'react-router-dom';
 
 import useStore from 'state';
 
-import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
 import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled';
 
 
 const Header: React.VFC = () => {
-  const [isMenuOpen, setIsMenuOpen] = React.useState({
-    L: false,
-    R: false,
-  });
   const location = useLocation();
   const state = useStore();
 
   React.useEffect(() => {
-    if (isMenuOpen) {
-      setIsMenuOpen({
-        L: false,
-        R: false,
-      });
-    }
+    state.closeMenus();
+
   }, [location.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.APIMediaObject) {
-    if (location.pathname === '/') {
-      state.setMedia(type, media);
-    }
+    state.setMedia(type, media);
   }
 
   function onMouseEnterList() {
@@ -39,35 +28,25 @@ const Header: React.VFC = () => {
     state.setFullscreen(false);
 
     if (location.pathname !== '/') {
-      setIsMenuOpen({
-        L: false,
-        R: false,
-      });
+      state.closeMenus();
     }
   }
 
-  function onMouseEnterNav(tag: 'container' | 'title', side: 'L' | 'R') {
+  function onMouseEnterNav(tag: 'container' | 'title', side: i.Side) {
     if (tag === 'title' || (tag === 'container' && location.pathname === '/')) {
-      setIsMenuOpen((prev) => ({
-        ...prev,
-        [side]: true,
-      }));
+      state.setMenuOpen(side, true);
     }
   }
 
   function onMouseLeaveNavContainer() {
-    setIsMenuOpen({
-      L: false,
-      R: false,
-    });
+    state.closeMenus();
   }
 
   return (
     <HeaderContainer>
-      {location.pathname !== '/' && <FullscreenCanvas />}
       <Nav>
         <NavContainer
-          isOpen={isMenuOpen.L}
+          isOpen={state.isMenuOpen.L}
           onMouseEnter={() => onMouseEnterNav('container', 'L')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
@@ -91,7 +70,7 @@ const Header: React.VFC = () => {
         </NavContainer>
 
         <NavContainer
-          isOpen={isMenuOpen.R}
+          isOpen={state.isMenuOpen.R}
           onMouseEnter={() => onMouseEnterNav('container', 'R')}
           onMouseLeave={onMouseLeaveNavContainer}
         >

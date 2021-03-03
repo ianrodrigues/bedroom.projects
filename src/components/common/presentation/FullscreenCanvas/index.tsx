@@ -5,7 +5,7 @@ import { isRef } from 'services/typeguards';
 
 import { Canvas } from './styled';
 
-const FullscreenCanvas = React.forwardRef<HTMLCanvasElement>((props, ref) => {
+const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref) => {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   function getCanvasElement(): HTMLCanvasElement | null {
@@ -51,8 +51,16 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement>((props, ref) => {
   }, [canvasRef, ref]);
 
   return (
-    <Canvas ref={ref || canvasRef} />
+    <Canvas ref={ref || canvasRef} show={props.show!} />
   );
 });
+
+FullscreenCanvas.defaultProps = {
+  show: true,
+};
+
+interface Props {
+  show?: boolean;
+}
 
 export default FullscreenCanvas;

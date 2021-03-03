@@ -25,6 +25,23 @@ const useStore = create<i.AppState>(log((set) => ({
   setFullscreen: (bool) => set(() => ({
     isFullscreen: bool,
   })),
+
+  isMenuOpen: {
+    L: false,
+    R: false,
+  },
+  setMenuOpen: (side, open) => set((state) => ({
+    isMenuOpen: {
+      ...state.isMenuOpen,
+      [side]: open,
+    },
+  })),
+  closeMenus: () => set(() => ({
+    isMenuOpen: {
+      L: false,
+      R: false,
+    },
+  })),
 })));
 
 function fetchMedia(): void {
