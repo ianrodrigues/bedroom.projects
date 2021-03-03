@@ -29,11 +29,11 @@ const MediaOverlay: React.VFC<Props> = (props) => {
       <Name show={state.showName}>bedroom</Name>
       <TitleContainer>
         <TitleInner>
-          <MediaTitle show={state.isFullscreen && props.sizeData.L === 'full'}>
-            {state.photo?.title}
-          </MediaTitle>
-          <MediaTitle show={state.isFullscreen && props.sizeData.R === 'full'}>
-            {state.video?.title}
+          <MediaTitle
+            show={state.isFullscreen}
+            side={props.sizeData.L ? 'L' : 'R'}
+          >
+            {props.sizeData.L ? state.photo?.title : state.video?.title}
           </MediaTitle>
         </TitleInner>
       </TitleContainer>

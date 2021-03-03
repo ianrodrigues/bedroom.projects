@@ -1,4 +1,6 @@
+import * as i from 'types';
 import styled, { css } from 'styled-components';
+
 
 export const PhotoFilmPreviewContainer = styled.div`
   width: 100vw;
@@ -49,7 +51,7 @@ export const TitleInner = styled.div`
   max-width: 1600px;
 `;
 
-export const MediaTitle = styled.h3<MediaTitleProps>((props) => `
+export const MediaTitle = styled.h3<MediaTitleProps>((props) => css`
   position: absolute;
   bottom: 0;
   margin: 0;
@@ -63,10 +65,10 @@ export const MediaTitle = styled.h3<MediaTitleProps>((props) => `
   transition: opacity 300ms;
   mix-blend-mode: difference;
 
-  &:last-of-type {
+  ${props.side === 'R' && css`
     right: 0;
     text-align: right;
-  }
+  `}
 
   ${props.show && css`
     opacity: 1;
@@ -74,5 +76,6 @@ export const MediaTitle = styled.h3<MediaTitleProps>((props) => `
 `);
 
 interface MediaTitleProps {
+  side: i.Side;
   show: boolean;
 }
