@@ -31,5 +31,15 @@ export function fetchMedia(): void {
       if (videos[0]) {
         useStore.getState().setMedia('video', videos[0]);
       }
+    })
+    .then(() => {
+      const photos = useStore.getState().allMedia?.photo;
+
+      if (photos) {
+        // Sort media layout rows
+        for (const photo of photos) {
+          photo.bedroom_media_layouts.sort((a, b) => Number(a.row_num > b.row_num));
+        }
+      }
     });
 }
