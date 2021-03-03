@@ -117,6 +117,20 @@ export interface PhotoMedia {
   updated_at: Date;
 }
 
+interface Layout {
+  id: number;
+  bedroom_media: number;
+  alt_text: string;
+  row_location: string;
+  offset_x: number;
+  offset_y: number;
+  scale: number;
+  published_at: Date;
+  created_at: Date;
+  updated_at: Date;
+  media: PhotoMedia;
+}
+
 export interface APIMediaObject {
   id: number;
   title: string;
@@ -129,4 +143,8 @@ export interface APIMediaObject {
   media: PhotoMedia[] | VideoMedia[];
   media_cover: PhotoMedia | VideoMedia;
   full_video?: VideoMedia[];
+}
+
+export interface APIPhotosObject extends APIMediaObject {
+  bedroom_media_layouts: Layout[];
 }

@@ -7,3 +7,7 @@ export function isVideo(media?: i.PhotoMedia | i.VideoMedia): media is i.VideoMe
 export function isPhoto(media?: i.PhotoMedia | i.VideoMedia): media is i.PhotoMedia {
   return !!media && media.formats != null;
 }
+
+export function isPhotoList(list?: i.PhotoMedia[] | i.VideoMedia[]): list is i.PhotoMedia[] {
+  return !!list && !!list[0] && list[0].formats != null;
+}

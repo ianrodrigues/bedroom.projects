@@ -26,7 +26,7 @@
       "pages/*": ["components/pages/*"],
       "vectors/*": ["static/vectors/*"],
       "services/*": ["services/*"],
-      "state": ["state/index"],
+      "state/*": ["state/*"],
       "styles/*": ["styles/*"],
       "types": ["types/index"]
     }
