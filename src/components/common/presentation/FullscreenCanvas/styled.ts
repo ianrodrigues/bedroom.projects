@@ -4,6 +4,7 @@ export const Canvas = styled.canvas<CanvasProps>`
   position: fixed;
   top: 0;
   left: 0;
+  z-index: 1;
   opacity: 0;
   background-color: #000;
   pointer-events: none;
