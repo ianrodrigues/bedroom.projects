@@ -1,19 +1,21 @@
 import * as i from 'types';
+
 import useStore from 'state';
+import { isAPIPhotoObject } from 'services/typeguards';
 
 
 export function fetchMedia(): void {
   fetch(`${CMS_URL}/bedroom-medias`)
     .then((res) => res.json())
-    .then((data: i.APIMediaObject[]) => {
-      const photos = [];
-      const videos = [];
+    .then((data: (i.APIMediaObject | i.APIPhotosObject)[]) => {
+      const photos: i.APIPhotosObject[] = [];
+      const videos: i.APIMediaObject[] = [];
 
       for (const media of data) {
-        if (media.video_url || media.full_video) {
-          videos.push(media);
-        } else {
+        if (isAPIPhotoObject(media)) {
           photos.push(media);
+        } else {
+          videos.push(media);
         }
       }
 

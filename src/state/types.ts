@@ -2,12 +2,12 @@ import * as i from 'types';
 import { State } from 'zustand';
 
 export interface AppState extends State {
-  allMedia?: AllMedia;
-  setAllMedia: (media: AllMedia) => void;
+  allMedia?: i.AllMedia;
+  setAllMedia: (media: i.AllMedia) => void;
 
-  photo?: APIMediaObject;
-  video?: APIMediaObject;
-  setMedia: (type: i.MediaType, media: APIMediaObject) => void;
+  photo?: i.APIPhotosObject;
+  video?: i.APIMediaObject;
+  setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.APIPhotosObject : i.APIMediaObject) => void;
 
   showName: boolean;
   setShowName: (showName: boolean) => void;
@@ -20,7 +20,10 @@ export interface AppState extends State {
   closeMenus: () => void;
 }
 
-export type AllMedia = Record<i.MediaType, APIMediaObject[]>;
+export type AllMedia = {
+  photo: i.APIPhotosObject[];
+  video: i.APIMediaObject[];
+}
 
 interface Thumbnail {
   name: string;
@@ -129,6 +132,7 @@ interface Layout {
   created_at: Date;
   updated_at: Date;
   media: PhotoMedia;
+  row_num: number;
 }
 
 export interface APIMediaObject {
