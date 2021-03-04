@@ -9,3 +9,15 @@ export const PhotoDetailContainer = styled.div`
   pointer-events: none;
   padding: ${Math.floor(window.innerHeight * .5)}px 20px 0;
 `;
+
+export const Img = styled.img`
+  padding: 0 0 ${Math.floor(window.innerHeight * .3)}px;
+  opacity: 0;
+  transform: translate3d(0, 150px, 0);
+  transition: opacity 1s, transform 1s;
+
+  &.visible {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+`;

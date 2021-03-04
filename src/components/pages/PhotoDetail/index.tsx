@@ -6,9 +6,10 @@ import VirtualScroll from 'virtual-scroll';
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
 
-import { PhotoDetailContainer } from './styled';
+import { Img, PhotoDetailContainer } from './styled';
 
 let scroller: any;
+const observers: IntersectionObserver[] = [];
 
 interface Sections {
   head?: i.Layout;
@@ -28,7 +29,7 @@ const PhotoDetail: React.VFC = () => {
   React.useEffect(() => {
     if (headRef.current) {
       scroller = new VirtualScroll({
-        mouseMultiplier: .5,
+        mouseMultiplier: .3,
       });
 
       scroller.on((event: any) => {
@@ -66,20 +67,75 @@ const PhotoDetail: React.VFC = () => {
         body.push(detail!.bedroom_media_layouts[i]!);
       }
 
-      setSections({ head, body });
+      setSections({ head, body: [] });
+
+      // Delay adding body so head is rendered first so it doesnt mess up animations
+      setTimeout(() => {
+        setSections({ head, body });
+      }, 100);
     }
   }, [detail]);
 
+  React.useEffect(() => {
+    setTimeout(() => {
+      if (sections.body.length === 0) {
+        return;
+      }
+
+      if (observers.length > 0) {
+        return;
+      }
+
+      const imgEls = document.getElementsByTagName('img');
+      if (!imgEls) {
+        return;
+      }
+
+      // Observe position of all images
+      for (const imgEl of Array.from(imgEls)) {
+        const observer = new IntersectionObserver((entries, obs) => {
+          const entry = entries[0];
+
+          if (!entry) return;
+
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+
+            obs.disconnect();
+          }
+        }, {
+          threshold: .25,
+        });
+
+        observer.observe(imgEl);
+        observers.push(observer);
+      }
+    }, 100); // Delay for page transitions / wait for all img elements to be rendered
+
+    return function cleanup() {
+      for (const observer of observers) {
+        observer.disconnect();
+      }
+    };
+  }, [sections]);
+
   return (
-    <PhotoDetailContainer>
+    <PhotoDetailContainer id="content-container">
       <div ref={headRef} id="scroll-head">
         {sections.head && (
-          <img src={CMS_URL + sections.head.media.url} alt={sections.head.media.alternativeText} />
+          <figure>
+            <Img src={CMS_URL + sections.head.media.url} alt={sections.head.media.alternativeText} />
+          </figure>
         )}
       </div>
       <div id="scroll-body">
         {sections.body && sections.body.map((layout) => (
-          <img key={layout.id} src={CMS_URL + layout.media.url} alt={layout.media.alternativeText} />
+          <figure key={layout.id}>
+            <Img
+              src={CMS_URL + layout.media.url}
+              alt={layout.media.alternativeText}
+            />
+          </figure>
         ))}
       </div>
       <div>next piece</div>
