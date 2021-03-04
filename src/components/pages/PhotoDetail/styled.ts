@@ -10,13 +10,18 @@ export const PhotoDetailContainer = styled.div`
   pointer-events: none;
 `;
 
-export const Row = styled.div`
+export const Row = styled.div<RowProps>((props) => css`
   display: flex;
   justify-content: space-between;
   position: relative;
   margin: 0;
   width: 100%;
-`;
+  min-height: ${props.$height ? `${props.$height}px` : 'auto'};
+`);
+
+interface RowProps {
+  $height?: number;
+}
 
 export const Img = styled.img<ImgProps>((props) => css`
   padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;

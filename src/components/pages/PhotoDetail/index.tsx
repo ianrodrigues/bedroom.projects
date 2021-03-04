@@ -126,10 +126,11 @@ const PhotoDetail: React.VFC = () => {
     const head = template[1];
     const body: i.Layout[][] = [];
 
-    for (let i = 2; i < template!.length; i++) {
-      body.push(template![i]!);
+    for (let i = 2; i < template.length; i++) {
+      body.push(template[i]!);
     }
 
+    // Set head instantly
     setSections({ head, body: [] });
 
     // Delay adding body so head is rendered first so it doesnt mess up animations
@@ -184,33 +185,35 @@ const PhotoDetail: React.VFC = () => {
   return (
     <>
       <PhotoDetailContainer ref={containerRef}>
-        <div ref={headRef}>
-          {sections.head && (
-            <Row>
+        {sections.head && (
+          <div ref={headRef}>
+            <Row $height={sections.head[0]!.media.height}>
               <Img
                 src={CMS_URL + sections.head[0]!.media.url}
                 alt={sections.head[0]!.media.alternativeText}
               />
             </Row>
-          )}
-        </div>
-        <div ref={bodyRef} id="full-content">
-          {sections.body && sections.body.map((row, i) => (
-            <Row key={i}>
-              {row.map((photo) => (
-                <Img
-                  key={photo.id}
-                  src={CMS_URL + photo.media.url}
-                  alt={photo.media.alternativeText}
-                  position={photo.row_location}
-                  offsetX={photo.offset_x}
-                  offsetY={photo.offset_y}
-                  $scale={photo.scale}
-                />
-              ))}
-            </Row>
-          ))}
-        </div>
+          </div>
+        )}
+        {sections.body && (
+          <div ref={bodyRef} id="full-content">
+            {sections.body.map((row, i) => (
+              <Row key={i}>
+                {row.map((photo) => (
+                  <Img
+                    key={photo.id}
+                    src={CMS_URL + photo.media.url}
+                    alt={photo.media.alternativeText}
+                    position={photo.row_location}
+                    offsetX={photo.offset_x}
+                    offsetY={photo.offset_y}
+                    $scale={photo.scale}
+                  />
+                ))}
+              </Row>
+            ))}
+          </div>
+        )}
         <div>next piece</div>
       </PhotoDetailContainer>
       <MediaTitle ref={titleRef} side="L" visible={!state.isMenuOpen.L}>
