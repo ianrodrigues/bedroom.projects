@@ -11,6 +11,8 @@ export const PhotoDetailContainer = styled.div`
 `;
 
 export const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
   position: relative;
   margin: 0;
   width: 100%;
@@ -21,7 +23,7 @@ export const Img = styled.img<ImgProps>((props) => css`
   opacity: 0;
   transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
   transition: opacity 1s, transform 1s;
-  scale: ${props.scale || 1};
+  scale: ${props.$scale || 1};
 
   &.visible {
     opacity: 1;
@@ -52,5 +54,5 @@ interface ImgProps {
   position?: 'left' | 'middle' | 'right';
   offsetX?: Px;
   offsetY?: Px;
-  scale?: number;
+  $scale?: number;
 }

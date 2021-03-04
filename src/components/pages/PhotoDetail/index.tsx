@@ -114,6 +114,11 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     setTemplate(state.templates[params.slug]);
+
+    setDetail({
+      cur: getMediaObjectBySlug(params.slug, 'photo'),
+      next: undefined,
+    });
   }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
@@ -203,7 +208,7 @@ const PhotoDetail: React.VFC = () => {
                   position={photo.row_location}
                   offsetX={photo.offset_x}
                   offsetY={photo.offset_y}
-                  scale={photo.scale}
+                  $scale={photo.scale}
                 />
               ))}
             </Row>
