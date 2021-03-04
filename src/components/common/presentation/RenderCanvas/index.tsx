@@ -1,6 +1,6 @@
 import * as i from 'types';
 import React from 'react';
-import { Route, Switch, useLocation } from 'react-router';
+import { useLocation } from 'react-router';
 
 import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
@@ -288,13 +288,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   return (
     <>
       <FullscreenCanvas ref={canvasRef} show={props.show} />
-      <Switch>
-        <Route
-          path="/"
-          exact
-          render={(props) => <MediaOverlay {...props} sizeData={sizeData} />}
-        />
-      </Switch>
+      <MediaOverlay sizeData={sizeData} />
     </>
   );
 };

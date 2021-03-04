@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 
+
 export const PhotoDetailContainer = styled.div`
   position: absolute;
   top: 0;
@@ -7,7 +8,6 @@ export const PhotoDetailContainer = styled.div`
   z-index: -1;
   width: 100%;
   pointer-events: none;
-  padding: ${Math.floor(window.innerHeight * .5)}px 20px 0;
 `;
 
 export const Row = styled.div`
@@ -17,7 +17,7 @@ export const Row = styled.div`
 `;
 
 export const Img = styled.img<ImgProps>((props) => css`
-  padding: 0 0 ${Math.floor(window.innerHeight * .3)}px;
+  padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;
   opacity: 0;
   transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
   transition: opacity 1s, transform 1s;
