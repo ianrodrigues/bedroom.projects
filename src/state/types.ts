@@ -9,6 +9,9 @@ export interface AppState extends State {
   video?: i.APIMediaObject;
   setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.APIPhotosObject : i.APIMediaObject) => void;
 
+  templates: i.PhotoDetailTemplates;
+  setTemplates: (templates: i.PhotoDetailTemplates) => void;
+
   showName: boolean;
   setShowName: (showName: boolean) => void;
 
@@ -20,7 +23,11 @@ export interface AppState extends State {
   closeMenus: () => void;
 }
 
-export type AllMedia = {
+export interface PhotoDetailTemplates {
+  [slug: string]: [undefined, ...i.Layout[][]]
+}
+
+export interface AllMedia {
   photo: i.APIPhotosObject[];
   video: i.APIMediaObject[];
 }

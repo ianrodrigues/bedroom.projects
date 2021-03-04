@@ -18,6 +18,11 @@ const useStore = create<i.AppState>(log((set) => ({
     [type]: media,
   })),
 
+  templates: {},
+  setTemplates: (templates) => set(() => ({
+    templates,
+  })),
+
   showName: true,
   setShowName: (showName) => set(() => ({
     showName,
