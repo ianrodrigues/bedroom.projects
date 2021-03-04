@@ -2,10 +2,10 @@ import * as i from 'types';
 import styled, { css } from 'styled-components';
 
 
-export const PhotoFilmPreviewContainer = styled.div`
+export const MediaOverlayContainer = styled.div`
   width: 100vw;
   height: 100vh;
-  background-color: #000;
+  pointer-events: none;
 `;
 
 export const Name = styled.h1<NameProps>((props) => `

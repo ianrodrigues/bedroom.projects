@@ -4,7 +4,7 @@ import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import useStore from 'state';
 
-import { Name, PhotoFilmPreviewContainer, TitleContainer, TitleInner, MediaTitle } from './styled';
+import { Name, MediaOverlayContainer, TitleContainer, TitleInner, MediaTitle } from './styled';
 
 
 const MediaOverlay: React.VFC<Props> = (props) => {
@@ -25,7 +25,7 @@ const MediaOverlay: React.VFC<Props> = (props) => {
   }, []);
 
   return (
-    <PhotoFilmPreviewContainer>
+    <MediaOverlayContainer>
       <Name show={state.showName}>bedroom</Name>
       <TitleContainer>
         <TitleInner>
@@ -37,7 +37,7 @@ const MediaOverlay: React.VFC<Props> = (props) => {
           </MediaTitle>
         </TitleInner>
       </TitleContainer>
-    </PhotoFilmPreviewContainer>
+    </MediaOverlayContainer>
   );
 };
 

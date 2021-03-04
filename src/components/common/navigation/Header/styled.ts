@@ -1,19 +1,13 @@
 import styled, { css } from 'styled-components';
 
 export const HeaderContainer = styled.header`
-  position: fixed;
+  position: absolute;
   top: 15px;
   left: 0;
   right: 0;
-  z-index: 2;
   margin: auto;
   width: 100vw;
   height: 100vh;
-
-  canvas {
-    position: absolute;
-    top: -15px;
-  }
 `;
 
 export const Nav = styled.nav`
