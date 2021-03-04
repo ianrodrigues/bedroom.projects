@@ -12,7 +12,6 @@ import { Img, PhotoDetailContainer, Row } from './styled';
 // CBA typing
 let scroller: i.AnyObject;
 let observers: IntersectionObserver[] = [];
-let distance = 0;
 
 interface Sections {
   head?: i.Layout[];
@@ -34,6 +33,7 @@ const PhotoDetail: React.VFC = () => {
   const location = useLocation();
   const headRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
+  const containerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
   const [template, setTemplate] = React.useState(state.templates[params.slug]);
   const [sections, setSections] = React.useState<Sections>({
@@ -70,47 +70,44 @@ const PhotoDetail: React.VFC = () => {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    if (headRef.current && bodyRef.current && titleRef.current) {
-      scroller = new VirtualScroll({
-        mouseMultiplier: .3,
-      });
+    scroller = new VirtualScroll({
+      mouseMultiplier: .3,
+    });
 
-      // CBA typing
-      scroller.on((event: i.AnyObject) => {
-        if (event.y > 0) {
-          event.y = 0;
-          scroller.__private_3_event.y = 0;
+    // CBA typing
+    scroller.on((event: i.AnyObject) => {
+      if (event.y > 0) {
+        event.y = 0;
+        scroller.__private_3_event.y = 0;
+      }
+
+      if (event.y === 0) {
+        event.y = event.deltaY;
+      }
+
+      if (headRef.current) {
+        headRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
+      }
+      if (bodyRef.current) {
+        bodyRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
+      }
+
+      if (containerRef.current && titleRef.current) {
+        const containerBounds = containerRef.current.getBoundingClientRect();
+        const titleDistance = window.innerHeight - 105 * 2; // Minus top/bottom distance
+        const y = (Math.abs(event.y) / containerBounds.height) * titleDistance;
+
+        // Minus font size, roughly
+        if (y < titleDistance - 75) {
+          titleRef.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
         }
-
-        if (event.y === 0) {
-          event.y = event.deltaY;
-        }
-
-        headRef.current!.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
-        bodyRef.current!.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
-
-        const bodyBounds = bodyRef.current!.getBoundingClientRect();
-
-        if (!distance) {
-          distance = bodyBounds.height + bodyBounds.top;
-        }
-
-        const y = (Math.abs(event.y / distance) * window.innerHeight) * - 1;
-        const tempTransform = titleRef.current!.style.transform;
-        titleRef.current!.style.transform = `translate3d(0px, ${y}px, 0px)`;
-
-        const titleBounds = titleRef.current!.getBoundingClientRect();
-
-        if (titleBounds.top < 100) {
-          titleRef.current!.style.transform = tempTransform;
-        }
-      });
-    }
+      }
+    });
 
     return function cleanup() {
       scroller.destroy();
     };
-  }, [headRef, bodyRef]);
+  }, [bodyRef]);
 
   React.useEffect(() => {
     setTemplate(state.templates[params.slug]);
@@ -186,7 +183,7 @@ const PhotoDetail: React.VFC = () => {
 
   return (
     <>
-      <PhotoDetailContainer>
+      <PhotoDetailContainer ref={containerRef}>
         <div ref={headRef}>
           {sections.head && (
             <Row>

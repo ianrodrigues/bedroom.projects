@@ -22,7 +22,7 @@ export const Img = styled.img<ImgProps>((props) => css`
   padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;
   opacity: 0;
   transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
-  transition: opacity 1s, transform 1s;
+  transition: opacity 1s, transform 1.2s;
   scale: ${props.$scale || 1};
 
   &.visible {
