@@ -39,7 +39,9 @@ const Header: React.VFC = () => {
   }
 
   function onMouseLeaveNavContainer() {
-    state.closeMenus();
+    if (state.isMenuOpen.L || state.isMenuOpen.R) {
+      state.closeMenus();
+    }
   }
 
   return (
