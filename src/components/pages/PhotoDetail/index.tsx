@@ -5,7 +5,7 @@ import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
 
-import { Img, PhotoDetailContainer } from './styled';
+import { Img, PhotoDetailContainer, Row } from './styled';
 
 let scroller: any;
 let observers: IntersectionObserver[] = [];
@@ -143,25 +143,29 @@ const PhotoDetail: React.VFC = () => {
     <PhotoDetailContainer id="content-container">
       <div ref={headRef} id="scroll-head">
         {sections.head && (
-          <figure>
+          <Row>
             <Img
               src={CMS_URL + sections.head[0]!.media.url}
               alt={sections.head[0]!.media.alternativeText}
             />
-          </figure>
+          </Row>
         )}
       </div>
       <div ref={bodyRef}>
         {sections.body && sections.body.map((row, i) => (
-          <figure key={i}>
+          <Row key={i}>
             {row.map((photo) => (
               <Img
                 key={photo.id}
                 src={CMS_URL + photo.media.url}
                 alt={photo.media.alternativeText}
+                position={photo.row_location}
+                offsetX={photo.offset_x}
+                offsetY={photo.offset_y}
+                scale={photo.scale}
               />
             ))}
-          </figure>
+          </Row>
         ))}
       </div>
       <div>next piece</div>

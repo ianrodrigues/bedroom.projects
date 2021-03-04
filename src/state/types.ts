@@ -131,7 +131,7 @@ export interface Layout {
   id: number;
   bedroom_media: number;
   alt_text: string;
-  row_location: string;
+  row_location: 'left' | 'middle' | 'right';
   offset_x: number;
   offset_y: number;
   scale: number;

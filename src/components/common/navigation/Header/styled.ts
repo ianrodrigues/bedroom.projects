@@ -6,15 +6,11 @@ export const HeaderContainer = styled.header`
   left: 0;
   right: 0;
   margin: auto;
-  width: 100vw;
-  height: 100vh;
 `;
 
 export const Nav = styled.nav`
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  height: 100%;
   max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px;
