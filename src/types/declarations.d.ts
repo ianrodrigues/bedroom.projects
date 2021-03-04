@@ -1,4 +1,5 @@
 declare module 'vite-plugin-react-svg';
+declare module 'virtual-scroll';
 
 declare const __DEV__: boolean;
 declare const __PROD__: boolean;

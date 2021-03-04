@@ -120,7 +120,7 @@ export interface PhotoMedia {
   updated_at: Date;
 }
 
-interface Layout {
+export interface Layout {
   id: number;
   bedroom_media: number;
   alt_text: string;
