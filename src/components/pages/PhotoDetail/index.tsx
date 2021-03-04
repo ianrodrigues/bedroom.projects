@@ -1,33 +1,53 @@
 import * as i from 'types';
 import React from 'react';
-import { useParams } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
-import { getMediaObjectBySlug } from 'state/utils';
 
 import { Img, PhotoDetailContainer } from './styled';
 
 let scroller: any;
-const observers: IntersectionObserver[] = [];
+let observers: IntersectionObserver[] = [];
 
 interface Sections {
-  head?: i.Layout;
-  body: i.Layout[];
+  head?: i.Layout[];
+  body: i.Layout[][];
 }
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
   const params = useParams<{ slug: string }>();
+  const location = useLocation();
   const headRef = React.useRef<HTMLDivElement>(null);
-  const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'photo'));
+  const bodyRef = React.useRef<HTMLDivElement>(null);
+  const [template, setTemplate] = React.useState(state.templates[params.slug]);
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
     body: [],
   });
 
   React.useEffect(() => {
-    if (headRef.current) {
+    for (const observer of observers) {
+      observer.disconnect();
+    }
+
+    observers = [];
+
+    setSections({ head: undefined, body: [] });
+
+    if (scroller) {
+      scroller.__private_3_event.y = 0;
+    }
+
+    if (headRef.current && bodyRef.current) {
+      headRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+      bodyRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    }
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    if (headRef.current && bodyRef.current) {
       scroller = new VirtualScroll({
         mouseMultiplier: .3,
       });
@@ -42,39 +62,39 @@ const PhotoDetail: React.VFC = () => {
           event.y = event.deltaY;
         }
 
-        const body = document.querySelector('#scroll-body') as HTMLDivElement;
-
         headRef.current!.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
-        body.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
+        bodyRef.current!.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
       });
     }
 
     return function cleanup() {
       scroller.destroy();
     };
-  }, [headRef]);
+  }, [headRef, bodyRef]);
 
   React.useEffect(() => {
-    setDetail(getMediaObjectBySlug(params.slug, 'photo'));
-  }, [params.slug, state.allMedia]);
+    setTemplate(state.templates[params.slug]);
+  }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
-    if (detail) {
-      const head = detail.bedroom_media_layouts[0];
-      const body: i.Layout[] = [];
-
-      for (let i = 1; i < detail!.bedroom_media_layouts.length; i++) {
-        body.push(detail!.bedroom_media_layouts[i]!);
-      }
-
-      setSections({ head, body: [] });
-
-      // Delay adding body so head is rendered first so it doesnt mess up animations
-      setTimeout(() => {
-        setSections({ head, body });
-      }, 100);
+    if (!template) {
+      return;
     }
-  }, [detail]);
+
+    const head = template[1];
+    const body: i.Layout[][] = [];
+
+    for (let i = 2; i < template!.length; i++) {
+      body.push(template![i]!);
+    }
+
+    setSections({ head, body: [] });
+
+    // Delay adding body so head is rendered first so it doesnt mess up animations
+    setTimeout(() => {
+      setSections({ head, body });
+    }, 100);
+  }, [template]);
 
   React.useEffect(() => {
     setTimeout(() => {
@@ -104,13 +124,13 @@ const PhotoDetail: React.VFC = () => {
             obs.disconnect();
           }
         }, {
-          threshold: .25,
+          threshold: .1,
         });
 
         observer.observe(imgEl);
         observers.push(observer);
       }
-    }, 100); // Delay for page transitions / wait for all img elements to be rendered
+    }, 500); // Delay for page transitions / wait for all img elements to be rendered
 
     return function cleanup() {
       for (const observer of observers) {
@@ -124,17 +144,23 @@ const PhotoDetail: React.VFC = () => {
       <div ref={headRef} id="scroll-head">
         {sections.head && (
           <figure>
-            <Img src={CMS_URL + sections.head.media.url} alt={sections.head.media.alternativeText} />
+            <Img
+              src={CMS_URL + sections.head[0]!.media.url}
+              alt={sections.head[0]!.media.alternativeText}
+            />
           </figure>
         )}
       </div>
-      <div id="scroll-body">
-        {sections.body && sections.body.map((layout) => (
-          <figure key={layout.id}>
-            <Img
-              src={CMS_URL + layout.media.url}
-              alt={layout.media.alternativeText}
-            />
+      <div ref={bodyRef}>
+        {sections.body && sections.body.map((row, i) => (
+          <figure key={i}>
+            {row.map((photo) => (
+              <Img
+                key={photo.id}
+                src={CMS_URL + photo.media.url}
+                alt={photo.media.alternativeText}
+              />
+            ))}
           </figure>
         ))}
       </div>
