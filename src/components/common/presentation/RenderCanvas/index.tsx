@@ -216,7 +216,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         R: null,
       });
     }
-  }, [setSizeData, state.isFullscreen]));
+  }, [setSizeData, state.isFullscreen, location.pathname]));
 
   // Init photo/video into memory
   React.useEffect(() => {
