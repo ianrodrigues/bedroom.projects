@@ -4,10 +4,12 @@ import { useLocation, useParams } from 'react-router';
 import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
+import { getMediaObjectBySlug } from 'state/utils';
 
 import MediaTitle from 'common/typography/MediaTitle';
-import { getMediaObjectBySlug } from 'state/utils';
-import { Img, PhotoDetailContainer, Row } from './styled';
+import { DetailContainer } from 'common/presentation/DetailPage';
+
+import { Img, Row } from './styled';
 
 // CBA typing
 let scroller: i.AnyObject;
@@ -18,10 +20,6 @@ interface Sections {
   body: i.Layout[][];
 }
 
-interface Params {
-  slug: string;
-}
-
 interface Details {
   cur?: i.APIPhotosObject;
   next?: i.APIPhotosObject;
@@ -29,7 +27,7 @@ interface Details {
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
-  const params = useParams<Params>();
+  const params = useParams<i.DetailPageParams>();
   const location = useLocation();
   const headRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
@@ -184,7 +182,7 @@ const PhotoDetail: React.VFC = () => {
 
   return (
     <>
-      <PhotoDetailContainer ref={containerRef}>
+      <DetailContainer ref={containerRef}>
         {sections.head && (
           <div ref={headRef}>
             <Row $height={sections.head[0]!.media.height}>
@@ -215,7 +213,7 @@ const PhotoDetail: React.VFC = () => {
           </div>
         )}
         <div>next piece</div>
-      </PhotoDetailContainer>
+      </DetailContainer>
       <MediaTitle ref={titleRef} side="L" visible={!state.isMenuOpen.L}>
         {detail.cur?.title}
       </MediaTitle>

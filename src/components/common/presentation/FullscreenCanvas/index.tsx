@@ -26,7 +26,7 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref)
 
     if (canvas) {
       canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      canvas.height = props.height || window.innerHeight;
     }
   }, []);
 
@@ -42,11 +42,9 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref)
 
       const ctx = canvas.getContext('2d');
 
-      if (!ctx) {
-        return;
+      if (ctx) {
+        ctx.imageSmoothingEnabled = false;
       }
-
-      ctx.imageSmoothingEnabled = false;
     }
   }, [canvasRef, ref]);
 
@@ -61,6 +59,7 @@ FullscreenCanvas.defaultProps = {
 
 interface Props {
   show?: boolean;
+  height?: number;
 }
 
 export default FullscreenCanvas;

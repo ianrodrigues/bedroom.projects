@@ -9,6 +9,7 @@ import Header from 'common/navigation/Header';
 import RenderCanvas from 'common/presentation/RenderCanvas';
 
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
+const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
@@ -45,7 +46,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       <React.Suspense fallback={<div />}>
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
-          {/* <Route path="/film/:slug" component={PhotoDetail} /> */}
+          <Route path="/film/:slug" component={VideoDetail} />
         </Switch>
       </React.Suspense>
     </main>

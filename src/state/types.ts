@@ -151,9 +151,11 @@ export interface APIMediaObject {
   video_url?: string;
   created_at: Date;
   updated_at: Date;
-  media: PhotoMedia[] | VideoMedia[];
+  /** @deprecated For cover/poster use media_cover. For layout use APIPhotosObject.bedroom_media_layouts */
+  media?: PhotoMedia[] | VideoMedia[];
   media_cover: PhotoMedia | VideoMedia;
-  full_video?: VideoMedia[];
+  full_video?: VideoMedia;
+  video_poster?: PhotoMedia;
 }
 
 export interface APIPhotosObject extends APIMediaObject {

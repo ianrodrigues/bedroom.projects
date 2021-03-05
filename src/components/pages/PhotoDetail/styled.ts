@@ -1,15 +1,6 @@
 import styled, { css } from 'styled-components';
 
 
-export const PhotoDetailContainer = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: -1;
-  width: 100%;
-  pointer-events: none;
-`;
-
 export const Row = styled.div<RowProps>((props) => css`
   display: flex;
   justify-content: space-between;
