@@ -43,6 +43,7 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
       ref={ref}
       height={window.innerHeight - 50}
       src={CMS_URL + props.videoObject.full_video?.url}
+      poster={CMS_URL + props.videoObject.video_poster?.url}
     />
   );
 });
