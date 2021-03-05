@@ -31,6 +31,18 @@ const Display = React.forwardRef<HTMLCanvasElement, Props>((_props, ref) => {
     }
   }, [props.videoObject]);
 
+  React.useEffect(() => {
+    if (!video) {
+      return;
+    }
+
+    if (video.paused && props.controls.playing) {
+      video.play();
+    } else if (!video.paused && !props.controls.playing) {
+      video.pause();
+    }
+  }, [props.controls.playing]);
+
   useAnimationFrame(() => {
     if (!isRef<HTMLCanvasElement>(ref)) {
       return;
