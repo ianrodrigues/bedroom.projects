@@ -20,11 +20,6 @@ interface Sections {
   body: i.Layout[][];
 }
 
-interface Details {
-  cur?: i.APIPhotosObject;
-  next?: i.APIPhotosObject;
-}
-
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
   const params = useParams<i.DetailPageParams>();
@@ -38,7 +33,7 @@ const PhotoDetail: React.VFC = () => {
     head: undefined,
     body: [],
   });
-  const [detail, setDetail] = React.useState<Details>({
+  const [detail, setDetail] = React.useState<i.CurNextDetails<'photo'>>({
     cur: getMediaObjectBySlug(params.slug, 'photo'),
     next: undefined,
   });

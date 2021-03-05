@@ -2,8 +2,8 @@ import React from 'react';
 
 import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
-import useControls from '../Player/useControls';
 
+import useControls from './useControls';
 import { ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea } from './styled';
 
 

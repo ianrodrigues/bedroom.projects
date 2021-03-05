@@ -4,7 +4,7 @@ import React from 'react';
 import PlayerControls from '../PlayerControls';
 import Display from '../Display';
 
-import { PlayerContainer } from './styled';
+// import { PlayerContainer } from './styled';
 
 
 const Player: React.VFC<Props> = (props) => {
@@ -26,11 +26,11 @@ const Player: React.VFC<Props> = (props) => {
   }, [canvasRef]);
 
   return (
-    <PlayerContainer>
+    <div id="player-container">
       <PlayerControls {...controlsDimensions}>
         <Display ref={canvasRef} videoObject={props.videoObject} />
       </PlayerControls>
-    </PlayerContainer>
+    </div>
   );
 };
 
