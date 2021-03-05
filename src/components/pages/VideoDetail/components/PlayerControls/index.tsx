@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router';
 
 import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
@@ -12,8 +13,16 @@ import {
 
 const PlayerControls: React.FC<Props> = (props) => {
   const controls = useControls();
+  const location = useLocation();
   const [progress, setProgress] = React.useState(0);
   const [time, setTime] = React.useState(0);
+
+  React.useEffect(() => {
+    setProgress(0);
+    setTime(0);
+    controls.setStarted(false);
+    controls.setPlaying(false);
+  }, [location.pathname]);
 
   function onPlayPauseClick() {
     if (controls.playing) {
