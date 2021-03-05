@@ -35,10 +35,7 @@ const MediaOverlay: React.VFC<Props> = (props) => {
           render={(props) => <Name {...props} show={state.showName}>bedroom</Name>}
         />
       </Switch>
-      <MediaTitle
-        visible={state.isFullscreen}
-        side={props.sizeData.L ? 'L' : 'R'}
-      >
+      <MediaTitle visible={state.isFullscreen} side={props.sizeData.L ? 'L' : 'R'}>
         {props.sizeData.L ? state.photo?.title : state.video?.title}
       </MediaTitle>
     </MediaOverlayContainer>

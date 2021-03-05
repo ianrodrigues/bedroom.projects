@@ -24,6 +24,7 @@ export const MediaTitleInner = styled.div`
 
 export const Title = styled.h3<TitleProps>((props) => css`
   position: absolute;
+  z-index: 1;
   bottom: 0;
   margin: 0;
   width: 50%;
