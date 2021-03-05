@@ -214,7 +214,7 @@ const PhotoDetail: React.VFC = () => {
         )}
         <div>next piece</div>
       </DetailContainer>
-      <MediaTitle ref={titleRef} side="L" visible={!state.isMenuOpen.L}>
+      <MediaTitle ref={titleRef} side="L" visible={!state.isAnyMenuOpen()}>
         {detail.cur?.title}
       </MediaTitle>
     </>

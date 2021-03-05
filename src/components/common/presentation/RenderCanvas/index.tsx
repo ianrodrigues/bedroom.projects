@@ -288,7 +288,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   return (
     <>
       <FullscreenCanvas ref={canvasRef} show={props.show} />
-      <MediaOverlay sizeData={sizeData} />
+      <MediaOverlay />
     </>
   );
 };

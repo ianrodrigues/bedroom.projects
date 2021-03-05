@@ -21,6 +21,7 @@ export interface AppState extends State {
   isMenuOpen: Record<i.Side, boolean>;
   setMenuOpen: (side: i.Side, open: boolean) => void;
   closeMenus: () => void;
+  isAnyMenuOpen: () => boolean;
 }
 
 export interface PhotoDetailTemplates {

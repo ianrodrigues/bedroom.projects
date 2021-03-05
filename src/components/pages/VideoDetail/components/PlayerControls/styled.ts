@@ -5,6 +5,10 @@ export const PlayerControlsContainer = styled.div<PlayerControlsContainerProps>(
   position: relative;
   width: ${props.$width || 0}px;
   height: ${props.$height || 0}px;
+
+  canvas {
+    z-index: 0;
+  }
 `);
 
 interface PlayerControlsContainerProps {

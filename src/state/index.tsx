@@ -6,7 +6,7 @@ import { log } from 'services';
 import { fetchMedia } from './utils';
 
 
-const useStore = create<i.AppState>(log((set) => ({
+const useStore = create<i.AppState>(log((set, get) => ({
   allMedia: undefined,
   setAllMedia: (media) => set(() => ({
     allMedia: media,
@@ -49,6 +49,7 @@ const useStore = create<i.AppState>(log((set) => ({
       R: false,
     },
   })),
+  isAnyMenuOpen: () => get().isMenuOpen.L || get().isMenuOpen.R,
 })));
 
 fetchMedia();

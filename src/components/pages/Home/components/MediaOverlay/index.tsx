@@ -9,7 +9,7 @@ import MediaTitle from 'common/typography/MediaTitle';
 import { Name, MediaOverlayContainer } from './styled';
 
 
-const MediaOverlay: React.VFC<Props> = (props) => {
+const MediaOverlay: React.VFC = () => {
   const state = useStore();
 
   React.useEffect(() => {
@@ -35,15 +35,11 @@ const MediaOverlay: React.VFC<Props> = (props) => {
           render={(props) => <Name {...props} show={state.showName}>bedroom</Name>}
         />
       </Switch>
-      <MediaTitle visible={state.isFullscreen} side={props.sizeData.L ? 'L' : 'R'}>
-        {props.sizeData.L ? state.photo?.title : state.video?.title}
+      <MediaTitle visible={state.isFullscreen} side={state.isMenuOpen.L ? 'L' : 'R'}>
+        {state.isMenuOpen.L ? state.photo?.title : state.video?.title}
       </MediaTitle>
     </MediaOverlayContainer>
   );
 };
-
-interface Props {
-  sizeData: i.SizeData;
-}
 
 export default MediaOverlay;

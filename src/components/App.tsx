@@ -16,16 +16,14 @@ const App: React.VFC<RouteComponentProps> = () => {
   const location = useLocation();
   const [isHomepage, setIsHomepage] = React.useState(location.pathname === '/');
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
-  const [showCanvas, setShowCanvas] = React.useState(
-    isHomepage || state.isMenuOpen.L || state.isMenuOpen.R,
-  );
+  const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.isAnyMenuOpen());
 
   React.useEffect(() => {
     setIsHomepage(location.pathname === '/');
   }, [location.pathname]);
 
   React.useEffect(() => {
-    setShowCanvas(isHomepage || state.isMenuOpen.L || state.isMenuOpen.R);
+    setShowCanvas(isHomepage || state.isAnyMenuOpen());
 
     if (isHomepage) {
       setFullscreenMedia(undefined);
