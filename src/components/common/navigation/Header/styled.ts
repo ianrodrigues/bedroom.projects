@@ -5,11 +5,12 @@ export const HeaderContainer = styled.header`
   top: 15px;
   left: 0;
   right: 0;
-  z-index: 2;
   margin: auto;
 `;
 
 export const Nav = styled.nav`
+  position: relative;
+  z-index: 2;
   display: flex;
   justify-content: space-between;
   max-width: 1600px;
