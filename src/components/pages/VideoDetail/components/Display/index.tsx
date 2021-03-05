@@ -24,6 +24,20 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
     }
   }, [props.controls.playing]);
 
+  React.useEffect(() => {
+    if (!isRef<HTMLVideoElement>(ref)) {
+      return;
+    }
+
+    const video = ref.current;
+
+    video.addEventListener('timeupdate', props.onTimeUpdate);
+
+    return function cleanup() {
+      video.removeEventListener('timeupdate', props.onTimeUpdate);
+    };
+  }, [ref]);
+
   return (
     <Video
       ref={ref}
@@ -43,6 +57,7 @@ interface ClonedProps extends Props {
     started: boolean;
     volume: number;
   };
+  onTimeUpdate: (event: Event) => void;
 }
 
 export default Display;

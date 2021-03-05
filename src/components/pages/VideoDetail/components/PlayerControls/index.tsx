@@ -4,11 +4,16 @@ import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
 
 import useControls from './useControls';
-import { ControlsGridContainer, ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea } from './styled';
+import {
+  ControlsGridContainer, ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea,
+  SeekbarContainer, SeekbarInner, SeekbarTimeIndicator,
+} from './styled';
 
 
 const PlayerControls: React.FC<Props> = (props) => {
   const controls = useControls();
+  const [progress, setProgress] = React.useState(0);
+  const [time, setTime] = React.useState(0);
 
   function onPlayPauseClick() {
     if (controls.playing) {
@@ -22,9 +27,33 @@ const PlayerControls: React.FC<Props> = (props) => {
     }
   }
 
+  function onTimeUpdate(this: HTMLVideoElement) {
+    const duration = this.duration;
+    const curTime = this.currentTime;
+    const progress = curTime / duration;
+
+    setProgress(progress);
+    setTime(curTime);
+  }
+
+  function getTimestamp() {
+    let minutes: string | number = Math.floor(time / 60);
+    let seconds: string | number = Math.floor(time % 60);
+
+    if (minutes < 10) {
+      minutes = '0' + minutes;
+    }
+
+    if (seconds < 10) {
+      seconds = '0' + seconds;
+    }
+
+    return `${minutes}:${seconds}`;
+  }
+
   return (
     <PlayerControlsContainer>
-      {React.cloneElement(props.children, { controls })}
+      {React.cloneElement(props.children, { controls, onTimeUpdate })}
 
       <ControlsGridContainer>
         <ControlsGrid maxWidth={props.width}>
@@ -32,6 +61,13 @@ const PlayerControls: React.FC<Props> = (props) => {
           <PlayPauseIcon onClick={onPlayPauseClick}>
             {controls.playing ? <PauseSvg /> : <PlaySvg />}
           </PlayPauseIcon>
+
+          <SeekbarContainer>
+            <SeekbarTimeIndicator progress={progress * 100}>
+              {getTimestamp()}
+            </SeekbarTimeIndicator>
+            <SeekbarInner progress={progress} />
+          </SeekbarContainer>
         </ControlsGrid>
       </ControlsGridContainer>
     </PlayerControlsContainer>
