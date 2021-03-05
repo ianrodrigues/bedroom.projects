@@ -4,7 +4,7 @@ import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
 
 import useControls from './useControls';
-import { ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea } from './styled';
+import { ControlsGridContainer, ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea } from './styled';
 
 
 const PlayerControls: React.FC<Props> = (props) => {
@@ -23,14 +23,17 @@ const PlayerControls: React.FC<Props> = (props) => {
   }
 
   return (
-    <PlayerControlsContainer $width={props.width} $height={props.height}>
+    <PlayerControlsContainer>
       {React.cloneElement(props.children, { controls })}
-      <ControlsGrid>
-        <VideoArea onClick={onPlayPauseClick} />
-        <PlayPauseIcon onClick={onPlayPauseClick}>
-          {controls.playing ? <PauseSvg /> : <PlaySvg />}
-        </PlayPauseIcon>
-      </ControlsGrid>
+
+      <ControlsGridContainer>
+        <ControlsGrid maxWidth={props.width}>
+          <VideoArea onClick={onPlayPauseClick} />
+          <PlayPauseIcon onClick={onPlayPauseClick}>
+            {controls.playing ? <PauseSvg /> : <PlaySvg />}
+          </PlayPauseIcon>
+        </ControlsGrid>
+      </ControlsGridContainer>
     </PlayerControlsContainer>
   );
 };
