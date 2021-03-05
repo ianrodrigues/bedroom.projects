@@ -91,6 +91,7 @@ interface Formats {
 export interface VideoMedia {
   id: number;
   name: string;
+  /** @deprecated use alt_text from APIMediaObject */
   alternativeText: string;
   caption: string;
   width?: number;

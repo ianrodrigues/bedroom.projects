@@ -183,7 +183,7 @@ const PhotoDetail: React.VFC = () => {
             <Row $height={sections.head[0]!.media.height}>
               <Img
                 src={CMS_URL + sections.head[0]!.media.url}
-                alt={sections.head[0]!.media.alternativeText}
+                alt={sections.head[0]!.alt_text}
               />
             </Row>
           </div>
@@ -196,7 +196,7 @@ const PhotoDetail: React.VFC = () => {
                   <Img
                     key={photo.id}
                     src={CMS_URL + photo.media.url}
-                    alt={photo.media.alternativeText}
+                    alt={photo.alt_text}
                     position={photo.row_location}
                     offsetX={photo.offset_x}
                     offsetY={photo.offset_y}
