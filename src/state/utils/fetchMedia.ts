@@ -17,7 +17,7 @@ export function fetchMedia(): void {
       for (const media of data) {
         if (isAPIPhotoObject(media)) {
           const tempMedia = media as i.StatePhotoObject;
-          tempMedia.next = undefined;
+          tempMedia.next = {} as i.StatePhotoObject;
 
           if (isStatePhotoObject(prevPhotoObj)) {
             prevPhotoObj.next = tempMedia;
@@ -27,7 +27,7 @@ export function fetchMedia(): void {
           photos.push(tempMedia);
         } else {
           const tempMedia = media as i.StateVideoObject;
-          tempMedia.next = undefined;
+          tempMedia.next = {} as i.StatePhotoObject;
 
           if (isStateVideoObject(prevVideoObj)) {
             prevVideoObj.next = tempMedia;
@@ -39,11 +39,11 @@ export function fetchMedia(): void {
       }
 
       // Link last to first
-      if (photos[photos.length - 1]) {
+      if (photos[photos.length - 1] && photos[0]) {
         photos[photos.length - 1]!.next = photos[0];
       }
 
-      if (videos[videos.length - 1]) {
+      if (videos[videos.length - 1] && videos[0]) {
         videos[videos.length - 1]!.next = videos[0];
       }
 

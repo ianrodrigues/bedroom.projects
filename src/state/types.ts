@@ -172,9 +172,9 @@ export interface APIPhotosObject extends APIMediaObject {
 }
 
 export interface StatePhotoObject extends APIPhotosObject {
-  next?: StatePhotoObject;
+  next: StatePhotoObject;
 }
 
 export interface StateVideoObject extends APIMediaObject {
-  next?: APIMediaObject;
+  next: APIMediaObject;
 }
