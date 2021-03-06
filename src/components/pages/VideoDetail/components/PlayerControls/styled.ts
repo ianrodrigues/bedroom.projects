@@ -50,7 +50,7 @@ export const VideoArea = styled.div`
 
 export const PlayPauseIcon = styled.div`
   grid-area: play;
-  height: 20px;
+  height: 15px;
   mix-blend-mode: difference;
 
   svg {

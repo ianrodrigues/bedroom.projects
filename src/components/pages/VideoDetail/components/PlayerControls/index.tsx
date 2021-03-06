@@ -1,10 +1,10 @@
 import React from 'react';
 import { useLocation } from 'react-router';
 
+import useStore from 'state';
 import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
 
-import useControls from './useControls';
 import {
   ControlsGridContainer, ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea,
   SeekbarContainer, SeekbarInner, SeekbarTimeIndicator,
@@ -12,7 +12,7 @@ import {
 
 
 const PlayerControls: React.FC<Props> = (props) => {
-  const controls = useControls();
+  const state = useStore();
   const location = useLocation();
   const [progress, setProgress] = React.useState(0);
   const [time, setTime] = React.useState(0);
@@ -20,19 +20,14 @@ const PlayerControls: React.FC<Props> = (props) => {
   React.useEffect(() => {
     setProgress(0);
     setTime(0);
-    controls.setStarted(false);
-    controls.setPlaying(false);
+    state.videoPlayer.setPlaying(false);
   }, [location.pathname]);
 
   function onPlayPauseClick() {
-    if (controls.playing) {
-      controls.setPlaying(false);
+    if (state.videoPlayer.isPlaying) {
+      state.videoPlayer.setPlaying(false);
     } else {
-      if (!controls.started) {
-        controls.setStarted(true);
-      }
-
-      controls.setPlaying(true);
+      state.videoPlayer.setPlaying(true);
     }
   }
 
@@ -62,14 +57,14 @@ const PlayerControls: React.FC<Props> = (props) => {
 
   return (
     <PlayerControlsContainer>
-      {React.cloneElement(props.children, { controls, onTimeUpdate })}
+      {React.cloneElement(props.children, { onTimeUpdate })}
 
       {props.width != null && props.width > 0 && (
         <ControlsGridContainer>
           <ControlsGrid maxWidth={props.width}>
             <VideoArea onClick={onPlayPauseClick} />
             <PlayPauseIcon onClick={onPlayPauseClick}>
-              {controls.playing ? <PauseSvg /> : <PlaySvg />}
+              {state.videoPlayer.isPlaying ? <PauseSvg /> : <PlaySvg />}
             </PlayPauseIcon>
 
             <SeekbarContainer>

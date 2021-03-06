@@ -1,12 +1,15 @@
 import * as i from 'types';
 import React from 'react';
 
+import useStore from 'state';
 import { isRef } from 'services/typeguards';
 
 import { Video } from './styled';
 
 
 const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
+  const state = useStore();
+
   // Dirty type fix
   const props = _props as ClonedProps;
 
@@ -17,12 +20,12 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
 
     const video = ref.current;
 
-    if (video.paused && props.controls.playing) {
+    if (video.paused && state.videoPlayer.isPlaying) {
       video.play();
-    } else if (!video.paused && !props.controls.playing) {
+    } else if (!video.paused && !state.videoPlayer.isPlaying) {
       video.pause();
     }
-  }, [props.controls.playing]);
+  }, [state.videoPlayer.isPlaying]);
 
   React.useEffect(() => {
     if (!isRef<HTMLVideoElement>(ref)) {
@@ -53,11 +56,6 @@ interface Props {
 }
 
 interface ClonedProps extends Props {
-  controls: {
-    playing: boolean;
-    started: boolean;
-    volume: number;
-  };
   onTimeUpdate: (event: Event) => void;
 }
 

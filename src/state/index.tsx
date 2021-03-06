@@ -50,6 +50,16 @@ const useStore = create<i.AppState>(log((set, get) => ({
     },
   })),
   isAnyMenuOpen: () => get().isMenuOpen.L || get().isMenuOpen.R,
+
+  videoPlayer: {
+    isPlaying: false,
+    setPlaying: (isPlaying) => set((state) => ({
+      videoPlayer: {
+        ...state.videoPlayer,
+        isPlaying,
+      },
+    })),
+  },
 })));
 
 fetchMedia();

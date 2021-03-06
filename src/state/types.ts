@@ -22,6 +22,11 @@ export interface AppState extends State {
   setMenuOpen: (side: i.Side, open: boolean) => void;
   closeMenus: () => void;
   isAnyMenuOpen: () => boolean;
+
+  videoPlayer: {
+    isPlaying: boolean;
+    setPlaying: (isPlaying: boolean) => void;
+  };
 }
 
 export interface PhotoDetailTemplates {
