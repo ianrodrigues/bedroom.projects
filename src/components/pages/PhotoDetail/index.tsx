@@ -9,7 +9,7 @@ import { getMediaObjectBySlug } from 'state/utils';
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
-import { Img, Row } from './styled';
+import { FullContentContainer, Img, NextContainer, Row } from './styled';
 
 // CBA typing
 let scroller: i.AnyObject;
@@ -28,15 +28,15 @@ const PhotoDetail: React.VFC = () => {
   const bodyRef = React.useRef<HTMLDivElement>(null);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
+  const nextRef = React.useRef<HTMLDivElement>(null);
   const [template, setTemplate] = React.useState(state.templates[params.slug]);
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
     body: [],
   });
-  const [detail, setDetail] = React.useState<i.CurNextDetails<'photo'>>({
-    cur: getMediaObjectBySlug(params.slug, 'photo'),
-    next: undefined,
-  });
+  const [detail, setDetail] = React.useState<i.StatePhotoObject | undefined>(
+    getMediaObjectBySlug(params.slug, 'photo'),
+  );
 
   React.useEffect(() => {
     for (const observer of observers) {
@@ -46,20 +46,14 @@ const PhotoDetail: React.VFC = () => {
     observers = [];
 
     setSections({ head: undefined, body: [] });
-    setDetail({
-      cur: getMediaObjectBySlug(params.slug, 'photo'),
-      next: undefined,
-    });
+    setDetail(getMediaObjectBySlug(params.slug, 'photo'));
 
     if (scroller) {
       scroller.__private_3_event.y = 0;
     }
 
-    if (headRef.current) {
-      headRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
-    }
-    if (bodyRef.current) {
-      bodyRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    if (containerRef.current) {
+      containerRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
     }
     if (titleRef.current) {
       titleRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
@@ -78,26 +72,29 @@ const PhotoDetail: React.VFC = () => {
         scroller.__private_3_event.y = 0;
       }
 
-      if (event.y === 0) {
-        event.y = event.deltaY;
-      }
-
-      if (headRef.current) {
-        headRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
-      }
-      if (bodyRef.current) {
-        bodyRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
-      }
-
-      if (containerRef.current && titleRef.current) {
+      if (containerRef.current && bodyRef.current && titleRef.current) {
         const containerBounds = containerRef.current.getBoundingClientRect();
-        const titleDistance = window.innerHeight - 105 * 2; // Minus top/bottom distance
-        const y = (Math.abs(event.y) / containerBounds.height) * titleDistance;
+        const bodyBounds = bodyRef.current.getBoundingClientRect();
+        const titleBounds = titleRef.current.getBoundingClientRect();
 
-        // Minus font size, roughly
-        if (y < titleDistance - 75) {
+        // With 100 px clearance top & bottom
+        const topEdge = window.innerHeight - titleBounds.height - 100 * 2;
+
+        const y = (Math.abs(event.y) / bodyBounds.height) * topEdge;
+
+        // Top edge
+        if (y < topEdge) {
           titleRef.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
         }
+
+        const bottomEdge = containerBounds.height - window.innerHeight;
+
+        if (Math.abs(event.y) >= bottomEdge) {
+          scroller.__private_3_event.y = -bottomEdge;
+          event.y = -bottomEdge;
+        }
+
+        containerRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
       }
     });
 
@@ -108,11 +105,7 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     setTemplate(state.templates[params.slug]);
-
-    setDetail({
-      cur: getMediaObjectBySlug(params.slug, 'photo'),
-      next: undefined,
-    });
+    setDetail(getMediaObjectBySlug(params.slug, 'photo'));
   }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
@@ -193,7 +186,7 @@ const PhotoDetail: React.VFC = () => {
           </div>
         )}
         {sections.body && (
-          <div ref={bodyRef} id="full-content">
+          <FullContentContainer ref={bodyRef} id="full-content">
             {sections.body.map((row, i) => (
               <Row key={i}>
                 {row.map((photo) => (
@@ -209,12 +202,14 @@ const PhotoDetail: React.VFC = () => {
                 ))}
               </Row>
             ))}
-          </div>
+          </FullContentContainer>
         )}
-        <div>next piece</div>
+        <NextContainer ref={nextRef}>
+          {detail?.next?.title}
+        </NextContainer>
       </DetailContainer>
       <MediaTitle ref={titleRef} side="L" visible={!state.isAnyMenuOpen()}>
-        {detail.cur?.title}
+        {detail?.title}
       </MediaTitle>
     </>
   );

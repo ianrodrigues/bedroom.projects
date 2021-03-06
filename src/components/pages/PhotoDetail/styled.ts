@@ -52,3 +52,12 @@ interface ImgProps {
   offsetY?: Px;
   $scale?: number;
 }
+
+export const NextContainer = styled.div`
+  width: 100%;
+  height: 100vh;
+`;
+
+export const FullContentContainer = styled.div`
+  padding-bottom: 300px;
+`;
