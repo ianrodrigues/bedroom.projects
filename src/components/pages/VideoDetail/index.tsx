@@ -65,11 +65,11 @@ const VideoDetail: React.VFC = () => {
 
         if (titleRef.current) {
           const containerBounds = containerRef.current.getBoundingClientRect();
-          const titleDistance = window.innerHeight - 105 * 2; // Minus top/bottom distance
+          const titleBounds = titleRef.current.getBoundingClientRect();
+          const titleDistance = window.innerHeight - titleBounds.height + 30;
           const y = (Math.abs(event.y) / containerBounds.height) * titleDistance;
 
-          // Minus font size, roughly
-          if (y < titleDistance - 75) {
+          if (y < titleDistance - titleBounds.height) {
             titleRef.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
           }
         }

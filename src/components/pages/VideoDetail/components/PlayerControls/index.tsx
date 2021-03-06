@@ -60,8 +60,6 @@ const PlayerControls: React.FC<Props> = (props) => {
     return `${minutes}:${seconds}`;
   }
 
-  console.log(props.width);
-
   return (
     <PlayerControlsContainer>
       {React.cloneElement(props.children, { controls, onTimeUpdate })}
