@@ -42,6 +42,14 @@ const Player: React.VFC<Props> = (props) => {
     });
   }, [videoRef]);
 
+  React.useEffect(() => {
+    if (state.videoPlayer.isReady && !state.videoPlayer.isPlaying) {
+      setTimeout(() => {
+        state.videoPlayer.setPlaying(true);
+      }, 3500);
+    }
+  }, [state.videoPlayer.isReady]);
+
   return (
     <PlayerContainer id="player-container">
       <PlayerControls {...controlsDimensions}>
