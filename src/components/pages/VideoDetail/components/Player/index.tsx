@@ -1,13 +1,15 @@
 import * as i from 'types';
 import React from 'react';
+import { useLocation } from 'react-router';
 
 import PlayerControls from '../PlayerControls';
 import Display from '../Display';
 
-// import { PlayerContainer } from './styled';
+import { PlayerContainer } from './styled';
 
 
 const Player: React.VFC<Props> = (props) => {
+  const location = useLocation();
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [controlsDimensions, setControlsDimensions] = React.useState({
     width: 0,
@@ -15,29 +17,27 @@ const Player: React.VFC<Props> = (props) => {
   });
 
   React.useEffect(() => {
-    if (!videoRef.current) {
-      return;
-    }
-
-    videoRef.current.onresize = () => {
-      setControlsDimensions({
-        width: videoRef.current!.clientWidth,
-        height: videoRef.current!.clientHeight,
-      });
-    };
-
     setControlsDimensions({
-      width: videoRef.current.clientWidth,
-      height: videoRef.current.clientHeight,
+      width: 0,
+      height: 0,
+    });
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    videoRef.current?.addEventListener('canplay', function () {
+      setControlsDimensions({
+        width: this.clientWidth,
+        height: this.clientHeight,
+      });
     });
   }, [videoRef]);
 
   return (
-    <div id="player-container">
+    <PlayerContainer id="player-container">
       <PlayerControls {...controlsDimensions}>
         <Display ref={videoRef} videoObject={props.videoObject} />
       </PlayerControls>
-    </div>
+    </PlayerContainer>
   );
 };
 

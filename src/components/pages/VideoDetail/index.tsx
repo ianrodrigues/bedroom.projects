@@ -31,6 +31,17 @@ const VideoDetail: React.VFC = () => {
       cur: getMediaObjectBySlug(params.slug, 'video'),
       next: undefined,
     });
+
+    if (scroller) {
+      scroller.__private_3_event.y = 0;
+    }
+
+    if (containerRef.current) {
+      containerRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    }
+    if (titleRef.current) {
+      titleRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    }
   }, [params.slug, state.allMedia?.video]);
 
   React.useEffect(() => {

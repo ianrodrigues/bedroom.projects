@@ -55,9 +55,13 @@ const PhotoDetail: React.VFC = () => {
       scroller.__private_3_event.y = 0;
     }
 
-    if (headRef.current && bodyRef.current && titleRef.current) {
+    if (headRef.current) {
       headRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    }
+    if (bodyRef.current) {
       bodyRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
+    }
+    if (titleRef.current) {
       titleRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
     }
   }, [location.pathname]);

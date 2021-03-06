@@ -60,25 +60,29 @@ const PlayerControls: React.FC<Props> = (props) => {
     return `${minutes}:${seconds}`;
   }
 
+  console.log(props.width);
+
   return (
     <PlayerControlsContainer>
       {React.cloneElement(props.children, { controls, onTimeUpdate })}
 
-      <ControlsGridContainer>
-        <ControlsGrid maxWidth={props.width}>
-          <VideoArea onClick={onPlayPauseClick} />
-          <PlayPauseIcon onClick={onPlayPauseClick}>
-            {controls.playing ? <PauseSvg /> : <PlaySvg />}
-          </PlayPauseIcon>
+      {props.width != null && props.width > 0 && (
+        <ControlsGridContainer>
+          <ControlsGrid maxWidth={props.width}>
+            <VideoArea onClick={onPlayPauseClick} />
+            <PlayPauseIcon onClick={onPlayPauseClick}>
+              {controls.playing ? <PauseSvg /> : <PlaySvg />}
+            </PlayPauseIcon>
 
-          <SeekbarContainer>
-            <SeekbarTimeIndicator progress={progress * 100}>
-              {getTimestamp()}
-            </SeekbarTimeIndicator>
-            <SeekbarInner progress={progress} />
-          </SeekbarContainer>
-        </ControlsGrid>
-      </ControlsGridContainer>
+            <SeekbarContainer>
+              <SeekbarTimeIndicator progress={progress * 100}>
+                {getTimestamp()}
+              </SeekbarTimeIndicator>
+              <SeekbarInner progress={progress} />
+            </SeekbarContainer>
+          </ControlsGrid>
+        </ControlsGridContainer>
+      )}
     </PlayerControlsContainer>
   );
 };
