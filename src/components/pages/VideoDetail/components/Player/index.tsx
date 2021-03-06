@@ -2,6 +2,8 @@ import * as i from 'types';
 import React from 'react';
 import { useLocation } from 'react-router';
 
+import useStore from 'state';
+
 import PlayerControls from '../PlayerControls';
 import Display from '../Display';
 
@@ -9,6 +11,7 @@ import { PlayerContainer } from './styled';
 
 
 const Player: React.VFC<Props> = (props) => {
+  const state = useStore();
   const location = useLocation();
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [controlsDimensions, setControlsDimensions] = React.useState({
@@ -21,6 +24,8 @@ const Player: React.VFC<Props> = (props) => {
       width: 0,
       height: 0,
     });
+
+    state.videoPlayer.setReady(false);
   }, [location.pathname]);
 
   React.useEffect(() => {
@@ -29,6 +34,11 @@ const Player: React.VFC<Props> = (props) => {
         width: this.clientWidth,
         height: this.clientHeight,
       });
+
+      // Wait a bit for everything to load
+      setTimeout(() => {
+        state.videoPlayer.setReady(true);
+      }, 1000);
     });
   }, [videoRef]);
 

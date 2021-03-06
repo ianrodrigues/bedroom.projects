@@ -10,7 +10,7 @@ import { DetailContainer } from 'common/presentation/DetailPage';
 import { getMediaObjectBySlug } from 'state/utils';
 
 import Player from './components/Player';
-import { DescriptionContainer } from './styled';
+import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster } from './styled';
 
 
 let scroller: i.AnyObject;
@@ -84,7 +84,15 @@ const VideoDetail: React.VFC = () => {
   return (
     <>
       <DetailContainer ref={containerRef}>
-        {detail.cur && <Player videoObject={detail.cur} />}
+        <DetailPlayerContainer isReady={state.videoPlayer.isReady}>
+          {(detail.cur && (
+            <>
+              <VideoPoster src={CMS_URL + detail.cur.video_poster?.url} />
+              <Player videoObject={detail.cur} />
+              <DetailPlayerOverlay />
+            </>
+          ))}
+        </DetailPlayerContainer>
         <DescriptionContainer>
           <div>{detail.cur?.description}</div>
           <div>{detail.cur?.credits}</div>

@@ -26,6 +26,8 @@ export interface AppState extends State {
   videoPlayer: {
     isPlaying: boolean;
     setPlaying: (isPlaying: boolean) => void;
+    isReady: boolean;
+    setReady: (isReady: boolean) => void;
   };
 }
 

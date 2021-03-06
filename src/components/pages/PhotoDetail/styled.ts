@@ -18,7 +18,7 @@ export const Img = styled.img<ImgProps>((props) => css`
   padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;
   opacity: 0;
   transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
-  transition: opacity 1s, transform 1.2s;
+  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
   scale: ${props.$scale || 1};
 
   &.visible {

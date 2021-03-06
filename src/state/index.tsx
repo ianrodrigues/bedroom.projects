@@ -59,6 +59,13 @@ const useStore = create<i.AppState>(log((set, get) => ({
         isPlaying,
       },
     })),
+    isReady: false,
+    setReady: (isReady) => set((state) => ({
+      videoPlayer: {
+        ...state.videoPlayer,
+        isReady,
+      },
+    })),
   },
 })));
 
