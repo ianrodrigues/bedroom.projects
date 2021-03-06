@@ -36,8 +36,23 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
 
     video.addEventListener('timeupdate', props.onTimeUpdate);
 
+    const observer = new IntersectionObserver((entries, obs) => {
+      const entry = entries[0];
+
+      if (!entry) return;
+
+      if (!entry.isIntersecting && state.videoPlayer.isPlaying) {
+        state.videoPlayer.setPlaying(false);
+      }
+    }, {
+      threshold: .25,
+    });
+
+    observer.observe(video);
+
     return function cleanup() {
       video.removeEventListener('timeupdate', props.onTimeUpdate);
+      observer.disconnect();
     };
   }, [ref]);
 
