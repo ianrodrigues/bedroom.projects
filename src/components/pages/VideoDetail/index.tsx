@@ -91,7 +91,11 @@ const VideoDetail: React.VFC = () => {
         </DescriptionContainer>
         <div>next piece</div>
       </DetailContainer>
-      <MediaTitle ref={titleRef} side="R" visible={!state.isAnyMenuOpen()}>
+      <MediaTitle
+        ref={titleRef}
+        side="R"
+        visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying}
+      >
         {detail.cur?.title}
       </MediaTitle>
     </>
