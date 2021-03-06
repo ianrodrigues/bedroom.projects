@@ -7,7 +7,7 @@ export interface AppState extends State {
 
   photo?: i.APIPhotosObject;
   video?: i.APIMediaObject;
-  setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.APIPhotosObject : i.APIMediaObject) => void;
+  setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.StatePhotoObject : i.StateVideoObject) => void;
 
   templates: i.PhotoDetailTemplates;
   setTemplates: (templates: i.PhotoDetailTemplates) => void;
@@ -36,8 +36,8 @@ export interface PhotoDetailTemplates {
 }
 
 export interface AllMedia {
-  photo: i.APIPhotosObject[];
-  video: i.APIMediaObject[];
+  photo: i.StatePhotoObject[];
+  video: i.StateVideoObject[];
 }
 
 interface Thumbnail {
@@ -169,4 +169,12 @@ export interface APIMediaObject {
 
 export interface APIPhotosObject extends APIMediaObject {
   bedroom_media_layouts: Layout[];
+}
+
+export interface StatePhotoObject extends APIPhotosObject {
+  next?: StatePhotoObject;
+}
+
+export interface StateVideoObject extends APIMediaObject {
+  next?: APIMediaObject;
 }

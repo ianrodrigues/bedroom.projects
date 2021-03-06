@@ -12,6 +12,14 @@ export function isPhotoList(list?: i.PhotoMedia[] | i.VideoMedia[]): list is i.P
   return !!list && !!list[0] && list[0].formats != null;
 }
 
-export function isAPIPhotoObject(object: i.APIMediaObject | i.APIPhotosObject): object is i.APIPhotosObject {
-  return !!object && object.video_url == null;
+export function isAPIPhotoObject(object?: i.APIMediaObject | i.APIPhotosObject): object is i.APIPhotosObject {
+  return !!object && (object.full_video == null && object.video_url == null);
+}
+
+export function isStatePhotoObject(object?: i.StatePhotoObject | i.StateVideoObject): object is i.StatePhotoObject {
+  return !!object && object.full_video == null && 'next' in object;
+}
+
+export function isStateVideoObject(object?: i.StatePhotoObject | i.StateVideoObject): object is i.StateVideoObject {
+  return !!object && (object.full_video != null || object.video_url != null) && 'next' in object;
 }

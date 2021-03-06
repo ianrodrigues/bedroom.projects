@@ -1,22 +1,50 @@
 import * as i from 'types';
 
 import useStore from 'state';
-import { isAPIPhotoObject } from 'services/typeguards';
+import { isAPIPhotoObject, isStatePhotoObject, isStateVideoObject } from 'services/typeguards';
 
 
 export function fetchMedia(): void {
   fetch(`${CMS_URL}/bedroom-medias`)
     .then((res) => res.json())
     .then((data: (i.APIMediaObject | i.APIPhotosObject)[]) => {
-      const photos: i.APIPhotosObject[] = [];
-      const videos: i.APIMediaObject[] = [];
+      const photos: i.StatePhotoObject[] = [];
+      const videos: i.StateVideoObject[] = [];
+      let prevPhotoObj: i.StatePhotoObject | undefined = undefined;
+      let prevVideoObj: i.StateVideoObject | undefined = undefined;
 
+      // Create linked lists of photos/videos
       for (const media of data) {
         if (isAPIPhotoObject(media)) {
-          photos.push(media);
+          const tempMedia = media as i.StatePhotoObject;
+          tempMedia.next = undefined;
+
+          if (isStatePhotoObject(prevPhotoObj)) {
+            prevPhotoObj.next = tempMedia;
+          }
+
+          prevPhotoObj = tempMedia;
+          photos.push(tempMedia);
         } else {
-          videos.push(media);
+          const tempMedia = media as i.StateVideoObject;
+          tempMedia.next = undefined;
+
+          if (isStateVideoObject(prevVideoObj)) {
+            prevVideoObj.next = tempMedia;
+          }
+
+          prevVideoObj = tempMedia;
+          videos.push(tempMedia);
         }
+      }
+
+      // Link last to first
+      if (photos[photos.length - 1]) {
+        photos[photos.length - 1]!.next = photos[0];
+      }
+
+      if (videos[videos.length - 1]) {
+        videos[videos.length - 1]!.next = videos[0];
       }
 
       useStore.getState().setAllMedia({
