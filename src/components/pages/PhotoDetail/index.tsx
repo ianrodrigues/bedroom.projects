@@ -291,7 +291,12 @@ const PhotoDetail: React.VFC = () => {
             {sections.body.map((row) => (
               <Row key={row.id} displayType={row.display_type} location={row.row_location}>
                 {row.media.map((photo, i) => (
-                  <RowImg key={photo.id} layout={row} photo={photo} index={i} />
+                  <RowImg
+                    key={photo.id}
+                    layout={row}
+                    photo={photo}
+                    index={i}
+                  />
                 ))}
               </Row>
             ))}

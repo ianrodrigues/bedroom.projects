@@ -138,16 +138,18 @@ export interface PhotoMedia {
   updated_at: Date;
 }
 
-export interface Layout {
+export type ImgAttributeIndices = 1 | 2;
+export type ImgAttribute =
+ | `offset_x_${ImgAttributeIndices}`
+ | `offset_y_${ImgAttributeIndices}`
+ | `scale_${ImgAttributeIndices}`;
+export type ImgAttributes = Record<ImgAttribute, number>;
+
+export interface Layout extends ImgAttributes {
   id: number;
   bedroom_media: number;
   row_location: 'left' | 'middle' | 'right';
   display_type: 'single' | 'spaced' | 'fill' | 'together';
-  offset_x_1: number;
-  offset_y_1: number;
-  scale_1: number;
-  offset_x_2: number;
-  offset_y_2: number;
   scale_2: number;
   published_at: Date;
   created_at: Date;

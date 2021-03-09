@@ -5,17 +5,18 @@ import { Img, ImgContainer, ImgFigure } from './styled';
 
 
 const RowImg: React.VFC<RowImgProps> = (props) => {
-  const index = (props.index ?? 0) + 1;
-  const attrs = props.id ? { id: props.id } : {};
+  const index = (props.index ?? 1) as i.ImgAttributeIndices;
+  const imgAttrs = [`offset_x_${index}`, `offset_y_${index}`, `scale_${index}`] as const;
+  const containerAttrs = props.id ? { id: props.id } : {};
 
   return (
     <ImgContainer
       displayType={props.layout.display_type}
       isNextHeader={props.isNextHeader}
-      offsetX={props.layout[`offset_x_${index}`]}
-      offsetY={props.layout[`offset_y_${index}`]}
-      $scale={props.layout[`scale_${index}`]}
-      {...attrs}
+      offsetX={props.layout[imgAttrs[0]]}
+      offsetY={props.layout[imgAttrs[1]]}
+      $scale={props.layout[imgAttrs[2]]}
+      {...containerAttrs}
     >
       <ImgFigure>
         <Img src={CMS_URL + props.photo.url} alt={props.photo.alternativeText} />
