@@ -31,8 +31,10 @@ export interface AppState extends State {
   };
 }
 
+export type PhotoDetailTemplate = [undefined, ...i.Layout[][]];
+
 export interface PhotoDetailTemplates {
-  [slug: string]: [undefined, ...i.Layout[][]]
+  [slug: string]: i.PhotoDetailTemplate;
 }
 
 export interface AllMedia {
@@ -147,7 +149,7 @@ export interface Layout {
   published_at: Date;
   created_at: Date;
   updated_at: Date;
-  media: PhotoMedia;
+  media: PhotoMedia[];
   row_num: number;
 }
 

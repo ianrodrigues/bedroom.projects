@@ -39,6 +39,7 @@ const PhotoDetail: React.VFC = () => {
   const titleRef = React.useRef<HTMLHeadingElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
   const [template, setTemplate] = React.useState(state.templates[params.slug]);
+  const [nextTemplate, setNextTemplate] = React.useState<i.PhotoDetailTemplate | undefined>();
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
     body: [],
@@ -203,6 +204,10 @@ const PhotoDetail: React.VFC = () => {
     setTimeout(() => {
       setSections({ head, body });
     }, 100);
+
+    if (detail) {
+      setNextTemplate(state.templates[detail.next.slug]);
+    }
   }, [template]);
 
   React.useEffect(() => {
@@ -276,9 +281,9 @@ const PhotoDetail: React.VFC = () => {
       <DetailContainer ref={containerRef}>
         {sections.head && (
           <div ref={headRef}>
-            <Row $height={sections.head[0]!.media.height}>
+            <Row $height={sections.head[0]!.media[0]!.height}>
               <Img
-                src={CMS_URL + sections.head[0]!.media.url}
+                src={CMS_URL + sections.head[0]!.media[0]!.url}
                 alt={sections.head[0]!.alt_text}
                 isNextHeader={isGoingNext === 'starting' || queries.has('next')}
               />
@@ -293,7 +298,7 @@ const PhotoDetail: React.VFC = () => {
                 {row?.map((photo) => (
                   <Img
                     key={photo.id}
-                    src={CMS_URL + photo.media.url}
+                    src={CMS_URL + photo.media[0]!.url}
                     alt={photo.alt_text}
                     position={photo.row_location}
                     offsetX={photo.offset_x}
@@ -310,11 +315,13 @@ const PhotoDetail: React.VFC = () => {
             {detail?.next.title}
           </MediaTitle>
           <div ref={nextPhotoRef}>
-            <Img
-              src={CMS_URL + detail?.next.media_cover.url}
-              alt={detail?.next.media_cover.alternativeText}
-              id="next-cover"
-            />
+            {nextTemplate && (
+              <Img
+                src={CMS_URL + nextTemplate[1]?.[0]?.media[0]?.url}
+                alt={detail?.next.media_cover.alternativeText}
+                id="next-cover"
+              />
+            )}
           </div>
         </NextContainer>
       </DetailContainer>
