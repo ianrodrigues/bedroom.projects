@@ -29,7 +29,7 @@ const Player: React.VFC<Props> = (props) => {
   }, [location.pathname]);
 
   React.useEffect(() => {
-    videoRef.current?.addEventListener('canplay', function () {
+    videoRef.current?.addEventListener('loadstart', function () {
       setControlsDimensions({
         width: this.clientWidth,
         height: this.clientHeight,
