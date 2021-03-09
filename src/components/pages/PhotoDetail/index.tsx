@@ -131,9 +131,6 @@ const PhotoDetail: React.VFC = () => {
           if (nextPhotoRef.current) {
             nextPhotoRef.current.style.transform = 'translate3d(0, 0, 0)';
           }
-          if (titleRef.current) {
-            titleRef.current.style.transform = 'translate3d(0, 0, 0)';
-          }
 
           // Route to next page
           setTimeout(() => {
@@ -328,9 +325,9 @@ const PhotoDetail: React.VFC = () => {
       <MediaTitle
         ref={titleRef}
         side="L"
-        visible={!state.isAnyMenuOpen()}
+        visible={!state.isAnyMenuOpen() && !isGoingNext}
       >
-        {isGoingNext ? detail?.next.title : detail?.title}
+        {detail?.title}
       </MediaTitle>
     </>
   );
