@@ -1,64 +1,37 @@
-import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
+import * as i from 'types';
 import styled, { css } from 'styled-components';
+
+import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
+import { ImgContainer } from './components/RowImg/styled';
 
 
 export const Row = styled.div<RowProps>((props) => css`
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: flex-start;
   position: relative;
   margin: 0;
   width: 100%;
-  min-height: ${props.$height ? `${props.$height}px` : 'auto'};
+  box-sizing: border-box;
+
+  ${props.location === 'right' && css`
+    justify-content: flex-end;
+  `}
+
+  ${props.location === 'middle' && css`
+    justify-content: center;
+  `}
+
+  ${props.displayType === 'fill' && css`
+    justify-content: space-around;
+  `}
 `);
 
 interface RowProps {
   $height?: number;
-}
-
-export const Img = styled.img<ImgProps>((props) => css`
-  padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;
-  max-width: 100%;
-  opacity: 0;
-  transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
-  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-  scale: ${props.$scale || 1};
-
-  &.visible {
-    opacity: 1;
-    transform: translate3d(${props.offsetX || 0}px, ${props.offsetY || 0}px, 0);
-  }
-
-  ${props.position === 'right' && css`
-    display: block;
-    margin-left: auto;
-  `}
-
-  ${props.position === 'middle' && css`
-    display: block;
-    margin: 0 auto;
-  `}
-
-  ${props.offsetX && css`
-    position: absolute;
-    top: 0;
-    right: 0;
-    left: 0;
-  `}
-
-  ${props.isNextHeader && css`
-    opacity: 1;
-    transform: translate3d(0, 200px, 0);
-  `}
-`);
-
-type Px = number;
-
-interface ImgProps {
-  position?: 'left' | 'middle' | 'right';
-  offsetX?: Px;
-  offsetY?: Px;
-  $scale?: number;
-  isNextHeader?: boolean;
+  location?: i.Layout['row_location'];
+  displayType?: i.Layout['display_type'];
 }
 
 export const NextContainer = styled.div`
@@ -72,7 +45,7 @@ export const NextContainer = styled.div`
     bottom: auto;
   }
 
-  ${Img} {
+  ${ImgContainer} {
     opacity: 1;
     transform: translate3d(0, 0, 0);
   }

@@ -9,15 +9,16 @@ import { getMediaObjectBySlug } from 'state/utils';
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
-import { FullContentContainer, Img, NextContainer, Row } from './styled';
+import RowImg from './components/RowImg';
+import { FullContentContainer, NextContainer, Row } from './styled';
 
 // CBA typing
 let scroller: i.AnyObject;
 let observers: IntersectionObserver[] = [];
 
 interface Sections {
-  head?: i.Layout[];
-  body: i.Layout[][];
+  head?: i.Layout;
+  body: i.Layout[];
 }
 
 type GoingNextPhases = false | 'starting' | 'ending';
@@ -38,8 +39,6 @@ const PhotoDetail: React.VFC = () => {
   const nextPhotoRef = React.useRef<HTMLImageElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
-  const [template, setTemplate] = React.useState(state.templates[params.slug]);
-  const [nextTemplate, setNextTemplate] = React.useState<i.PhotoDetailTemplate | undefined>();
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
     body: [],
@@ -115,7 +114,7 @@ const PhotoDetail: React.VFC = () => {
           // Set head piece to next's
           setSections((sections) => ({
             ...sections,
-            head: state.templates[detail!.next.slug]![1],
+            head: detail?.next.bedroom_media_layouts[0],
           }));
 
           // Set scroll positions to top
@@ -178,20 +177,19 @@ const PhotoDetail: React.VFC = () => {
   }, [bodyRef, detail, isGoingNext]);
 
   React.useEffect(() => {
-    setTemplate(state.templates[params.slug]);
     setDetail(getMediaObjectBySlug(params.slug, 'photo'));
   }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
-    if (!template) {
+    if (!detail) {
       return;
     }
 
-    const head = template[1];
-    const body: i.Layout[][] = [];
+    const head = detail.bedroom_media_layouts[0];
+    const body: i.Layout[] = [];
 
-    for (let i = 2; i < template.length; i++) {
-      body.push(template[i]!);
+    for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
+      body.push(detail.bedroom_media_layouts[i]!);
     }
 
     // Set head instantly
@@ -201,11 +199,7 @@ const PhotoDetail: React.VFC = () => {
     setTimeout(() => {
       setSections({ head, body });
     }, 100);
-
-    if (detail) {
-      setNextTemplate(state.templates[detail.next.slug]);
-    }
-  }, [template]);
+  }, [detail]);
 
   React.useEffect(() => {
     // Delay for page transitions / wait for all img elements to be rendered
@@ -218,13 +212,13 @@ const PhotoDetail: React.VFC = () => {
         return;
       }
 
-      const imgEls = document.getElementsByTagName('img');
+      const imgEls = document.querySelectorAll('[data-img-container]');
       if (!imgEls) {
         return;
       }
 
       // Observe position of all images
-      for (const imgEl of Array.from(imgEls)) {
+      for (const imgEl of imgEls) {
         if (imgEl.id === 'next-cover') {
           continue;
         }
@@ -242,29 +236,34 @@ const PhotoDetail: React.VFC = () => {
             obs.disconnect();
           }
         }, {
-          threshold: .1,
+          threshold: .15,
         });
 
         observer.observe(imgEl);
         observers.push(observer);
+
+        // Fix img height
+        const img = imgEl.querySelector('img');
+
+        if (img) {
+          function fixHeight() {
+            const img = imgEl.querySelector('img');
+            const figure = imgEl.querySelector('figure');
+
+            if (img && figure) {
+              const height = img.naturalHeight / img.naturalWidth * 100;
+              figure.style.paddingBottom = `${height}%`;
+            }
+          }
+
+          // Try immediately
+          fixHeight();
+
+          // And async
+          img.addEventListener('load', fixHeight);
+        }
       }
     }, 500);
-
-    // if (nextPhotoRef.current) {
-    //   const observer = new IntersectionObserver((entries) => {
-    //     const entry = entries[0];
-
-    //     if (!entry) {
-    //       return;
-    //     }
-
-    //     setShowTitle(!entry.isIntersecting);
-    //   }, {
-    //     threshold: .5,
-    //   });
-
-    //   observer.observe(nextPhotoRef.current);
-    // }
 
     return function cleanup() {
       for (const observer of observers) {
@@ -278,30 +277,21 @@ const PhotoDetail: React.VFC = () => {
       <DetailContainer ref={containerRef}>
         {sections.head && (
           <div ref={headRef}>
-            <Row $height={sections.head[0]!.media[0]!.height}>
-              <Img
-                src={CMS_URL + sections.head[0]!.media[0]!.url}
-                alt={sections.head[0]!.alt_text}
+            <Row $height={sections.head.media[0]!.height}>
+              <RowImg
+                layout={sections.head}
                 isNextHeader={isGoingNext === 'starting' || queries.has('next')}
+                photo={sections.head.media[0]!}
               />
             </Row>
           </div>
         )}
         {sections.body && (
           <FullContentContainer ref={bodyRef} id="full-content">
-            {sections.body.map((row, i) => (
-              <Row key={i}>
-                {/* A row num might be unused/forgotten */}
-                {row?.map((photo) => (
-                  <Img
-                    key={photo.id}
-                    src={CMS_URL + photo.media[0]!.url}
-                    alt={photo.alt_text}
-                    position={photo.row_location}
-                    offsetX={photo.offset_x}
-                    offsetY={photo.offset_y}
-                    $scale={photo.scale}
-                  />
+            {sections.body.map((row) => (
+              <Row key={row.id} displayType={row.display_type} location={row.row_location}>
+                {row.media.map((photo, i) => (
+                  <RowImg key={photo.id} layout={row} photo={photo} index={i} />
                 ))}
               </Row>
             ))}
@@ -312,11 +302,11 @@ const PhotoDetail: React.VFC = () => {
             {detail?.next.title}
           </MediaTitle>
           <div ref={nextPhotoRef}>
-            {nextTemplate && (
-              <Img
-                src={CMS_URL + nextTemplate[1]?.[0]?.media[0]?.url}
-                alt={detail?.next.media_cover.alternativeText}
+            {detail?.next.bedroom_media_layouts[0] && (
+              <RowImg
                 id="next-cover"
+                layout={detail.next.bedroom_media_layouts[0]}
+                photo={detail.next.bedroom_media_layouts[0].media[0]!}
               />
             )}
           </div>

@@ -141,11 +141,14 @@ export interface PhotoMedia {
 export interface Layout {
   id: number;
   bedroom_media: number;
-  alt_text: string;
   row_location: 'left' | 'middle' | 'right';
-  offset_x: number;
-  offset_y: number;
-  scale: number;
+  display_type: 'single' | 'spaced' | 'fill' | 'together';
+  offset_x_1: number;
+  offset_y_1: number;
+  scale_1: number;
+  offset_x_2: number;
+  offset_y_2: number;
+  scale_2: number;
   published_at: Date;
   created_at: Date;
   updated_at: Date;
