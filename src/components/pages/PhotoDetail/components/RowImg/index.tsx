@@ -5,7 +5,7 @@ import { Img, ImgContainer, ImgFigure } from './styled';
 
 
 const RowImg: React.VFC<RowImgProps> = (props) => {
-  const index = (props.index ?? 1) as i.ImgAttributeIndices;
+  const index = (props.index ?? 0) + 1 as i.ImgAttributeIndices;
   const imgAttrs = [`offset_x_${index}`, `offset_y_${index}`, `scale_${index}`] as const;
   const containerAttrs = props.id ? { id: props.id } : {};
 
