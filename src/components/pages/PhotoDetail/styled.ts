@@ -47,7 +47,7 @@ export const NextContainer = styled.div`
     left: 0;
     right: 0;
     top: auto;
-    bottom: ${window.innerHeight - window.innerHeight * .3 - 200}px;
+    bottom: ${window.innerHeight - 200}px;
   }
 
   > div {
@@ -57,5 +57,5 @@ export const NextContainer = styled.div`
 `;
 
 export const FullContentContainer = styled.div`
-  padding-bottom: 0;
+  padding-bottom: 200px;
 `;

@@ -167,7 +167,7 @@ const PhotoDetail: React.VFC = () => {
 
         const TOP_POS = 110;
         const deltaBottomScrollDist = bottomEdge - Math.abs(scroll.y);
-        const nextTitleEdge = (window.innerHeight - PHOTO_PADDING - CONTAINER_PADDING - TOP_POS);
+        const nextTitleEdge = (window.innerHeight - CONTAINER_PADDING - TOP_POS);
 
         if (nextTitleEdge < deltaBottomScrollDist) {
           nextTitleRef.current!.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
