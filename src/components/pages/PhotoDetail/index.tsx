@@ -57,7 +57,7 @@ const PhotoDetail: React.VFC = () => {
 
     observers = [];
 
-    setSections({ head: undefined, body: [] }); // Necessary for transitions between photos pages
+    setSections({ head: undefined, body: [] }); // Necessary for transitions between clicking photos pages
     setDetail(getMediaObjectBySlug(params.slug, 'photo'));
 
     if (scroller) {
@@ -89,10 +89,10 @@ const PhotoDetail: React.VFC = () => {
     });
 
     // CBA typing
-    scroller.on((event: i.AnyObject) => {
+    scroller.on((scroll: i.AnyObject) => {
       // Disable scrolling past top
-      if (event.y > 0) {
-        event.y = 0;
+      if (scroll.y > 0) {
+        scroll.y = 0;
         scroller.__private_3_event.y = 0;
       }
 
@@ -108,7 +108,7 @@ const PhotoDetail: React.VFC = () => {
         const bottomEdge = containerBounds.height - window.innerHeight;
 
         // Start transition to next page
-        if (Math.abs(event.y) >= bottomEdge && !isGoingNext) {
+        if (Math.abs(scroll.y) >= bottomEdge && !isGoingNext) {
           setGoingNext('starting');
 
           // Set head piece to next's
@@ -119,7 +119,7 @@ const PhotoDetail: React.VFC = () => {
 
           // Set scroll positions to top
           scroller.__private_3_event.y = 0;
-          event.y = 0;
+          scroll.y = 0;
 
           if (headRef.current) {
             headRef.current.style.transform = 'translate3d(0, 0, 0)';
@@ -147,28 +147,34 @@ const PhotoDetail: React.VFC = () => {
         }
 
         // With 100px clearance top & bottom
-        const PADDING_BOTTOM = 300;
+        const PHOTO_PADDING = window.innerHeight * .3;
+        const CONTAINER_PADDING = 200;
         const topEdge = window.innerHeight - titleBounds.height - 100 * 2;
 
-        const y = (Math.abs(event.y) / (bodyBounds.height + PADDING_BOTTOM)) * topEdge;
+        const titleY =
+          (Math.abs(scroll.y) / (bodyBounds.height + CONTAINER_PADDING + PHOTO_PADDING)) * topEdge;
 
         // Top edge
-        if (y < topEdge) {
-          titleRef.current.style.transform = `translate3d(0, -${y}px, 0)`;
+        if (titleY < topEdge) {
+          titleRef.current.style.transform = `translate3d(0, -${titleY}px, 0)`;
+        }
+
+        const TOP_POS = 110;
+        const deltaBottomScrollDist = bottomEdge - Math.abs(scroll.y);
+        const nextTitleEdge = (window.innerHeight - PHOTO_PADDING - CONTAINER_PADDING - TOP_POS);
+
+        if (nextTitleEdge < deltaBottomScrollDist) {
+          nextTitleRef.current!.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
         }
 
         if (headRef.current) {
-          headRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
+          headRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
         }
 
-        bodyRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
-
-        if (nextTitleRef.current) {
-          nextTitleRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
-        }
+        bodyRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
 
         if (nextPhotoRef.current) {
-          nextPhotoRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
+          nextPhotoRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
         }
       }
     });
@@ -179,12 +185,12 @@ const PhotoDetail: React.VFC = () => {
   }, [bodyRef, detail, isGoingNext]);
 
   React.useEffect(() => {
-    setDetail(getMediaObjectBySlug(params.slug, 'photo'));
-
-    setSections((sections) => ({
-      head: detail?.bedroom_media_layouts[0],
-      body: [],
-    }));
+    if (queries.has('next')) {
+      setSections({
+        head: detail?.bedroom_media_layouts[0],
+        body: [],
+      });
+    }
   }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
@@ -284,7 +290,6 @@ const PhotoDetail: React.VFC = () => {
     };
   }, [sections]);
 
-  console.log(sections.head?.media[0]);
 
   return (
     <>
@@ -318,23 +323,26 @@ const PhotoDetail: React.VFC = () => {
           </FullContentContainer>
         )}
         <NextContainer>
-          <div ref={nextPhotoRef}>
+          <div>
             {detail?.next.bedroom_media_layouts[0] && (
-              <RowImg
-                id="next-cover"
-                layout={detail.next.bedroom_media_layouts[0]}
-                photo={detail.next.bedroom_media_layouts[0].media[0]!}
-                isNextHeader
-              />
+              <div ref={nextPhotoRef}>
+                <RowImg
+                  id="next-cover"
+                  layout={detail.next.bedroom_media_layouts[0]}
+                  photo={detail.next.bedroom_media_layouts[0].media[0]!}
+                  isNextHeader
+                />
+              </div>
             )}
+
+            <MediaTitle
+              ref={nextTitleRef}
+              side="L"
+              visible={!state.isAnyMenuOpen() && sections.body.length > 0}
+            >
+              {detail?.next.title}
+            </MediaTitle>
           </div>
-          <MediaTitle
-            ref={nextTitleRef}
-            side="L"
-            visible={!state.isAnyMenuOpen()}
-          >
-            {detail?.next.title}
-          </MediaTitle>
         </NextContainer>
       </DetailContainer>
       <MediaTitle

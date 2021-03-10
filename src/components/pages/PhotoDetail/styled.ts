@@ -46,6 +46,13 @@ export const NextContainer = styled.div`
   ${MediaTitleContainer} {
     left: 0;
     right: 0;
+    top: auto;
+    bottom: ${window.innerHeight - window.innerHeight * .3 - 200}px;
+  }
+
+  > div {
+    position: relative;
+    max-height: 100%;
   }
 `;
 
