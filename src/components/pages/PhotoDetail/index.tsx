@@ -117,6 +117,12 @@ const PhotoDetail: React.VFC = () => {
             head: detail?.next.bedroom_media_layouts[0],
           }));
 
+          // Remove visible class for transition animation
+          const curCover = document.getElementById('current-cover');
+          if (curCover) {
+            curCover.classList.remove('visible');
+          }
+
           // Set scroll positions to top
           scroller.__private_3_event.y = 0;
           scroll.y = 0;
@@ -239,16 +245,7 @@ const PhotoDetail: React.VFC = () => {
             return;
           }
 
-          // Remove 'visible' class if next section is visible
-          if (entry.target.id === 'next-cover') {
-            const curCover = document.getElementById('current-cover') as HTMLDivElement;
-
-            if (entry.isIntersecting) {
-              curCover.classList.remove('visible');
-            } else {
-              curCover.classList.add('visible');
-            }
-          } else if (entry.isIntersecting) {
+          if (entry.isIntersecting) {
             entry.target.classList.add('visible');
 
             obs.disconnect();
@@ -289,7 +286,6 @@ const PhotoDetail: React.VFC = () => {
       }
     };
   }, [sections]);
-
 
   return (
     <>
