@@ -264,6 +264,10 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
   // Show "bedroom" title
   React.useEffect(() => {
+    if (location.pathname !== '/') {
+      return;
+    }
+
     if (state.isFullscreen && state.showName) {
       state.setShowName(false);
     } else if (!state.isFullscreen && !state.showName) {
