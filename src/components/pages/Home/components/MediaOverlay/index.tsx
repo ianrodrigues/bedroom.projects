@@ -11,6 +11,13 @@ import { Name, MediaOverlayContainer } from './styled';
 
 const MediaOverlay: React.VFC = () => {
   const state = useStore();
+  let text: string | undefined = undefined;
+
+  if (state.isMenuOpen.L) {
+    text = state.photo?.title;
+  } else if (state.isMenuOpen.R) {
+    text = state.video?.title;
+  }
 
   React.useEffect(() => {
     const body = document.querySelector('body');
@@ -36,7 +43,7 @@ const MediaOverlay: React.VFC = () => {
         />
       </Switch>
       <MediaTitle visible={state.isFullscreen} side={state.isMenuOpen.L ? 'L' : 'R'}>
-        {state.isMenuOpen.L ? state.photo?.title : state.video?.title}
+        {text}
       </MediaTitle>
     </MediaOverlayContainer>
   );
