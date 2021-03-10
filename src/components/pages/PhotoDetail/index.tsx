@@ -36,8 +36,8 @@ const PhotoDetail: React.VFC = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const headRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
-  const nextPhotoRef = React.useRef<HTMLImageElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
+  const nextPhotoRef = React.useRef<HTMLImageElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
@@ -130,6 +130,12 @@ const PhotoDetail: React.VFC = () => {
           if (nextPhotoRef.current) {
             nextPhotoRef.current.style.transform = 'translate3d(0, 0, 0)';
           }
+          if (titleRef.current) {
+            titleRef.current.style.transform = 'translate3d(0, 0, 0)';
+          }
+          if (nextTitleRef.current) {
+            nextTitleRef.current.style.transform = 'translate3d(0, 0, 0)';
+          }
 
           // Route to next page
           setTimeout(() => {
@@ -141,9 +147,10 @@ const PhotoDetail: React.VFC = () => {
         }
 
         // With 100px clearance top & bottom
+        const PADDING_BOTTOM = 300;
         const topEdge = window.innerHeight - titleBounds.height - 100 * 2;
 
-        const y = (Math.abs(event.y) / bodyBounds.height) * topEdge;
+        const y = (Math.abs(event.y) / (bodyBounds.height + PADDING_BOTTOM)) * topEdge;
 
         // Top edge
         if (y < topEdge) {
@@ -157,12 +164,7 @@ const PhotoDetail: React.VFC = () => {
         bodyRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
 
         if (nextTitleRef.current) {
-          const nextTitleBounds = nextTitleRef.current.getBoundingClientRect();
-          const nextTitleEdge = bodyBounds.height + nextTitleBounds.height + 190; // 190px is just magic rn
-
-          if (Math.abs(event.y) <= nextTitleEdge) {
-            nextTitleRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
-          }
+          nextTitleRef.current.style.transform = `translate3d(0, ${event.y}px, 0)`;
         }
 
         if (nextPhotoRef.current) {
@@ -178,6 +180,11 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     setDetail(getMediaObjectBySlug(params.slug, 'photo'));
+
+    setSections((sections) => ({
+      head: detail?.bedroom_media_layouts[0],
+      body: [],
+    }));
   }, [params.slug, state.allMedia, state.templates]);
 
   React.useEffect(() => {
@@ -219,10 +226,6 @@ const PhotoDetail: React.VFC = () => {
 
       // Observe position of all images
       for (const imgEl of imgEls) {
-        if (imgEl.id === 'next-cover') {
-          continue;
-        }
-
         const observer = new IntersectionObserver((entries, obs) => {
           const entry = entries[0];
 
@@ -230,7 +233,16 @@ const PhotoDetail: React.VFC = () => {
             return;
           }
 
-          if (entry.isIntersecting) {
+          // Remove 'visible' class if next section is visible
+          if (entry.target.id === 'next-cover') {
+            const curCover = document.getElementById('current-cover') as HTMLDivElement;
+
+            if (entry.isIntersecting) {
+              curCover.classList.remove('visible');
+            } else {
+              curCover.classList.add('visible');
+            }
+          } else if (entry.isIntersecting) {
             entry.target.classList.add('visible');
 
             obs.disconnect();
@@ -272,6 +284,8 @@ const PhotoDetail: React.VFC = () => {
     };
   }, [sections]);
 
+  console.log(sections.head?.media[0]);
+
   return (
     <>
       <DetailContainer ref={containerRef}>
@@ -279,6 +293,7 @@ const PhotoDetail: React.VFC = () => {
           <div ref={headRef}>
             <Row $height={sections.head.media[0]!.height}>
               <RowImg
+                id="current-cover"
                 layout={sections.head}
                 isNextHeader={isGoingNext === 'starting' || queries.has('next')}
                 photo={sections.head.media[0]!}
@@ -303,26 +318,31 @@ const PhotoDetail: React.VFC = () => {
           </FullContentContainer>
         )}
         <NextContainer>
-          <MediaTitle ref={nextTitleRef} side="L" visible={!state.isAnyMenuOpen()}>
-            {detail?.next.title}
-          </MediaTitle>
           <div ref={nextPhotoRef}>
             {detail?.next.bedroom_media_layouts[0] && (
               <RowImg
                 id="next-cover"
                 layout={detail.next.bedroom_media_layouts[0]}
                 photo={detail.next.bedroom_media_layouts[0].media[0]!}
+                isNextHeader
               />
             )}
           </div>
+          <MediaTitle
+            ref={nextTitleRef}
+            side="L"
+            visible={!state.isAnyMenuOpen()}
+          >
+            {detail?.next.title}
+          </MediaTitle>
         </NextContainer>
       </DetailContainer>
       <MediaTitle
         ref={titleRef}
         side="L"
-        visible={!state.isAnyMenuOpen() && !isGoingNext}
+        visible={!state.isAnyMenuOpen()}
       >
-        {detail?.title}
+        {isGoingNext ? detail?.next.title : detail?.title}
       </MediaTitle>
     </>
   );

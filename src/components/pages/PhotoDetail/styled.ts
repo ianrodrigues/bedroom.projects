@@ -39,18 +39,16 @@ export const NextContainer = styled.div`
   width: 100%;
   height: 100vh;
 
-  ${MediaTitleContainer} {
-    top: 105px;
-    left: 0;
-    bottom: auto;
-  }
-
   ${ImgContainer} {
     opacity: 1;
-    transform: translate3d(0, 0, 0);
+  }
+
+  ${MediaTitleContainer} {
+    left: 0;
+    right: 0;
   }
 `;
 
 export const FullContentContainer = styled.div`
-  padding-bottom: 300px;
+  padding-bottom: 0;
 `;
