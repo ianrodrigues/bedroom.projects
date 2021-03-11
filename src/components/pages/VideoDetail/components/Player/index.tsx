@@ -40,6 +40,13 @@ const Player: React.VFC<Props> = (props) => {
         state.videoPlayer.setReady(true);
       }, 1000);
     });
+
+    videoRef.current?.addEventListener('playing', function () {
+      setControlsDimensions({
+        width: this.clientWidth,
+        height: this.clientHeight,
+      });
+    });
   }, [videoRef]);
 
   React.useEffect(() => {
