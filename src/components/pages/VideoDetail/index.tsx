@@ -96,7 +96,8 @@ const VideoDetail: React.VFC = () => {
         if (titleRef.current) {
           const containerBounds = containerRef.current.getBoundingClientRect();
           const titleBounds = titleRef.current.getBoundingClientRect();
-          const titleDistance = window.innerHeight - titleBounds.height + 30;
+          const TOP_BOTTOM_PADDING = 100 * 2;
+          const titleDistance = window.innerHeight - TOP_BOTTOM_PADDING;
           const y = (Math.abs(scroll.y) / (containerBounds.height - window.innerHeight)) * titleDistance;
 
           if (y < titleDistance - titleBounds.height) {
