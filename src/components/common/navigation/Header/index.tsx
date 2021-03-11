@@ -16,7 +16,7 @@ const Header: React.VFC = () => {
 
   }, [location.pathname]);
 
-  function onMouseEnter(type: i.MediaType, media: i.APIMediaObject) {
+  function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
     state.setMedia(type, media);
   }
 
@@ -39,7 +39,7 @@ const Header: React.VFC = () => {
   }
 
   function onMouseLeaveNavContainer() {
-    if (state.isAnyMenuOpen()) {
+    if (state.isAnyMenuOpen() && location.pathname !== '/') {
       state.closeMenus();
     }
   }

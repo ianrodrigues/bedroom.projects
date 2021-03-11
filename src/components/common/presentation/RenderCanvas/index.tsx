@@ -218,6 +218,22 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     }
   }, [setSizeData, state.isFullscreen, location.pathname]));
 
+  React.useEffect(() => {
+    if (location.pathname !== '/') {
+      return;
+    }
+
+    if (!state.isAnyMenuOpen()) {
+      if (sizeData.L) {
+        state.setMenuOpen('L', true);
+      } else if (sizeData.R) {
+        state.setMenuOpen('R', true);
+      }
+    } else if (!sizeData.L && !sizeData.R) {
+      state.closeMenus();
+    }
+  }, [sizeData.L, sizeData.R]);
+
   // Init photo/video into memory
   React.useEffect(() => {
     if (!state.allMedia) {
