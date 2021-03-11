@@ -9,9 +9,6 @@ export interface AppState extends State {
   video?: i.APIMediaObject;
   setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.StatePhotoObject : i.StateVideoObject) => void;
 
-  templates: i.PhotoDetailTemplates;
-  setTemplates: (templates: i.PhotoDetailTemplates) => void;
-
   showName: boolean;
   setShowName: (showName: boolean) => void;
 
