@@ -2,13 +2,31 @@ import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 
-export const HeaderContainer = styled.header`
+export const HeaderContainer = styled.header<HeaderContainerProps>`
   position: absolute;
   top: 15px;
   left: 0;
   right: 0;
   margin: auto;
+  height: 0;
+
+  nav {
+    height: 50px;
+    overflow: hidden;
+  }
+
+  ${(props) => props.isOpen && css`
+    height: auto;
+
+    nav {
+      height: auto;
+    }
+  `}
 `;
+
+interface HeaderContainerProps {
+  isOpen?: boolean;
+}
 
 export const Nav = styled.nav`
   position: relative;

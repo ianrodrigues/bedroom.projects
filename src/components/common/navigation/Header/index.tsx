@@ -45,7 +45,7 @@ const Header: React.VFC = () => {
   }
 
   return (
-    <HeaderContainer>
+    <HeaderContainer isOpen={state.isAnyMenuOpen()}>
       <Nav>
         <NavContainer
           isOpen={state.isMenuOpen.L}
