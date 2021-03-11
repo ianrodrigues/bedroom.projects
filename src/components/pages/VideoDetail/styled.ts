@@ -1,11 +1,25 @@
 import styled, { css } from 'styled-components';
 
+import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
+
 import { GoingNext } from '.';
 import { PlayerContainer } from './components/Player/styled';
 
 
 const EASING = 'cubic-bezier(0, 0.55, 0.45, 1)';
 
+
+export const VideoDetailContainer = styled.div<VideoDetailContainerProps>((props) => css`
+  ${(props.isNext === false || props.isNext === 'starting') && css`
+    ${MediaTitleContainer} h3 {
+      transition: opacity 300ms;
+    }
+  `}
+`);
+
+interface VideoDetailContainerProps {
+  isNext?: GoingNext;
+}
 
 export const DescriptionContainer = styled.div`
   display: grid;
@@ -89,6 +103,8 @@ interface DetailPlayerContainerProps {
 }
 
 export const NextContainer = styled.div<NextContainerProps>((props) => css`
+  position: relative;
+  
   ${VideoPoster} {
     transform: translate3d(0, 0, 0);
 
@@ -105,6 +121,11 @@ export const NextContainer = styled.div<NextContainerProps>((props) => css`
       transition: transform 600ms ease-in-out;
       transform: scaleY(0);
     `}
+  }
+
+  ${MediaTitleContainer} {
+    right: 0;
+    bottom: 55px;
   }
 `);
 

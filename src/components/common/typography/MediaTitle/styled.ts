@@ -34,7 +34,6 @@ export const Title = styled.h3<TitleProps>((props) => css`
   font-family: 'Caveat Brush', sans-serif;
   color: #fff;
   opacity: 0;
-  transition: opacity 300ms;
   mix-blend-mode: difference;
 
   ${props.side === 'R' && css`

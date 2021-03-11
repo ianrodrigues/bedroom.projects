@@ -11,7 +11,7 @@ import { DetailContainer } from 'common/presentation/DetailPage';
 import { getMediaObjectBySlug } from 'state/utils';
 
 import Player from './components/Player';
-import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer } from './styled';
+import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer, VideoDetailContainer } from './styled';
 
 
 let scroller: VirtualScroll;
@@ -37,10 +37,7 @@ const VideoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     setDetail(getMediaObjectBySlug(params.slug, 'video'));
-
-    setTimeout(() => {
-      setGoingNext(false);
-    }, 1000);
+    setGoingNext(false);
 
     if (scroller) {
       scroller.__private_3_event.y = 0;
@@ -79,7 +76,13 @@ const VideoDetail: React.VFC = () => {
           scroll.y = -bottomEdge;
           scroller.__private_3_event.y = -bottomEdge;
 
+          containerRef.current.style.transform = `translate3d(0px, ${scroll.y}px, 0px)`;
+
           setGoingNext('starting');
+
+          setTimeout(() => {
+            setGoingNext('transition');
+          }, 600);
 
           setTimeout(() => {
             history.push(`/film/${detail?.next.slug}?next=1`);
@@ -109,12 +112,9 @@ const VideoDetail: React.VFC = () => {
   }, [containerRef, isGoingNext, detail]);
 
   return (
-    <>
+    <VideoDetailContainer isNext={isGoingNext}>
       <DetailContainer ref={containerRef}>
-        <DetailPlayerContainer
-          isReady={state.videoPlayer.isReady}
-          isNext={queries.has('next')}
-        >
+        <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
           {detail && (
             <>
               <VideoPoster $src={CMS_URL + detail.video_poster?.url} />
@@ -134,13 +134,17 @@ const VideoDetail: React.VFC = () => {
             {(detail?.next && (
               <>
                 <VideoPoster $src={CMS_URL + detail.next.video_poster?.url} />
-                {/* <Player videoObject={detail.next} /> */}
                 <DetailPlayerOverlay />
               </>
             ))}
           </DetailPlayerContainer>
+
+          <MediaTitle side="R" visible={!state.isAnyMenuOpen()}>
+            {detail?.next.title}
+          </MediaTitle>
         </NextContainer>
       </DetailContainer>
+
       <MediaTitle
         ref={titleRef}
         side="R"
@@ -148,7 +152,7 @@ const VideoDetail: React.VFC = () => {
       >
         {detail?.title}
       </MediaTitle>
-    </>
+    </VideoDetailContainer>
   );
 };
 
