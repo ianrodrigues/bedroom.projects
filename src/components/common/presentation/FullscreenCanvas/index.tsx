@@ -1,5 +1,4 @@
 import React from 'react';
-import { useLocation } from 'react-router';
 
 import { useEventListener } from 'hooks';
 import { isRef } from 'services/typeguards';
@@ -8,7 +7,6 @@ import { Canvas } from './styled';
 
 
 const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref) => {
-  const location = useLocation();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
 
   function getCanvasElement(): HTMLCanvasElement | null {
@@ -42,12 +40,6 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref)
     if (canvas) {
       // Set canvas size
       setCanvasSize();
-
-      const ctx = canvas.getContext('2d');
-
-      if (ctx) {
-        ctx.imageSmoothingEnabled = false;
-      }
     }
   }, [canvasRef, ref]);
 
