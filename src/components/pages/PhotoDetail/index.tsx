@@ -12,8 +12,8 @@ import { DetailContainer } from 'common/presentation/DetailPage';
 import RowImg from './components/RowImg';
 import { FullContentContainer, NextContainer, Row } from './styled';
 
-// CBA typing
-let scroller: i.AnyObject;
+
+let scroller: VirtualScroll;
 let observers: IntersectionObserver[] = [];
 
 interface Sections {
@@ -26,6 +26,7 @@ type GoingNextPhases = false | 'starting' | 'ending';
 function useQuery(location: ReturnType<typeof useLocation>) {
   return new URLSearchParams(location.search);
 }
+
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
@@ -50,6 +51,7 @@ const PhotoDetail: React.VFC = () => {
     queries.has('next') ? 'ending' : false,
   );
 
+  // Route change transition/reset
   React.useEffect(() => {
     for (const observer of observers) {
       observer.disconnect();
@@ -83,13 +85,13 @@ const PhotoDetail: React.VFC = () => {
     setGoingNext(false);
   }, [location.pathname]);
 
+  // Scroll logic
   React.useEffect(() => {
     scroller = new VirtualScroll({
       mouseMultiplier: .3,
     });
 
-    // CBA typing
-    scroller.on((scroll: i.AnyObject) => {
+    scroller.on((scroll) => {
       // Disable scrolling past top
       if (scroll.y > 0) {
         scroll.y = 0;

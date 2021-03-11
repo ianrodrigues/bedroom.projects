@@ -13,7 +13,7 @@ import Player from './components/Player';
 import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster } from './styled';
 
 
-let scroller: i.AnyObject;
+let scroller: VirtualScroll;
 
 
 const VideoDetail: React.VFC = () => {
@@ -49,25 +49,24 @@ const VideoDetail: React.VFC = () => {
       mouseMultiplier: .3,
     });
 
-    // CBA typing
-    scroller.on((event: i.AnyObject) => {
-      if (event.y > 0) {
-        event.y = 0;
+    scroller.on((scroll) => {
+      if (scroll.y > 0) {
+        scroll.y = 0;
         scroller.__private_3_event.y = 0;
       }
 
-      if (event.y === 0) {
-        event.y = event.deltaY;
+      if (scroll.y === 0) {
+        scroll.y = scroll.deltaY;
       }
 
       if (containerRef.current) {
-        containerRef.current.style.transform = `translate3d(0px, ${event.y}px, 0px)`;
+        containerRef.current.style.transform = `translate3d(0px, ${scroll.y}px, 0px)`;
 
         if (titleRef.current) {
           const containerBounds = containerRef.current.getBoundingClientRect();
           const titleBounds = titleRef.current.getBoundingClientRect();
           const titleDistance = window.innerHeight - titleBounds.height + 30;
-          const y = (Math.abs(event.y) / containerBounds.height) * titleDistance;
+          const y = (Math.abs(scroll.y) / containerBounds.height) * titleDistance;
 
           if (y < titleDistance - titleBounds.height) {
             titleRef.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
