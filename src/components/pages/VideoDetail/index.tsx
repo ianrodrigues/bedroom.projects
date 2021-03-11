@@ -1,36 +1,46 @@
 import * as i from 'types';
 import React from 'react';
-import { useParams } from 'react-router';
+import { useHistory, useParams } from 'react-router';
 import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
+import { useQuery } from 'hooks';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
 import { getMediaObjectBySlug } from 'state/utils';
 
 import Player from './components/Player';
-import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster } from './styled';
+import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer } from './styled';
 
 
 let scroller: VirtualScroll;
 
+export type GoingNext = false | 'starting' | 'transition';
 
 const VideoDetail: React.VFC = () => {
   const state = useStore();
+  const history = useHistory();
+  const queries = useQuery();
   const params = useParams<i.DetailPageParams>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
-  const [detail, setDetail] = React.useState<i.CurNextDetails<'video'>>({
-    cur: getMediaObjectBySlug(params.slug, 'video'),
-    next: undefined,
-  });
+  const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
+  const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
+
+  // Initialise
+  React.useEffect(() => {
+    if (!detail) {
+      setDetail(getMediaObjectBySlug(params.slug, 'video'));
+    }
+  }, [state.allMedia]);
 
   React.useEffect(() => {
-    setDetail({
-      cur: getMediaObjectBySlug(params.slug, 'video'),
-      next: undefined,
-    });
+    setDetail(getMediaObjectBySlug(params.slug, 'video'));
+
+    setTimeout(() => {
+      setGoingNext(false);
+    }, 1000);
 
     if (scroller) {
       scroller.__private_3_event.y = 0;
@@ -55,11 +65,29 @@ const VideoDetail: React.VFC = () => {
         scroller.__private_3_event.y = 0;
       }
 
-      if (scroll.y === 0) {
-        scroll.y = scroll.deltaY;
+      // Lock scrolling
+      if (isGoingNext) {
+        return;
       }
 
       if (containerRef.current) {
+        const containerBounds = containerRef.current.getBoundingClientRect();
+        const VIDEO_BOTTOM_PADDING = 50;
+        const bottomEdge = containerBounds.height - window.innerHeight + VIDEO_BOTTOM_PADDING;
+
+        if (Math.abs(scroll.y) >= bottomEdge) {
+          scroll.y = -bottomEdge;
+          scroller.__private_3_event.y = -bottomEdge;
+
+          setGoingNext('starting');
+
+          setTimeout(() => {
+            history.push(`/film/${detail?.next.slug}?next=1`);
+          }, 1300);
+
+          return;
+        }
+
         containerRef.current.style.transform = `translate3d(0px, ${scroll.y}px, 0px)`;
 
         if (titleRef.current) {
@@ -78,32 +106,47 @@ const VideoDetail: React.VFC = () => {
     return function cleanup() {
       scroller.destroy();
     };
-  }, [containerRef]);
+  }, [containerRef, isGoingNext, detail]);
 
   return (
     <>
       <DetailContainer ref={containerRef}>
-        <DetailPlayerContainer isReady={state.videoPlayer.isReady}>
-          {(detail.cur && (
+        <DetailPlayerContainer
+          isReady={state.videoPlayer.isReady}
+          isNext={queries.has('next')}
+        >
+          {detail && (
             <>
-              <VideoPoster src={CMS_URL + detail.cur.video_poster?.url} />
-              <Player videoObject={detail.cur} />
+              <VideoPoster $src={CMS_URL + detail.video_poster?.url} />
+              <Player videoObject={detail} />
               <DetailPlayerOverlay />
             </>
-          ))}
+          )}
         </DetailPlayerContainer>
+
         <DescriptionContainer>
-          <div>{detail.cur?.description}</div>
-          <div>{detail.cur?.credits}</div>
+          <div>{detail?.description}</div>
+          <div>{detail?.credits}</div>
         </DescriptionContainer>
-        <div>next piece</div>
+
+        <NextContainer isGoingNext={isGoingNext}>
+          <DetailPlayerContainer>
+            {(detail?.next && (
+              <>
+                <VideoPoster $src={CMS_URL + detail.next.video_poster?.url} />
+                {/* <Player videoObject={detail.next} /> */}
+                <DetailPlayerOverlay />
+              </>
+            ))}
+          </DetailPlayerContainer>
+        </NextContainer>
       </DetailContainer>
       <MediaTitle
         ref={titleRef}
         side="R"
-        visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying}
+        visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
       >
-        {detail.cur?.title}
+        {detail?.title}
       </MediaTitle>
     </>
   );

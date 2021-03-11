@@ -1,6 +1,10 @@
 import styled, { css } from 'styled-components';
 
+import { GoingNext } from '.';
 import { PlayerContainer } from './components/Player/styled';
+
+
+const EASING = 'cubic-bezier(0, 0.55, 0.45, 1)';
 
 
 export const DescriptionContainer = styled.div`
@@ -9,7 +13,7 @@ export const DescriptionContainer = styled.div`
   grid-template-rows: 1fr;
   gap: 0px 20px;
   grid-template-areas: "description credits";
-  padding-top: 100px;
+  padding: 100px 0;
 
   div {
     color: #fff;
@@ -33,17 +37,15 @@ export const VideoPoster = styled.div<VideoPosterProps>((props) => css`
   top: 0;
   width: 100%;
   height: 100%;
-  background: url(${props.src}) no-repeat center center fixed; 
+  background: url(${props.$src}) no-repeat center center fixed; 
   background-size: cover;
   transform: translate3d(0, 150px, 0);
   pointer-events: none;
 `);
 
 interface VideoPosterProps {
-  src: string;
+  $src: string;
 }
-
-const ease = 'cubic-bezier(0, 0.55, 0.45, 1)';
 
 export const DetailPlayerContainer = styled.div<DetailPlayerContainerProps>((props) => css`
   position: relative;
@@ -54,27 +56,58 @@ export const DetailPlayerContainer = styled.div<DetailPlayerContainerProps>((pro
     opacity: 0;
   }
 
-  ${props.isReady && css`
+  ${props.isReady && css<DetailPlayerContainerProps>`
     transform: translate3d(0, 0, 0);
 
     ${DetailPlayerOverlay} {
-      transition: transform 1s ${ease};
+      ${!props.isNext && css`
+        transition: transform 600ms ${EASING};
+      `}
+
       transform: scaleY(0);
     }
 
     ${VideoPoster} {
-      transition: opacity 500ms 1.5s ${ease}, transform 1.2s ${ease};
+      ${!props.isNext && css`
+        transition: transform 600ms ${EASING}, opacity 500ms 1s ${EASING};
+      `}
+
       opacity: 0;
       transform: translate3d(0, 0, 0);
     }
 
     ${PlayerContainer} {
-      transition: opacity 1s 2.5s ${ease};
+      transition: opacity 1s 1.5s ${EASING};
       opacity: 1;
     }
   `}
 `);
 
 interface DetailPlayerContainerProps {
-  isReady: boolean;
+  isReady?: boolean;
+  isNext?: boolean;
+}
+
+export const NextContainer = styled.div<NextContainerProps>((props) => css`
+  ${VideoPoster} {
+    transform: translate3d(0, 0, 0);
+
+    ${!!props.isGoingNext && css`
+      transition: opacity 600ms 1000ms ${EASING};
+      opacity: 0;
+    `}
+  }
+
+  ${DetailPlayerOverlay} {
+    transform: scaleY(.5);
+
+    ${!!props.isGoingNext && css`
+      transition: transform 600ms ease-in-out;
+      transform: scaleY(0);
+    `}
+  }
+`);
+
+interface NextContainerProps {
+  isGoingNext?: GoingNext;
 }

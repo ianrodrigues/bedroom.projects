@@ -5,6 +5,7 @@ import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
+import { useQuery } from 'hooks';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
@@ -23,17 +24,13 @@ interface Sections {
 
 type GoingNextPhases = false | 'starting' | 'ending';
 
-function useQuery(location: ReturnType<typeof useLocation>) {
-  return new URLSearchParams(location.search);
-}
-
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
   const params = useParams<i.DetailPageParams>();
   const history = useHistory();
   const location = useLocation();
-  const queries = useQuery(location);
+  const queries = useQuery();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const headRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
