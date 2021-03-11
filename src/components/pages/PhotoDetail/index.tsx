@@ -51,6 +51,13 @@ const PhotoDetail: React.VFC = () => {
     queries.has('next') ? 'ending' : false,
   );
 
+  // Initialise
+  React.useEffect(() => {
+    if (!detail) {
+      setDetail(getMediaObjectBySlug(params.slug, 'photo'));
+    }
+  }, [state.allMedia]);
+
   // Route change transition/reset
   React.useEffect(() => {
     for (const observer of observers) {
