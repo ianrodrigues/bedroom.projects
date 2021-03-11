@@ -45,7 +45,7 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
         state.videoPlayer.setPlaying(false);
       }
     }, {
-      threshold: .25,
+      threshold: .33,
     });
 
     observer.observe(video);
@@ -54,7 +54,7 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((_props, ref) => {
       video.removeEventListener('timeupdate', props.onTimeUpdate);
       observer.disconnect();
     };
-  }, [ref]);
+  }, [ref, state.videoPlayer.isPlaying]);
 
   return (
     <Video
