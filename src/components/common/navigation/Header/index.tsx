@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 
 import useStore from 'state';
 
-import { HeaderContainer, List, ListItem, Nav, H2, NavContainer } from './styled';
+import { HeaderContainer, List, ListItem, Nav, H2, NavContainer, HomeLink, HomeLinkContainer } from './styled';
 
 
 const Header: React.VFC = () => {
@@ -70,6 +70,10 @@ const Header: React.VFC = () => {
             ))}
           </List>
         </NavContainer>
+
+        <HomeLinkContainer>
+          <HomeLink to="/">bedroom</HomeLink>
+        </HomeLinkContainer>
 
         <NavContainer
           isOpen={state.isMenuOpen.R}

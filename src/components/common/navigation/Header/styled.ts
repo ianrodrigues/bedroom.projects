@@ -1,4 +1,6 @@
 import styled, { css } from 'styled-components';
+import { Link } from 'react-router-dom';
+
 
 export const HeaderContainer = styled.header`
   position: absolute;
@@ -11,7 +13,9 @@ export const HeaderContainer = styled.header`
 export const Nav = styled.nav`
   position: relative;
   z-index: 2;
-  display: flex;
+  display: grid;
+  grid-template-columns: 33% 33% 33%;
+  grid-template-rows: 1fr;
   justify-content: space-between;
   max-width: 1600px;
   margin: 0 auto;
@@ -90,4 +94,19 @@ export const H2 = styled.h2`
   margin: 0;
   padding: 0;
   color: #fff;
+`;
+
+export const HomeLinkContainer = styled.div`
+  display: flex;
+  justify-content: center;
+`;
+
+export const HomeLink = styled(Link)`
+  display: block;
+  margin: 0 auto;
+  font-size: 30px;
+  color: #fff;
+  text-decoration: none;
+  mix-blend-mode: difference;
+  font-family: 'Caveat Brush', sans-serif;  
 `;
