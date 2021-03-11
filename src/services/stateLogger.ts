@@ -10,7 +10,11 @@ export const log = (config: StateCreator<i.AppState>) => (
   if (__DEV__) {
     // eslint-disable-next-line no-console
     console.log('  applying', args);
-    set(args);
+  }
+
+  set(args);
+
+  if (__DEV__) {
     // eslint-disable-next-line no-console
     console.log('  new state', get());
   }

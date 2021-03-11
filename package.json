@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && NODE_ENV=production APP_ENV=production vite build",
     "serve": "vite preview",
     "postinstall": "npx patch-package",
     "typecheck": "tsc",
