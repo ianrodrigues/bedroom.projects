@@ -19,6 +19,7 @@ const Player: React.VFC<Props> = (props) => {
     height: 0,
   });
 
+  // Reset player
   React.useEffect(() => {
     setControlsDimensions({
       width: 0,
@@ -26,10 +27,18 @@ const Player: React.VFC<Props> = (props) => {
     });
 
     state.videoPlayer.setReady(false);
+    state.videoPlayer.setPlaying(false);
   }, [location.pathname]);
 
+  // Video element events
   React.useEffect(() => {
-    videoRef.current?.addEventListener('loadstart', function () {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
+    }
+
+    video.addEventListener('loadstart', function () {
       setControlsDimensions({
         width: this.clientWidth,
         height: this.clientHeight,
@@ -41,25 +50,59 @@ const Player: React.VFC<Props> = (props) => {
       }, 1000);
     });
 
-    videoRef.current?.addEventListener('playing', function () {
+    video.addEventListener('playing', function () {
+      state.videoPlayer.setPlaying(true);
+
       setControlsDimensions({
         width: this.clientWidth,
         height: this.clientHeight,
       });
     });
-  }, [videoRef]);
 
-  React.useEffect(() => {
-    if (state.videoPlayer.isReady && !state.videoPlayer.isPlaying) {
+    video.addEventListener('canplay', function () {
       setTimeout(() => {
         state.videoPlayer.setPlaying(true);
-      }, 3500);
+      }, 2200);
+    });
+
+    // Add intersection to pause video
+    const observer = new IntersectionObserver((entries, obs) => {
+      const entry = entries[0];
+
+      if (!entry) return;
+
+      if (!entry.isIntersecting && state.videoPlayer.isPlaying) {
+        state.videoPlayer.setPlaying(false);
+      }
+    }, {
+      threshold: .33,
+    });
+
+    observer.observe(video);
+
+    return function cleanup() {
+      observer.disconnect();
+    };
+  }, [videoRef]);
+
+  // Play/pause state
+  React.useEffect(() => {
+    const video = videoRef.current;
+
+    if (!video) {
+      return;
     }
-  }, [state.videoPlayer.isReady]);
+
+    if (video.paused && state.videoPlayer.isPlaying) {
+      video.play();
+    } else if (!video.paused && !state.videoPlayer.isPlaying) {
+      video.pause();
+    }
+  }, [state.videoPlayer.isPlaying]);
 
   return (
     <PlayerContainer id="player-container">
-      <PlayerControls {...controlsDimensions}>
+      <PlayerControls videoRef={videoRef} {...controlsDimensions}>
         <Display ref={videoRef} videoObject={props.videoObject} />
       </PlayerControls>
     </PlayerContainer>

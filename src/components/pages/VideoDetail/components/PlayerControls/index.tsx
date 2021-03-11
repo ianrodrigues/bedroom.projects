@@ -23,6 +23,19 @@ const PlayerControls: React.FC<Props> = (props) => {
     state.videoPlayer.setPlaying(false);
   }, [location.pathname]);
 
+  React.useEffect(() => {
+    if (!props.videoRef?.current) {
+      return;
+    }
+
+    const video = props.videoRef.current;
+    video.addEventListener('timeupdate', onTimeUpdate);
+
+    return function cleanup() {
+      video.removeEventListener('timeupdate', onTimeUpdate);
+    };
+  }, [props.videoRef]);
+
   function onPlayPauseClick() {
     if (state.videoPlayer.isPlaying) {
       state.videoPlayer.setPlaying(false);
@@ -57,8 +70,7 @@ const PlayerControls: React.FC<Props> = (props) => {
 
   return (
     <PlayerControlsContainer>
-      {React.cloneElement(props.children, { onTimeUpdate })}
-
+      {props.children}
       {props.width != null && props.width > 0 && (
         <ControlsGridContainer>
           <ControlsGrid maxWidth={props.width}>
@@ -83,6 +95,7 @@ const PlayerControls: React.FC<Props> = (props) => {
 export type Props = {
   width?: number;
   height?: number;
+  videoRef?: React.RefObject<HTMLVideoElement>;
   children: React.ReactElement;
 };
 
