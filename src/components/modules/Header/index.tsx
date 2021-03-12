@@ -1,10 +1,14 @@
 import * as i from 'types';
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, Route, useLocation } from 'react-router-dom';
 
 import useStore from 'state';
 
-import { HeaderContainer, List, ListItem, Nav, H2, NavContainer, HomeLink, HomeLinkContainer } from './styled';
+import HomeLink from './components/HomeLink';
+import GridLink from './components/GridLink';
+import {
+  HeaderContainer, List, ListItem, Nav, H2, NavContainer, HomeGridLinkContainer,
+} from './styled';
 
 
 const Header: React.VFC = () => {
@@ -52,9 +56,7 @@ const Header: React.VFC = () => {
           onMouseEnter={() => onMouseEnterNav('container', 'L')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2
-            onMouseEnter={() => onMouseEnterNav('title', 'L')}
-          >
+          <H2 onMouseEnter={() => onMouseEnterNav('title', 'L')}>
             Photo
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
@@ -71,18 +73,17 @@ const Header: React.VFC = () => {
           </List>
         </NavContainer>
 
-        <HomeLinkContainer>
-          <HomeLink to="/">bedroom</HomeLink>
-        </HomeLinkContainer>
+        <HomeGridLinkContainer>
+          <Route path={['/', '/grid']} exact component={GridLink} />
+          <HomeLink />
+        </HomeGridLinkContainer>
 
         <NavContainer
           isOpen={state.isMenuOpen.R}
           onMouseEnter={() => onMouseEnterNav('container', 'R')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2
-            onMouseEnter={() => onMouseEnterNav('title', 'R')}
-          >
+          <H2 onMouseEnter={() => onMouseEnterNav('title', 'R')}>
             Film
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>

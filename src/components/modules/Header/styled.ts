@@ -1,5 +1,4 @@
 import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
 
 
 export const HeaderContainer = styled.header<HeaderContainerProps>`
@@ -116,17 +115,7 @@ export const H2 = styled.h2`
   color: #fff;
 `;
 
-export const HomeLinkContainer = styled.div`
+export const HomeGridLinkContainer = styled.div`
   display: flex;
   justify-content: center;
-`;
-
-export const HomeLink = styled(Link)`
-  display: block;
-  margin: 0 auto;
-  font-size: 30px;
-  color: #fff;
-  text-decoration: none;
-  mix-blend-mode: difference;
-  font-family: 'Caveat Brush', sans-serif;  
 `;

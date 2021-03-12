@@ -5,7 +5,7 @@ import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'rea
 import useStore from 'state';
 import GlobalStyle from 'styles';
 
-import Header from 'common/navigation/Header';
+import Header from 'modules/Header';
 import RenderCanvas from 'common/presentation/RenderCanvas';
 
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
