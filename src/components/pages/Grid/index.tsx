@@ -76,6 +76,33 @@ const Grid: React.VFC<Props> = () => {
     }
   }
 
+  function renderGrid() {
+    return combinedMedia.current && combinedMedia.current.map((media) => {
+      const linkPrefix = isStatePhotoObject(media) ? 'photos' : 'film';
+      const previewUrl = isStatePhotoObject(media)
+        ? media.media_cover.formats?.small.url
+        : media.video_poster.formats.small.url;
+      let visible = false;
+
+      if (
+        !filtered ||
+        (linkPrefix === 'photos' && filtered === 'photo') ||
+        (linkPrefix === 'film' && filtered === 'video')
+      ) {
+        visible = true;
+      }
+
+      return (
+        <GridTile key={media.id} visible={visible}>
+          <Link to={`${linkPrefix}/${media.slug}`}>
+            <Figure src={CMS_URL + previewUrl} />
+            <Title>{media.title}</Title>
+          </Link>
+        </GridTile>
+      );
+    });
+  }
+
   return (
     <GridPageContainer ref={containerRef}>
       <FilterContainer>
@@ -88,30 +115,7 @@ const Grid: React.VFC<Props> = () => {
       </FilterContainer>
 
       <GridContainer>
-        {combinedMedia.current && combinedMedia.current.map((media) => {
-          const linkPrefix = isStatePhotoObject(media) ? 'photos' : 'film';
-          const previewUrl = isStatePhotoObject(media)
-            ? media.media_cover.formats?.small.url
-            : media.video_poster.formats.small.url;
-          let visible = false;
-
-          if (
-            !filtered ||
-            (linkPrefix === 'photos' && filtered === 'photo') ||
-            (linkPrefix === 'film' && filtered === 'video')
-          ) {
-            visible = true;
-          }
-
-          return (
-            <GridTile key={media.id} visible={visible}>
-              <Link to={`${linkPrefix}/${media.slug}`}>
-                <Figure src={CMS_URL + previewUrl} />
-                <Title>{media.title}</Title>
-              </Link>
-            </GridTile>
-          );
-        })}
+        {renderGrid()}
       </GridContainer>
     </GridPageContainer>
   );
