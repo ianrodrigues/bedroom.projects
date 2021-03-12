@@ -11,7 +11,7 @@ import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
 import RowImg from './components/RowImg';
-import { FullContentContainer, NextContainer, Row } from './styled';
+import { PhotoDetailContainer, FullContentContainer, NextContainer, Row } from './styled';
 
 
 let scroller: VirtualScroll;
@@ -294,7 +294,7 @@ const PhotoDetail: React.VFC = () => {
   }, [sections]);
 
   return (
-    <>
+    <PhotoDetailContainer>
       <DetailContainer ref={containerRef}>
         {sections.head && (
           <div ref={headRef}>
@@ -351,10 +351,11 @@ const PhotoDetail: React.VFC = () => {
         ref={titleRef}
         side="L"
         visible={!state.isAnyMenuOpen()}
+        autoHide
       >
         {isGoingNext ? detail?.next.title : detail?.title}
       </MediaTitle>
-    </>
+    </PhotoDetailContainer>
   );
 };
 

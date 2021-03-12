@@ -150,6 +150,7 @@ const VideoDetail: React.VFC = () => {
         ref={titleRef}
         side="R"
         visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
+        autoHide
       >
         {detail?.title}
       </MediaTitle>

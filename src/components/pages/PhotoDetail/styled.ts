@@ -5,6 +5,12 @@ import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
 import { ImgContainer } from './components/RowImg/styled';
 
 
+export const PhotoDetailContainer = styled.div`
+  ${MediaTitleContainer} h3 {
+    transition: opacity 300ms;
+  }
+`;
+
 export const Row = styled.div<RowProps>((props) => css`
   display: flex;
   flex-direction: row;

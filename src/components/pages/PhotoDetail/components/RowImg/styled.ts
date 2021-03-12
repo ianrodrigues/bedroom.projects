@@ -7,7 +7,7 @@ export const ImgContainer = styled.div.attrs({
 })<ImgContainerProps>((props) => css`
   box-sizing: border-box;
   flex: 0 0 auto;
-  padding: ${Math.floor(window.innerHeight * .3)}px 20px 0;
+  padding: ${Math.floor(window.innerHeight * .3)}px 0 0;
   flex-basis: 50%;
   max-width: 50%;
   opacity: 0;
