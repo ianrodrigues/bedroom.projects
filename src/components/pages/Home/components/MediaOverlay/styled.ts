@@ -21,6 +21,7 @@ export const Name = styled.h1<NameProps>((props) => `
   font-size: 150px;
   opacity: 1;
   transition: opacity 500ms;
+  user-select: none;
 
   ${!props.show && css`
     opacity: 0;

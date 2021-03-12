@@ -9,6 +9,8 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
   right: 0;
   margin: auto;
   height: 0;
+  cursor: default;
+  user-select: none;
 
   nav {
     height: 50px;
