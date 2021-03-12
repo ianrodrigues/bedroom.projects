@@ -52,8 +52,23 @@ const Seekbar: React.VFC<Props> = (props) => {
     return `${minutes}:${seconds}`;
   }
 
+  function handleClick(e: React.MouseEvent) {
+    const video = props.videoRef?.current;
+    if (!video) {
+      return;
+    }
+
+    const bounds = e.currentTarget.getBoundingClientRect();
+    const { left, width } = bounds;
+    const clickX = e.pageX - left;
+    const prct = clickX / width;
+    const time = prct * video.duration;
+
+    video.currentTime = time;
+  }
+
   return (
-    <SeekbarContainer>
+    <SeekbarContainer onClick={handleClick}>
       <SeekbarTimeIndicator progress={progress * 100}>
         {getTimestamp()}
       </SeekbarTimeIndicator>
