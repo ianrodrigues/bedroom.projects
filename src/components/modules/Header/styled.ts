@@ -110,6 +110,7 @@ export const ListItem = styled.li`
 `;
 
 export const H2 = styled.h2`
+  display: inline-block;
   margin: 0;
   padding: 0;
   color: #fff;
