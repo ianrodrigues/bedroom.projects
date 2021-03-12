@@ -7,7 +7,9 @@ import VirtualScroll from 'virtual-scroll';
 import useStore from 'state';
 import { isStatePhotoObject } from 'services/typeguards';
 
-import { Figure, FilterContainer, GridContainer, GridPageContainer, GridTile, Title } from './styled';
+import {
+  Figure, FilterContainer, GridContainer, GridPageContainer, GridTile, Title, FilterButton,
+} from './styled';
 
 
 let scroller: VirtualScroll;
@@ -17,6 +19,7 @@ const Grid: React.VFC<Props> = () => {
   const state = useStore();
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
 
   React.useEffect(() => {
     if (!state.allMedia) {
@@ -65,11 +68,23 @@ const Grid: React.VFC<Props> = () => {
     };
   }, []);
 
+  function toggleFilter(type: i.MediaType) {
+    if (filtered === type) {
+      setFiltered(false);
+    } else {
+      setFiltered(type);
+    }
+  }
+
   return (
     <GridPageContainer ref={containerRef}>
       <FilterContainer>
-        <button>Photos ({state.allMedia?.photo.length})</button>
-        <button>Films ({state.allMedia?.video.length})</button>
+        <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
+          Photos ({state.allMedia?.photo.length})
+        </FilterButton>
+        <FilterButton onClick={() => toggleFilter('video')} toggled={filtered === 'video'}>
+          Films ({state.allMedia?.video.length})
+        </FilterButton>
       </FilterContainer>
 
       <GridContainer>
@@ -78,9 +93,18 @@ const Grid: React.VFC<Props> = () => {
           const previewUrl = isStatePhotoObject(media)
             ? media.media_cover.formats?.small.url
             : media.video_poster.formats.small.url;
+          let visible = false;
+
+          if (
+            !filtered ||
+            (linkPrefix === 'photos' && filtered === 'photo') ||
+            (linkPrefix === 'film' && filtered === 'video')
+          ) {
+            visible = true;
+          }
 
           return (
-            <GridTile key={media.id}>
+            <GridTile key={media.id} visible={visible}>
               <Link to={`${linkPrefix}/${media.slug}`}>
                 <Figure src={CMS_URL + previewUrl} />
                 <Title>{media.title}</Title>

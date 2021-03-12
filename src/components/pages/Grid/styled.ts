@@ -22,7 +22,9 @@ export const GridContainer = styled.div`
   max-width: 1600px;
 `;
 
-export const GridTile = styled.div`
+export const GridTile = styled.div<GridTileProps>((props) => css`
+  opacity: 0;
+  pointer-events: none;
   transition: opacity 200ms;
 
   a {
@@ -37,7 +39,16 @@ export const GridTile = styled.div`
   &:hover {
     opacity: .75;
   }
-`;
+
+  ${props.visible && css`
+    pointer-events: auto;
+    opacity: 1;
+  `}
+`);
+
+interface GridTileProps {
+  visible?: boolean;
+}
 
 export const Figure = styled.figure<FigureProps>((props) => css`
   margin: 0;
@@ -71,23 +82,31 @@ export const FilterContainer = styled.div`
   justify-content: center;
   width: 100%;
   padding-bottom: 30px;
-
-  button {
-    margin: 0;
-    padding: 0;
-    color: #aaa;
-    background: none;
-    border: 0;
-    font-size: 20px;
-    cursor: pointer;
-    transition: color 200ms;
-
-    &:first-child {
-      margin-right: 10px;
-    }
-
-    &:hover {
-      color: #fff;
-    }
-  }
 `;
+
+export const FilterButton = styled.button<FilterButtonProps>((props) => css`
+  margin: 0;
+  padding: 0;
+  color: #aaa;
+  background: none;
+  border: 0;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 200ms;
+
+  &:first-child {
+    margin-right: 10px;
+  }
+
+  &:hover {
+    color: #ddd;
+  }
+
+  ${props.toggled && css`
+    color: #fff !important;
+  `}
+`);
+
+interface FilterButtonProps {
+  toggled?: boolean;
+}
