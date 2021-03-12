@@ -15,7 +15,6 @@ export const GridToggleContainer = styled.button<GridToggleContainerProps>((prop
   
   ${props.isGrid && css`
     transform: rotate(-90deg);
-    transition: .5s cubic-bezier(.19, 1, .22, 1);
   `}
 
   span:nth-child(1) {

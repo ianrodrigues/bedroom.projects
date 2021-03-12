@@ -11,6 +11,7 @@ import { Name } from 'common/presentation/Name';
 
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
+const Grid = React.lazy(() => import('pages/Grid'));
 
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
@@ -53,6 +54,7 @@ const App: React.VFC<RouteComponentProps> = () => {
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
           <Route path="/film/:slug" component={VideoDetail} />
+          <Route path="/grid" component={Grid} />
         </Switch>
       </React.Suspense>
     </main>

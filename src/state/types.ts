@@ -181,4 +181,5 @@ export interface StatePhotoObject extends APIPhotosObject {
 
 export interface StateVideoObject extends APIMediaObject {
   next: APIMediaObject;
+  video_poster: PhotoMedia;
 }
