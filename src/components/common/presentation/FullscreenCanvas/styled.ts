@@ -7,10 +7,10 @@ export const Canvas = styled.canvas<CanvasProps>((props) => css`
   left: 0;
   z-index: 1;
   opacity: 0;
-  transform: scale(.97);
+  transform: scale(.95);
   background-color: #000;
   pointer-events: none;
-  transition: opacity 400ms, transform 400ms;
+  transition: opacity 400ms, transform 400ms ease-out;
 
   ${props.show && `
     opacity: 1;
