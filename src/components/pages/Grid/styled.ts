@@ -1,14 +1,31 @@
 import styled, { css } from 'styled-components';
 
 
-export const GridPageContainer = styled.div`
+export const GridPageContainer = styled.div<GridPageContainerProps>((props) => css`
   position: absolute;
   top: 105px;
   left: 20px;
   right: 20px;
   margin: auto;
   padding: 0;
-`;
+
+  > div {
+    opacity: 0;
+    transform: translate3d(0, 25px, 0);
+    transition: 500ms ease-out;
+  }
+
+  ${props.fadeIn && css`
+    > div {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  `}
+`);
+
+interface GridPageContainerProps {
+  fadeIn?: boolean;
+}
 
 export const GridContainer = styled.div`
   display: grid;

@@ -20,6 +20,7 @@ const Grid: React.VFC<Props> = () => {
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
+  const [fadeIn, setFadeIn] = React.useState(false);
 
   React.useEffect(() => {
     if (!state.allMedia) {
@@ -27,6 +28,10 @@ const Grid: React.VFC<Props> = () => {
     }
 
     combinedMedia.current = [...state.allMedia.photo, ...state.allMedia.video];
+
+    setTimeout(() => {
+      setFadeIn(true);
+    }, 750);
   }, [state.allMedia]);
 
   React.useEffect(() => {
@@ -104,7 +109,7 @@ const Grid: React.VFC<Props> = () => {
   }
 
   return (
-    <GridPageContainer ref={containerRef}>
+    <GridPageContainer ref={containerRef} fadeIn={fadeIn}>
       <FilterContainer>
         <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
           Photos ({state.allMedia?.photo.length})
