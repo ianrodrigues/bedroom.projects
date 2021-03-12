@@ -7,6 +7,7 @@ import GlobalStyle from 'styles';
 
 import Header from 'modules/Header';
 import RenderCanvas from 'common/presentation/RenderCanvas';
+import { Name } from 'common/presentation/Name';
 
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
@@ -20,6 +21,12 @@ const App: React.VFC<RouteComponentProps> = () => {
 
   React.useEffect(() => {
     setIsHomepage(location.pathname === '/');
+
+    if (['/', '/grid'].includes(location.pathname)) {
+      state.setShowName(true);
+    } else {
+      state.setShowName(false);
+    }
   }, [location.pathname]);
 
   React.useEffect(() => {
@@ -41,6 +48,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       <GlobalStyle />
       <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
       <Header />
+      <Name show={state.showName}>bedroom</Name>
       <React.Suspense fallback={<div />}>
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
