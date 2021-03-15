@@ -44,62 +44,61 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   const prevSideSize = usePrevious(sizeData);
 
   // Omega ugly but works for now :)
-  const mediaTransition = React.useCallback(
-    (ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) => {
-      if (!state.photo || !state.video) {
-        return;
-      }
+  function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
+    if (!state.photo || !state.video) {
+      return;
+    }
 
-      const collection = mediaType === 'photo' ? photos : videos;
-      const media = mediaType === 'photo' ? photos[state.photo.id] : videos[state.video.id];
-      const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
+    const collection = mediaType === 'photo' ? photos : videos;
+    const media = mediaType === 'photo' ? photos[state.photo.id] : videos[state.video.id];
+    const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
 
-      if (!media) {
-        return;
-      }
+    if (!media) {
+      return;
+    }
 
-      if (transitionStartTime === 0 && prevMedia!.id !== media.id) {
-        transitionStartTime = timestamp;
-      }
+    if (transitionStartTime === 0 && prevMedia!.id !== media.id) {
+      transitionStartTime = timestamp;
+    }
 
-      if (transitionStartTime > 0) {
-        const duration = .4;
-        const runtime = timestamp - transitionStartTime;
-        const relativeProgress = Math.min(runtime / duration, 1);
-        const alpha1 = 1 - relativeProgress;
-        const alpha2 = relativeProgress;
+    if (transitionStartTime > 0) {
+      const duration = .4;
+      const runtime = timestamp - transitionStartTime;
+      const relativeProgress = Math.min(runtime / duration, 1);
+      const alpha1 = 1 - relativeProgress;
+      const alpha2 = relativeProgress;
 
-        ctx.globalAlpha = alpha1;
+      ctx.globalAlpha = alpha1;
 
-        if (mediaType === 'video') {
-          drawCoverFitVideo(
-            ctx,
-            collection[prevMedia!.id]!.element as HTMLVideoElement,
-          );
-        } else {
-          let width = Math.min(dividerPos, window.innerWidth);
+      if (mediaType === 'video') {
+        drawCoverFitVideo(
+          ctx,
+          collection[prevMedia!.id]!.element as HTMLVideoElement,
+        );
+      } else {
+        let width = Math.min(dividerPos, window.innerWidth);
 
-          if (props.fullscreen === 'photo') {
-            width = window.innerWidth;
-          }
-
-          drawCoverFitImage(
-            ctx,
-            collection[prevMedia!.id]!.element as HTMLImageElement,
-            width,
-            ctx.canvas.height,
-          );
+        if (props.fullscreen === 'photo') {
+          width = window.innerWidth;
         }
 
-        ctx.globalAlpha = alpha2;
-
-        if (relativeProgress === 1) {
-          transitionStartTime = 0;
-          prevVideo = undefined;
-          prevPhoto = undefined;
-        }
+        drawCoverFitImage(
+          ctx,
+          collection[prevMedia!.id]!.element as HTMLImageElement,
+          width,
+          ctx.canvas.height,
+        );
       }
-    }, [state.photo, state.video]);
+
+      ctx.globalAlpha = alpha2;
+
+      if (relativeProgress === 1) {
+        transitionStartTime = 0;
+        prevVideo = undefined;
+        prevPhoto = undefined;
+      }
+    }
+  }
 
   useAnimationFrame(((animProps) => {
     const timestamp = animProps.time;
@@ -192,7 +191,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   }), [sizeData, state.photo, state.video, props.fullscreen, props.show]);
 
   // Add mouseover events
-  useEventListener('mousemove', React.useCallback((e: MouseEvent) => {
+  useEventListener('mousemove', (e: MouseEvent) => {
     if (props.fullscreen) {
       return;
     }
@@ -217,7 +216,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         R: null,
       });
     }
-  }, [setSizeData, state.isFullscreen, location.pathname]));
+  });
 
   React.useEffect(() => {
     if (location.pathname !== '/') {

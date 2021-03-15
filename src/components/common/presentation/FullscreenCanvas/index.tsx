@@ -22,14 +22,14 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref)
   }
 
   // Add window resize events
-  const setCanvasSize = React.useCallback(() => {
+  function setCanvasSize() {
     const canvas = getCanvasElement();
 
     if (canvas) {
       canvas.width = window.innerWidth;
       canvas.height = props.height || window.innerHeight;
     }
-  }, []);
+  }
 
   useEventListener('resize', setCanvasSize);
 
