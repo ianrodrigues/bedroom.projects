@@ -1,14 +1,24 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
 
-export const SeekbarContainer = styled.div`
+export const SeekbarContainer = styled.div<SeekbarContainerProps>((props) => css`
   grid-area: seekbar;
   position: relative;
   width: 100%;
   height: 5px;
   background-color: #2d2b2b;
   mix-blend-mode: difference;
-`;
+  opacity: 0;
+  transition: opacity 300ms;
+
+  ${props.visible && css`
+    opacity: 1;
+  `}
+`);
+
+interface SeekbarContainerProps {
+  visible?: boolean;
+}
 
 export const SeekbarInner = styled.div.attrs<ProgressProps>((props) => ({
   style: {

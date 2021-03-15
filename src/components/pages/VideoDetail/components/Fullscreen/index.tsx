@@ -11,7 +11,7 @@ const Fullscreen: React.VFC<Props> = (props) => {
   }
 
   return (
-    <FullscreenButton onClick={handleClick}>
+    <FullscreenButton onClick={handleClick} visible={props.visible}>
       <FullscreenSvg />
     </FullscreenButton>
   );
@@ -19,6 +19,7 @@ const Fullscreen: React.VFC<Props> = (props) => {
 
 export type Props = {
   videoRef?: React.RefObject<HTMLVideoElement>;
+  visible?: boolean;
 };
 
 export default Fullscreen;

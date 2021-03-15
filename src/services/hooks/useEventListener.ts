@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 
 export function useEventListener<K extends keyof HTMLElementEventMap>(
   eventName: K,
-  handler: (e: HTMLElementEventMap[K]) => void, element: HTMLElement | Window = window,
+  handler: (e: HTMLElementEventMap[K]) => void,
+  element: HTMLElement | Window | null = window,
 ): void {
   // Create a ref that stores handler
   const savedHandler = useRef<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -24,11 +25,11 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
     const eventListener = (event: any) => savedHandler.current(event); // eslint-disable-line @typescript-eslint/no-explicit-any
 
     // Add event listener
-    element.addEventListener(eventName, eventListener);
+    element?.addEventListener(eventName, eventListener);
 
     // Remove event listener on cleanup
     return () => {
-      element.removeEventListener(eventName, eventListener);
+      element?.removeEventListener(eventName, eventListener);
     };
   }, [eventName, element]); // Re-run if eventName or element changes
 }

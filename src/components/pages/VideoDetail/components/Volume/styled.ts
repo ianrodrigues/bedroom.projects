@@ -1,13 +1,23 @@
 import styled, { css } from 'styled-components';
 
 
-export const VolumeContainer = styled.button`
+export const VolumeContainer = styled.button<VolumeContainerProps>((props) => css`
   display: flex;
   align-items: flex-end;
   height: 17px;
   mix-blend-mode: difference;
   cursor: pointer;
-`;
+  opacity: 0;
+  transition: opacity 300ms;
+
+  ${props.visible && css`
+    opacity: 1;
+  `}
+`);
+
+interface VolumeContainerProps {
+  visible?: boolean;
+}
 
 export const VolumeBar = styled.span<VolumeBarProps>((props) => css`
   height: 100%;

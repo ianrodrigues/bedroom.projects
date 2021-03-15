@@ -16,7 +16,7 @@ const Volume: React.VFC<Props> = (props) => {
     props.videoRef.current.addEventListener('volumechange', handleVolumeChange);
 
     return function cleanup() {
-      props.videoRef!.current!.removeEventListener('volumechange', handleVolumeChange);
+      props.videoRef?.current?.removeEventListener('volumechange', handleVolumeChange);
     };
   }, [props.videoRef]);
 
@@ -38,7 +38,7 @@ const Volume: React.VFC<Props> = (props) => {
   }
 
   return (
-    <VolumeContainer ref={containerRef} onClick={handleClick}>
+    <VolumeContainer ref={containerRef} onClick={handleClick} visible={props.visible}>
       {Array.from({ length: NUM_BARS }).map((_, i) => (
         <VolumeBar key={i} active={volume * NUM_BARS >= i} />
       ))}
@@ -48,6 +48,7 @@ const Volume: React.VFC<Props> = (props) => {
 
 export type Props = {
   videoRef?: React.RefObject<HTMLVideoElement>;
+  visible?: boolean;
 };
 
 export default Volume;

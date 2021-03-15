@@ -1,15 +1,11 @@
 import styled, { css } from 'styled-components';
 
 
-export const PlayerControlsContainer = styled.div<PlayerControlsContainerProps>((props) => css`
+export const PlayerControlsContainer = styled.div`
   position: relative;
   width: 100%;
   height: ${window.innerHeight - 50}px;
-`);
-
-interface PlayerControlsContainerProps {
-  $height?: number;
-}
+`;
 
 export const ControlsGridContainer = styled.div`
   position: absolute;
@@ -18,6 +14,7 @@ export const ControlsGridContainer = styled.div`
   margin: auto;
   width: 100%;
   height: 100%;
+  opacity: 1;
 `;
 
 export const ControlsGrid = styled.div<ControlsGridProps>((props) => css`
@@ -48,11 +45,13 @@ export const VideoArea = styled.div`
   height: 100%;
 `;
 
-export const PlayPauseIcon = styled.button`
+export const PlayPauseIcon = styled.button<PlayPauseIconProps>((props) => css`
   grid-area: play;
   height: 15px;
   mix-blend-mode: difference;
   cursor: pointer;
+  opacity: 0;
+  transition: opacity 300ms;
 
   svg {
     position: relative;
@@ -62,4 +61,12 @@ export const PlayPauseIcon = styled.button`
       fill: #fff;
     }
   }
-`;
+
+  ${props.visible && css`
+    opacity: 1;
+  `}
+`);
+
+interface PlayPauseIconProps {
+  visible?: boolean;
+}

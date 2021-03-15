@@ -68,7 +68,7 @@ const Seekbar: React.VFC<Props> = (props) => {
   }
 
   return (
-    <SeekbarContainer onClick={handleClick}>
+    <SeekbarContainer onClick={handleClick} visible={props.visible}>
       <SeekbarTimeIndicator progress={progress * 100}>
         {getTimestamp()}
       </SeekbarTimeIndicator>
@@ -79,6 +79,7 @@ const Seekbar: React.VFC<Props> = (props) => {
 
 export type Props = {
   videoRef?: React.RefObject<HTMLVideoElement>;
+  visible?: boolean;
 };
 
 export default Seekbar;
