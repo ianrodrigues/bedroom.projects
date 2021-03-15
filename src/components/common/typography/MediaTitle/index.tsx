@@ -9,7 +9,7 @@ let timeoutId = -1;
 const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
   const [show, setShow] = React.useState(true);
 
-  function handleShow() {
+  function handleAutoHide() {
     if (!props.autoHide) {
       return;
     }
@@ -23,11 +23,11 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
 
   function handleMouseMove() {
     setShow(true);
-    handleShow();
+    handleAutoHide();
   }
 
   React.useEffect(() => {
-    handleShow();
+    handleAutoHide();
 
     if (props.autoHide) {
       document.addEventListener('wheel', handleMouseMove);
@@ -37,6 +37,13 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
       document.removeEventListener('wheel', handleMouseMove);
     };
   }, []);
+
+  React.useEffect(() => {
+    if (props.visible) {
+      setShow(true);
+      handleAutoHide();
+    }
+  }, [props.visible]);
 
   return (
     <MediaTitleContainer>
