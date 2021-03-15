@@ -30,6 +30,13 @@ const globalStyle = createGlobalStyle`
     box-sizing: border-box;
     font-family: sans-serif;
   }
+
+  button {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
 `;
 
 export default globalStyle;

@@ -5,6 +5,7 @@ import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
 
 import Seekbar from '../Seekbar';
+import Volume from '../Volume';
 import {
   ControlsGridContainer, ControlsGrid, PlayerControlsContainer, PlayPauseIcon, VideoArea,
 } from './styled';
@@ -35,6 +36,8 @@ const PlayerControls: React.FC<Props> = (props) => {
             </PlayPauseIcon>
 
             <Seekbar videoRef={props.videoRef} />
+
+            <Volume videoRef={props.videoRef} />
           </ControlsGrid>
         </ControlsGridContainer>
       )}
