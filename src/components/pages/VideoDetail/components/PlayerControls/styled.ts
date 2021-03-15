@@ -48,10 +48,11 @@ export const VideoArea = styled.div`
   height: 100%;
 `;
 
-export const PlayPauseIcon = styled.div`
+export const PlayPauseIcon = styled.button`
   grid-area: play;
   height: 15px;
   mix-blend-mode: difference;
+  cursor: pointer;
 
   svg {
     position: relative;

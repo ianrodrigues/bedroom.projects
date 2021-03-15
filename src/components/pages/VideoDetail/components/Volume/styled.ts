@@ -3,9 +3,10 @@ import styled, { css } from 'styled-components';
 
 export const VolumeContainer = styled.button`
   display: flex;
+  align-items: flex-end;
   height: 17px;
   mix-blend-mode: difference;
-  align-items: flex-end;
+  cursor: pointer;
 `;
 
 export const VolumeBar = styled.span<VolumeBarProps>((props) => css`
