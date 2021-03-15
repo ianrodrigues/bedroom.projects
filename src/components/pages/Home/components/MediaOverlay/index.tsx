@@ -11,13 +11,6 @@ import { MediaOverlayContainer } from './styled';
 const MediaOverlay: React.VFC = () => {
   const state = useStore();
   const location = useLocation();
-  let text: string | undefined = undefined;
-
-  if (state.isMenuOpen.L) {
-    text = state.photo?.title;
-  } else if (state.isMenuOpen.R) {
-    text = state.video?.title;
-  }
 
   React.useEffect(() => {
     const body = document.querySelector('body');
@@ -38,6 +31,15 @@ const MediaOverlay: React.VFC = () => {
       state.setShowName(true);
     }
   }, [location.pathname]);
+
+
+  let text: string | undefined = undefined;
+
+  if (state.isMenuOpen.L) {
+    text = state.photo?.title;
+  } else if (state.isMenuOpen.R) {
+    text = state.video?.title;
+  }
 
   return (
     <MediaOverlayContainer>
