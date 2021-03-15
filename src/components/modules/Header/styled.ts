@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 
-export const HeaderContainer = styled.header<HeaderContainerProps>`
+export const HeaderContainer = styled.header<HeaderContainerProps>((props) => css`
   position: absolute;
   top: 15px;
   left: 0;
@@ -16,14 +16,14 @@ export const HeaderContainer = styled.header<HeaderContainerProps>`
     overflow: hidden;
   }
 
-  ${(props) => props.isOpen && css`
+  ${props.isOpen && css`
     height: auto;
 
     nav {
       height: auto;
     }
   `}
-`;
+`);
 
 interface HeaderContainerProps {
   isOpen?: boolean;

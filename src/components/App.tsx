@@ -7,11 +7,14 @@ import GlobalStyle from 'styles';
 
 import Header from 'modules/Header';
 import RenderCanvas from 'common/presentation/RenderCanvas';
+
 import { Name } from 'common/presentation/Name';
+import Loader from './common/presentation/Loader';
 
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 const Grid = React.lazy(() => import('pages/Grid'));
+
 
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
@@ -49,7 +52,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       <GlobalStyle />
       <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
       <Header />
-      <Name show={state.showName}>bedroom</Name>
+      <Name show={state.loading || state.showName}>bedroom</Name>
       <React.Suspense fallback={<div />}>
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
@@ -57,6 +60,7 @@ const App: React.VFC<RouteComponentProps> = () => {
           <Route path="/grid" component={Grid} />
         </Switch>
       </React.Suspense>
+      <Loader />
     </main>
   );
 };

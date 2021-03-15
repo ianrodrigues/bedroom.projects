@@ -4,7 +4,7 @@ export const Name = styled.h1<NameProps>((props) => css`
   position: absolute;
   top: 50%;
   left: 50%;
-  z-index: 2;
+  z-index: 3;
   margin: 0 50% 0 0;
   transform: translate(-50%, -50%);
   padding: 0;

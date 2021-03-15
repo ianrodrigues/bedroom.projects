@@ -227,6 +227,10 @@ const PhotoDetail: React.VFC = () => {
   }, [detail]);
 
   React.useEffect(() => {
+    if (state.loading) {
+      return;
+    }
+
     // Delay for page transitions / wait for all img elements to be rendered
     setTimeout(() => {
       if (sections.body.length === 0) {
@@ -291,7 +295,11 @@ const PhotoDetail: React.VFC = () => {
         observer.disconnect();
       }
     };
-  }, [sections]);
+  }, [sections, state.loading]);
+
+  if (state.loading) {
+    return null;
+  }
 
   return (
     <PhotoDetailContainer>

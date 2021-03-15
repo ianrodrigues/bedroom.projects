@@ -65,5 +65,11 @@ export const GridPart = styled.span`
   height: .6em;
   border: 1px solid #fff;
   box-sizing: border-box;
-  transition: .4s cubic-bezier(.19, 1, .22, 1) .5s;
+  transition:
+    width .4s cubic-bezier(.19, 1, .22, 1) .5s,
+    opacity .4s cubic-bezier(.19, 1, .22, 1) .5s,
+    left .4s cubic-bezier(.19, 1, .22, 1) .5s,
+    right .4s cubic-bezier(.19, 1, .22, 1) .5s,
+    top .4s cubic-bezier(.19, 1, .22, 1) .5s,
+    bottom .4s cubic-bezier(.19, 1, .22, 1) .5s;
 `;

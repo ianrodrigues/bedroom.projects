@@ -7,6 +7,11 @@ import { fetchMedia } from './utils';
 
 
 const useStore = create<i.AppState>(log((set, get) => ({
+  loading: true,
+  setLoading: (loading) => set(() => ({
+    loading,
+  })),
+
   allMedia: undefined,
   setAllMedia: (media) => set(() => ({
     allMedia: media,
@@ -18,7 +23,7 @@ const useStore = create<i.AppState>(log((set, get) => ({
     [type]: media,
   })),
 
-  showName: true,
+  showName: false,
   setShowName: (showName) => set(() => ({
     showName,
   })),

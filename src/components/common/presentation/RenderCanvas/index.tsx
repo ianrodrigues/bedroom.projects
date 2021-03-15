@@ -23,6 +23,7 @@ let startTime = 0;
 let transitionStartTime = 0;
 let prevPhoto: i.APIMediaObject | undefined;
 let prevVideo: i.APIMediaObject | undefined;
+let loaded = 0;
 
 // We keep all videos and photos in memory with these objects for super fast switching between
 // different photos/films
@@ -250,11 +251,11 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
       if (videoData && isVideo(videoMedia)) {
         const video = document.createElement('video');
-        video.id = videoData.title;
-        video.src = CMS_URL + videoMedia.url;
+        video.oncanplaythrough = onMediaLoaded;
         video.autoplay = true;
         video.loop = true;
         video.muted = true;
+        video.src = CMS_URL + videoMedia.url;
 
         videos[videoData.id] = {
           ...videoData,
@@ -267,8 +268,8 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
       if (photoData && isPhoto(photoMedia)) {
         const img = document.createElement('img');
-        const format = photoMedia.formats.large || photoMedia.formats.medium || photoMedia.formats.small;
-        img.src = CMS_URL + format.url;
+        img.onload = onMediaLoaded;
+        img.src = CMS_URL + photoMedia.url;
 
         photos[photoData.id] = {
           ...photoData,
@@ -304,6 +305,17 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   React.useEffect(() => {
     dividerPos = canvasRef.current!.width * 0.5;
   }, [canvasRef, location.pathname]);
+
+  function onMediaLoaded() {
+    const maxLoaded = Object.keys(videos).length + Object.keys(photos).length;
+    loaded++;
+
+    if (loaded === maxLoaded) {
+      setTimeout(() => {
+        state.setLoading(false);
+      }, 1000);
+    }
+  }
 
   return (
     <>

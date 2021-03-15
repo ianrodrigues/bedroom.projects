@@ -112,6 +112,10 @@ const VideoDetail: React.VFC = () => {
     };
   }, [containerRef, isGoingNext, detail]);
 
+  if (state.loading) {
+    return null;
+  }
+
   return (
     <VideoDetailContainer isNext={isGoingNext}>
       <DetailContainer ref={containerRef}>
