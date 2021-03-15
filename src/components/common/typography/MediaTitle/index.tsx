@@ -22,10 +22,7 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
   }
 
   function handleMouseMove() {
-    if (!show) {
-      setShow(true);
-    }
-
+    setShow(true);
     handleShow();
   }
 
