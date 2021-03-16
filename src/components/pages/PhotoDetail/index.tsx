@@ -94,7 +94,7 @@ const PhotoDetail: React.VFC = () => {
   // Scroll logic
   React.useEffect(() => {
     scroller = new VirtualScroll({
-      mouseMultiplier: .3,
+      mouseMultiplier: 1,
     });
 
     scroller.on((scroll) => {
@@ -104,12 +104,8 @@ const PhotoDetail: React.VFC = () => {
         scroller.__private_3_event.y = 0;
       }
 
-      // Disable scrolling
-      if (isGoingNext) {
-        return;
-      }
-
-      if (containerRef.current && bodyRef.current && titleRef.current) {
+      // Disable scrolling if transitioning
+      if (!isGoingNext && !state.loading && containerRef.current && bodyRef.current && titleRef.current) {
         const containerBounds = containerRef.current.getBoundingClientRect();
         const bodyBounds = bodyRef.current.getBoundingClientRect();
         const titleBounds = titleRef.current.getBoundingClientRect();
@@ -196,7 +192,7 @@ const PhotoDetail: React.VFC = () => {
     return function cleanup() {
       scroller.destroy();
     };
-  }, [bodyRef, detail, isGoingNext]);
+  }, [bodyRef, detail, isGoingNext, state.mouseMultiplier, state.loading]);
 
   React.useEffect(() => {
     if (queries.has('next')) {

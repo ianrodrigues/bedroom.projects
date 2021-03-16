@@ -76,7 +76,7 @@ const VideoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     scroller = new VirtualScroll({
-      mouseMultiplier: .3,
+      mouseMultiplier: 1,
     });
 
     scroller.on((scroll) => {

@@ -2,8 +2,8 @@ import * as i from 'types';
 import React from 'react';
 import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'react-router-dom';
 
-import useStore from 'state';
 import GlobalStyle from 'styles';
+import useStore from 'state';
 
 import Header from 'modules/Header';
 import RenderCanvas from 'common/presentation/RenderCanvas';
@@ -11,10 +11,10 @@ import RenderCanvas from 'common/presentation/RenderCanvas';
 import { Name } from 'common/presentation/Name';
 import Loader from './common/presentation/Loader';
 
+
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 const Grid = React.lazy(() => import('pages/Grid'));
-
 
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
