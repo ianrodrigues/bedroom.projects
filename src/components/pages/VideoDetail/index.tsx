@@ -14,6 +14,8 @@ import Player from './components/Player';
 import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer, VideoDetailContainer } from './styled';
 
 
+const loadAmt = 2; // Video poster & video canplay event
+let loaded = 0;
 let scroller: VirtualScroll;
 
 export type GoingNext = false | 'starting' | 'transition';
@@ -34,6 +36,27 @@ const VideoDetail: React.VFC = () => {
       setDetail(getMediaObjectBySlug(params.slug, 'video'));
     }
   }, [state.allMedia]);
+
+  React.useEffect(() => {
+    if (detail) {
+      if (state.loading === false) {
+        state.setLoading('page');
+      }
+
+      const img = document.createElement('img');
+      img.onload = handleLoad;
+      img.src = CMS_URL + detail.video_poster.url;
+
+      const vid = document.createElement('video');
+      vid.oncanplay = handleLoad;
+      vid.src = CMS_URL + detail.full_video!.url;
+    }
+
+    return function cleanup() {
+      loaded = 0;
+      state.setLoading(false);
+    };
+  }, [detail]);
 
   React.useEffect(() => {
     setDetail(getMediaObjectBySlug(params.slug, 'video'));
@@ -111,6 +134,14 @@ const VideoDetail: React.VFC = () => {
       scroller.destroy();
     };
   }, [containerRef, isGoingNext, detail]);
+
+  function handleLoad() {
+    loaded++;
+
+    if (loaded >= loadAmt) {
+      state.setLoading(false);
+    }
+  }
 
   if (state.loading) {
     return null;
