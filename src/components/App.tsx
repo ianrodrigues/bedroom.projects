@@ -52,7 +52,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       <GlobalStyle />
       <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
       <Header />
-      <Name show={state.loading || state.showName}>bedroom</Name>
+      <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
       <React.Suspense fallback={<div />}>
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
