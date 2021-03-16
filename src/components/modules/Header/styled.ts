@@ -7,19 +7,11 @@ export const HeaderContainer = styled.header<HeaderContainerProps>((props) => cs
   left: 0;
   right: 0;
   margin: auto;
-  height: 0;
   cursor: default;
   user-select: none;
 
-  nav {
-    height: 50px;
-    overflow: hidden;
-  }
-
   ${props.isOpen && css`
-    height: auto;
-
-    nav {
+    nav div {
       height: auto;
     }
   `}
@@ -36,11 +28,17 @@ export const Nav = styled.nav`
   grid-template-columns: 33% 33% 33%;
   grid-template-rows: 1fr;
   justify-content: space-between;
-  max-width: 1600px;
   margin: 0 auto;
   padding: 0 20px;
+  max-width: 1600px;
+  height: 50px;
+  overflow: visible;
   mix-blend-mode: difference;
   font-family: 'Roboto';
+
+  div {
+    height: 0;
+  }
 `;
 
 function setListAnimations(props: NavContainerProps) {
