@@ -14,6 +14,7 @@ import {
 
 let scroller: VirtualScroll;
 let containerTop = 0;
+let loaded = 0;
 
 const Grid: React.VFC<Props> = () => {
   const state = useStore();
@@ -21,18 +22,6 @@ const Grid: React.VFC<Props> = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
   const [fadeIn, setFadeIn] = React.useState(false);
-
-  React.useEffect(() => {
-    if (!state.allMedia) {
-      return;
-    }
-
-    combinedMedia.current = [...state.allMedia.photo, ...state.allMedia.video];
-
-    setTimeout(() => {
-      setFadeIn(true);
-    }, 750);
-  }, [state.allMedia]);
 
   React.useEffect(() => {
     scroller = new VirtualScroll({
@@ -73,6 +62,39 @@ const Grid: React.VFC<Props> = () => {
     };
   }, []);
 
+  React.useEffect(() => {
+    if (!state.allMedia) {
+      return;
+    }
+
+    combinedMedia.current = [...state.allMedia.photo, ...state.allMedia.video];
+
+    for (const media of combinedMedia.current) {
+      const img = document.createElement('img');
+      img.onload = onMediaLoaded;
+
+      if (isStatePhotoObject(media)) {
+        img.src = CMS_URL + media.media_cover.formats!.small.url;
+      } else {
+        img.src = CMS_URL + media.video_poster.formats!.small.url;
+      }
+    }
+
+    return function cleanup() {
+      loaded = 0;
+    };
+  }, [state.allMedia]);
+
+  function onMediaLoaded() {
+    loaded++;
+
+    if (loaded >= combinedMedia.current.length) {
+      setTimeout(() => {
+        setFadeIn(true);
+      }, 750);
+    }
+  }
+
   function toggleFilter(type: i.MediaType) {
     if (filtered === type) {
       setFiltered(false);
@@ -109,7 +131,7 @@ const Grid: React.VFC<Props> = () => {
   }
 
   return (
-    <GridPageContainer ref={containerRef} fadeIn={fadeIn}>
+    <GridPageContainer ref={containerRef} visible={fadeIn}>
       <FilterContainer>
         <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
           Photos ({state.allMedia?.photo.length})

@@ -13,18 +13,26 @@ export const GridPageContainer = styled.div<GridPageContainerProps>((props) => c
     opacity: 0;
     transform: translate3d(0, 25px, 0);
     transition: 500ms ease-out;
+
+    a {
+      pointer-events: none;
+    }
   }
 
-  ${props.fadeIn && css`
+  ${props.visible && css`
     > div {
       opacity: 1;
       transform: translate3d(0, 0, 0);
+      
+      a {
+        pointer-events: auto;
+      }
     }
   `}
 `);
 
 interface GridPageContainerProps {
-  fadeIn?: boolean;
+  visible?: boolean;
 }
 
 export const GridContainer = styled.div`
