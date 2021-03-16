@@ -46,7 +46,7 @@ const Frames = keyframes`
 export const LoaderInner = styled.div<LoaderInnerProps>((props) => css`
   height: 5px;
   width: 100%;
-  transform: scaleX(1);
+  transform: scaleX(0);
   transform-origin: left;
   background-color: #fff;
   transition: transform 100ms;
@@ -57,6 +57,7 @@ export const LoaderInner = styled.div<LoaderInnerProps>((props) => css`
   `}
 
   ${props.done && css`
+    transition: transform 300ms;
     transform: scaleX(1);
   `}
 `);
