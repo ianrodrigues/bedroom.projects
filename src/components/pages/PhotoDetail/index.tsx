@@ -16,6 +16,8 @@ import { PhotoDetailContainer, FullContentContainer, NextContainer, Row } from '
 
 let scroller: VirtualScroll;
 let observers: IntersectionObserver[] = [];
+let loaded = 0;
+let photosAmt = 0;
 
 interface Sections {
   head?: i.Layout;
@@ -210,11 +212,28 @@ const PhotoDetail: React.VFC = () => {
       return;
     }
 
-    const head = detail.bedroom_media_layouts[0];
-    const body: i.Layout[] = [];
+    if (state.loading === false) {
+      state.setLoading('page');
+    }
 
+    const head = detail.bedroom_media_layouts[0];
+    const img = document.createElement('img');
+    img.onload = handleLoad;
+    img.src = CMS_URL + head!.media[0]!.url;
+    photosAmt++;
+
+    const body: i.Layout[] = [];
     for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
-      body.push(detail.bedroom_media_layouts[i]!);
+      const row = detail.bedroom_media_layouts[i]!;
+
+      body.push(row);
+
+      for (const photo of row.media) {
+        const img = document.createElement('img');
+        img.onload = handleLoad;
+        img.src = CMS_URL + photo.url;
+        photosAmt++;
+      }
     }
 
     // Set head instantly
@@ -224,6 +243,11 @@ const PhotoDetail: React.VFC = () => {
     setTimeout(() => {
       setSections({ head, body });
     }, 100);
+
+    return function cleanup() {
+      loaded = 0;
+      photosAmt = 0;
+    };
   }, [detail]);
 
   React.useEffect(() => {
@@ -296,6 +320,14 @@ const PhotoDetail: React.VFC = () => {
       }
     };
   }, [sections, state.loading]);
+
+  function handleLoad() {
+    loaded++;
+
+    if (loaded >= photosAmt) {
+      state.setLoading(false);
+    }
+  }
 
   if (state.loading) {
     return null;

@@ -250,7 +250,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
       if (videoData && isVideo(videoMedia)) {
         const video = document.createElement('video');
-        video.oncanplaythrough = onMediaLoaded;
+        video.oncanplaythrough = handleMediaLoaded;
         video.autoplay = true;
         video.loop = true;
         video.muted = true;
@@ -267,7 +267,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
       if (photoData && isPhoto(photoMedia)) {
         const img = document.createElement('img');
-        img.onload = onMediaLoaded;
+        img.onload = handleMediaLoaded;
         img.src = CMS_URL + photoMedia.url;
 
         photos[photoData.id] = {
@@ -305,7 +305,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     dividerPos = canvasRef.current!.width * 0.5;
   }, [canvasRef, location.pathname]);
 
-  function onMediaLoaded() {
+  function handleMediaLoaded() {
     const maxLoaded = Object.keys(videos).length + Object.keys(photos).length;
     loaded++;
 

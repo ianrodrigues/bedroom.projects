@@ -2,8 +2,8 @@ import * as i from 'types';
 import { State } from 'zustand';
 
 export interface AppState extends State {
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
+  loading: i.LoadingState;
+  setLoading: (loading: i.LoadingState) => void;
 
   allMedia?: i.AllMedia;
   setAllMedia: (media: i.AllMedia) => void;
@@ -30,6 +30,8 @@ export interface AppState extends State {
     setReady: (isReady: boolean) => void;
   };
 }
+
+export type LoadingState = false | 'site' | 'page';
 
 export type PhotoDetailTemplate = [undefined, ...i.Layout[][]];
 

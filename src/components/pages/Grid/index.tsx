@@ -69,26 +69,32 @@ const Grid: React.VFC<Props> = () => {
 
     combinedMedia.current = [...state.allMedia.photo, ...state.allMedia.video];
 
-    for (const media of combinedMedia.current) {
-      const img = document.createElement('img');
-      img.onload = onMediaLoaded;
-
-      if (isStatePhotoObject(media)) {
-        img.src = CMS_URL + media.media_cover.formats!.small.url;
-      } else {
-        img.src = CMS_URL + media.video_poster.formats!.small.url;
+    if (loaded === 0) {
+      if (state.loading === false) {
+        state.setLoading('page');
       }
-    }
 
-    return function cleanup() {
-      loaded = 0;
-    };
+      for (const media of combinedMedia.current) {
+        const img = document.createElement('img');
+        img.onload = handleMediaLoaded;
+
+        if (isStatePhotoObject(media)) {
+          img.src = CMS_URL + media.media_cover.formats!.small.url;
+        } else {
+          img.src = CMS_URL + media.video_poster.formats!.small.url;
+        }
+      }
+    } else {
+      handleMediaLoaded();
+    }
   }, [state.allMedia]);
 
-  function onMediaLoaded() {
+  function handleMediaLoaded() {
     loaded++;
 
     if (loaded >= combinedMedia.current.length) {
+      state.setLoading(false);
+
       setTimeout(() => {
         setFadeIn(true);
       }, 750);

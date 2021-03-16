@@ -1,3 +1,4 @@
+import * as i from 'types';
 import styled, { css, keyframes } from 'styled-components';
 
 
@@ -9,17 +10,22 @@ export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
   width: 100vw;
   height: 100vh;
   opacity: 0;
-  background-color: #000;
   pointer-events: none;
   transition: opacity 500ms;
+  
+  ${props.$type === 'site' && css`
+    background-color: #000;
+  `}
 
-  ${props.visible  && css`
+  ${props.visible && css`
+    transition: opacity 0s;
     opacity: 1;
   `}
 `);
 
 interface LoaderContainerProps {
   visible?: boolean;
+  $type: i.LoadingState;
 }
 
 const Frames = keyframes`

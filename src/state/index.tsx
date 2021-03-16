@@ -7,7 +7,7 @@ import { fetchMedia } from './utils';
 
 
 const useStore = create<i.AppState>(log((set, get) => ({
-  loading: true,
+  loading: 'site',
   setLoading: (loading) => set(() => ({
     loading,
   })),
