@@ -31,7 +31,7 @@ export const Title = styled.h3<TitleProps>((props) => css`
   max-width: 800px;
   font-size: 100px;
   line-height: .9;
-  font-family: 'Caveat Brush', sans-serif;
+  font-family: 'Caveat Brush';
   color: #fff;
   opacity: 0;
   mix-blend-mode: difference;

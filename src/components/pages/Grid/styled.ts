@@ -50,7 +50,7 @@ export const GridTile = styled.div<GridTileProps>((props) => css`
     height: 100%;
     color: #fff;
     text-decoration: none;
-    font-family: 'Caveat Brush', sans-serif;
+    font-family: 'Caveat Brush';
   }
 
   &:hover {

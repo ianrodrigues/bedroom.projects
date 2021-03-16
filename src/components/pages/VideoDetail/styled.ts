@@ -31,7 +31,7 @@ export const DescriptionContainer = styled.div`
 
   div {
     color: #fff;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Roboto';
     font-size: 18px;
     white-space: pre-wrap;
   }

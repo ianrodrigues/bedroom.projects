@@ -8,5 +8,5 @@ export const DetailContainer = styled.div`
   padding: 0 20px;
   width: 100%;
   color: #fff;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto';
 `;

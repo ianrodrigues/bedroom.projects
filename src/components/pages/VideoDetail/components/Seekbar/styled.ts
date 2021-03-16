@@ -41,7 +41,7 @@ export const SeekbarTimeIndicator = styled.span.attrs<ProgressProps>((props) => 
   top: 50%;
   transform: translate3d(-50%, -150%, 0);
   pointer-events: none;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto';
   transition: left 100ms;
 `;
 

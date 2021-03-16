@@ -40,7 +40,7 @@ export const Nav = styled.nav`
   margin: 0 auto;
   padding: 0 20px;
   mix-blend-mode: difference;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto';
 `;
 
 function setListAnimations(props: NavContainerProps) {
