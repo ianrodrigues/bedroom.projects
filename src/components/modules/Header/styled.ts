@@ -60,24 +60,32 @@ function setListAnimations(props: NavContainerProps) {
   return str;
 }
 
-export const NavContainer = styled.div<NavContainerProps>`
-  ${(props) => setListAnimations(props)};
+export const NavContainer = styled.div<NavContainerProps>((props) => css`
+  opacity: 0;
+  transition: opacity 300ms;
+
+  ${setListAnimations(props)};
 
   &:last-of-type {
     text-align: right;
   }
 
-  ${(props) => props.isOpen && css`
+  ${props.visible && css`
+    opacity: 1;
+  `}
+
+  ${props.isOpen && css`
     li {
       pointer-events: auto;
       transform: translate3d(0, 0, 0);
       opacity: .5;
     }
   `}
-`;
+`);
 
 interface NavContainerProps {
-  isOpen: boolean;
+  isOpen?: boolean;
+  visible?: boolean;
 }
 
 export const List = styled.ul`

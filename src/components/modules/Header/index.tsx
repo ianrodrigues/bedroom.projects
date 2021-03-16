@@ -14,10 +14,13 @@ import {
 const Header: React.VFC = () => {
   const location = useLocation();
   const state = useStore();
+  const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
     state.closeMenus();
 
+    const visible = location.pathname !== '/grid';
+    setVisible(visible);
   }, [location.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
@@ -38,7 +41,9 @@ const Header: React.VFC = () => {
 
   function onMouseEnterNav(tag: 'container' | 'title', side: i.Side) {
     if (tag === 'title' || (tag === 'container' && location.pathname === '/')) {
-      state.setMenuOpen(side, true);
+      if (visible) {
+        state.setMenuOpen(side, true);
+      }
     }
   }
 
@@ -53,6 +58,7 @@ const Header: React.VFC = () => {
       <Nav>
         <NavContainer
           isOpen={state.isMenuOpen.L}
+          visible={visible}
           onMouseEnter={() => onMouseEnterNav('container', 'L')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
@@ -80,6 +86,7 @@ const Header: React.VFC = () => {
 
         <NavContainer
           isOpen={state.isMenuOpen.R}
+          visible={visible}
           onMouseEnter={() => onMouseEnterNav('container', 'R')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
