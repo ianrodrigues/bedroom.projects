@@ -50,11 +50,14 @@ export const LoaderInner = styled.div<LoaderInnerProps>((props) => css`
   transform-origin: left;
   background-color: #fff;
   transition: transform 100ms;
-  animation-name: ${Frames};
-  animation-duration: 30s;
+
+  ${!props.done && css`
+    animation-name: ${Frames};
+    animation-duration: 30s;
+  `}
 
   ${props.done && css`
-    transform: scaleX(1) !important;
+    transform: scaleX(1);
   `}
 `);
 
