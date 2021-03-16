@@ -6,6 +6,7 @@ import GlobalStyle from 'styles';
 import useStore from 'state';
 
 import Header from 'modules/Header';
+import Footer from 'common/navigation/Footer';
 import RenderCanvas from 'common/presentation/RenderCanvas';
 
 import { Name } from 'common/presentation/Name';
@@ -61,6 +62,7 @@ const App: React.VFC<RouteComponentProps> = () => {
         </Switch>
       </React.Suspense>
       <Loader />
+      <Footer />
     </main>
   );
 };
