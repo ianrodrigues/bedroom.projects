@@ -29,7 +29,7 @@ const Grid: React.VFC<Props> = () => {
     });
 
     scroller.on((scroll) => {
-      if (!containerRef.current) {
+      if (!containerRef.current || state.loading) {
         return;
       }
 
@@ -60,7 +60,7 @@ const Grid: React.VFC<Props> = () => {
     return function cleanup() {
       scroller.destroy();
     };
-  }, []);
+  }, [containerRef.current, state.loading]);
 
   React.useEffect(() => {
     if (!state.allMedia) {

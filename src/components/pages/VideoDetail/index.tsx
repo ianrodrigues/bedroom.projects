@@ -85,12 +85,7 @@ const VideoDetail: React.VFC = () => {
         scroller.__private_3_event.y = 0;
       }
 
-      // Lock scrolling
-      if (isGoingNext) {
-        return;
-      }
-
-      if (containerRef.current) {
+      if (!isGoingNext && !state.isLoading && containerRef.current) {
         const containerBounds = containerRef.current.getBoundingClientRect();
         const VIDEO_BOTTOM_PADDING = 50;
         const bottomEdge = containerBounds.height - window.innerHeight + VIDEO_BOTTOM_PADDING;
@@ -133,7 +128,7 @@ const VideoDetail: React.VFC = () => {
     return function cleanup() {
       scroller.destroy();
     };
-  }, [containerRef, isGoingNext, detail]);
+  }, [containerRef, isGoingNext, detail, state.loading]);
 
   function handleLoad() {
     loaded++;
