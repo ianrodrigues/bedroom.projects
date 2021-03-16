@@ -30,7 +30,6 @@ export const Nav = styled.nav`
   justify-content: space-between;
   margin: 0 auto;
   padding: 0 20px;
-  max-width: 1600px;
   height: 50px;
   overflow: visible;
   mix-blend-mode: difference;

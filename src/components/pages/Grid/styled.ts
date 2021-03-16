@@ -44,7 +44,6 @@ export const GridContainer = styled.div`
   margin: 0 auto;
   padding: 0;
   width: 100%;
-  max-width: 1600px;
 `;
 
 export const GridTile = styled.div<GridTileProps>((props) => css`
