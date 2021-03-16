@@ -32,6 +32,10 @@ export const Row = styled.div<RowProps>((props) => css`
   ${props.displayType === 'fill' && css`
     justify-content: space-around;
   `}
+
+  ${props.displayType === 'spaced' && css`
+    justify-content: space-between;
+  `}
 `);
 
 interface RowProps {

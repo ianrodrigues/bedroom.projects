@@ -15,6 +15,13 @@ export const ImgContainer = styled.div.attrs({
   transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
   scale: ${props.$scale || 1};
 
+  &:first-child {
+    padding-right: 10px;
+  }
+  &:not(:first-child) {
+    padding-left: 10px;
+  }
+
   ${props.displayType === 'together' && css`
     flex-basis: ${100 / 3}%;
     max-width: ${100 / 3}%;
@@ -54,7 +61,7 @@ export const ImgFigure = styled.figure`
   width: 100%;
 `;
 
-export const Img = styled.img((props) => css`
+export const Img = styled.img`
   display: block;
   position: absolute;
   top: 0;
@@ -62,4 +69,4 @@ export const Img = styled.img((props) => css`
   width: 100%;
   max-width: 100%;
   height: auto;
-`);
+`;
