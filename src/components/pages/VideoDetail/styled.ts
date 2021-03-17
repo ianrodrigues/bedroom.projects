@@ -33,7 +33,16 @@ export const DescriptionContainer = styled.div`
     color: #fff;
     font-family: 'Roboto';
     font-size: 18px;
+    line-height: 1.333em;
     white-space: pre-wrap;
+
+    p {
+      margin-top: 0;
+    }
+
+    a {
+      color: #fff;
+    }
   }
 `;
 

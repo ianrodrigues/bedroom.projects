@@ -156,8 +156,8 @@ const VideoDetail: React.VFC = () => {
         </DetailPlayerContainer>
 
         <DescriptionContainer>
-          <div>{detail?.description}</div>
-          <div>{detail?.credits}</div>
+          <div dangerouslySetInnerHTML={{ __html: detail?.description || '' }} />
+          <div dangerouslySetInnerHTML={{ __html: detail?.credits || '' }} />
         </DescriptionContainer>
 
         <NextContainer isGoingNext={isGoingNext}>

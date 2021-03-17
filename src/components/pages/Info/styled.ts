@@ -33,6 +33,7 @@ export const InfoDescription = styled.div`
   white-space: pre-wrap;
 
   p {
+    margin-top: 0;
     line-height: 1.333em;
   }
 

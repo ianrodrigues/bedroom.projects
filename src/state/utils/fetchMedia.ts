@@ -1,4 +1,5 @@
 import * as i from 'types';
+import Showdown from 'showdown';
 
 import useStore from 'state';
 import { isAPIPhotoObject, isStatePhotoObject, isStateVideoObject } from 'services/typeguards';
@@ -28,6 +29,21 @@ export function fetchMedia(): void {
         } else {
           const tempMedia = media as i.StateVideoObject;
           tempMedia.next = {} as i.StatePhotoObject;
+
+          // Convert markdown to html
+          if (tempMedia.description) {
+            const converter = new Showdown.Converter();
+            const html = converter.makeHtml(tempMedia.description);
+
+            tempMedia.description = html;
+          }
+
+          if (tempMedia.credits) {
+            const converter = new Showdown.Converter();
+            const html = converter.makeHtml(tempMedia.credits);
+
+            tempMedia.credits = html;
+          }
 
           if (isStateVideoObject(prevVideoObj)) {
             prevVideoObj.next = tempMedia;
