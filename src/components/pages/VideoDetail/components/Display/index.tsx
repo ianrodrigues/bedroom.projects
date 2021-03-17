@@ -12,6 +12,7 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((props, ref) => {
       src={CMS_URL + props.videoObject.full_video?.url}
       poster={CMS_URL + props.videoObject.video_poster?.url}
       disablePictureInPicture
+      loop
     />
   );
 });

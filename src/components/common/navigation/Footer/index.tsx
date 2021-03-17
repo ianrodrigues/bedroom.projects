@@ -7,7 +7,7 @@ import VimeoSvg from 'vectors/vimeo-v-brands.svg';
 import { InfoLink, SocialMediaLinksContainer } from './styled';
 
 
-const Footer: React.VFC<Props> = () => {
+const Footer: React.VFC = () => {
   const location = useLocation();
   const [visible, setVisible] = React.useState(false);
 
@@ -29,10 +29,6 @@ const Footer: React.VFC<Props> = () => {
       </SocialMediaLinksContainer>
     </>
   );
-};
-
-export type Props = {
-
 };
 
 export default Footer;
