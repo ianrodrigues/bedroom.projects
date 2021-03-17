@@ -83,17 +83,17 @@ const Info: React.VFC = () => {
     }
   }, [isLoading]);
 
-  if (!data && state.loading) {
+  if (!data || state.loading) {
     return null;
   }
 
   return (
     <InfoContainer $visible={visible}>
-      <InfoDescription ref={descriptionRef} dangerouslySetInnerHTML={{ __html: data!.description }} />
+      <InfoDescription ref={descriptionRef} dangerouslySetInnerHTML={{ __html: data.description }} />
 
       <InfoFigure>
         {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
-        <img src={CMS_URL + data?.image.url} alt={data?.image.alternativeText} />
+        <img src={CMS_URL + data.image.url} alt={data.image.alternativeText} />
       </InfoFigure>
 
       <MediaTitle side="R" visible>SOREN HARRISON & AMIR HOSSAIN</MediaTitle>
