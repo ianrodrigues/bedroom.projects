@@ -96,7 +96,7 @@ const Info: React.VFC = () => {
         <img src={CMS_URL + data.image.url} alt={data.image.alternativeText} />
       </InfoFigure>
 
-      <MediaTitle side="R" visible>SOREN HARRISON & AMIR HOSSAIN</MediaTitle>
+      <MediaTitle side="R" visible>{data.title}</MediaTitle>
     </InfoContainer>
   );
 };

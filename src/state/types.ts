@@ -196,4 +196,5 @@ export interface APIInfoObject {
   created_at: Date;
   updated_at: Date;
   image: i.PhotoMedia;
+  title: string;
 }
