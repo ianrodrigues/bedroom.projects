@@ -38,18 +38,22 @@ const PlayerControls: React.FC<Props> = (props) => {
     clearTimeout(timeoutId);
 
     timeoutId = setTimeout(() => {
-      setVisible({
-        play: false,
-        other: false,
-      });
+      if (!props.videoRef?.current?.paused) {
+        setVisible({
+          play: false,
+          other: false,
+        });
+      }
     }, 5000);
   }
 
   function handleMouseMove() {
-    setVisible({
-      play: true,
-      other: true,
-    });
+    if (!props.videoRef?.current?.paused) {
+      setVisible({
+        play: true,
+        other: true,
+      });
+    }
 
     handleAutoHide();
   }
