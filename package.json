@@ -14,8 +14,10 @@
     "body-scroll-lock": "3.1.5",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
+    "react-query": "3.12.2",
     "react-router": "5.2.0",
     "react-router-dom": "5.2.0",
+    "showdown": "1.9.1",
     "styled-components": "5.2.1",
     "virtual-scroll": "2.1.0",
     "zustand": "3.3.2"
@@ -27,6 +29,7 @@
     "@types/react-dom": "^17.0.0",
     "@types/react-router": "5.1.11",
     "@types/react-router-dom": "5.1.7",
+    "@types/showdown": "1.9.3",
     "@types/styled-components": "5.1.7",
     "@typescript-eslint/eslint-plugin": "4.1.1",
     "@typescript-eslint/parser": "4.1.1",

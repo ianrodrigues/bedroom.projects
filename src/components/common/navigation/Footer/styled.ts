@@ -30,7 +30,7 @@ export const SocialMediaLinksContainer = styled.div<FooterProps>((props) => css`
     }
   }
 
-  ${props.visible && css`
+  ${props.$visible && css`
     opacity: 1;
     pointer-events: auto;
   `}
@@ -50,12 +50,12 @@ export const InfoLink = styled(Link)<FooterProps>((props) => css`
   transition: opacity 300ms;
   pointer-events: none;
 
-  ${props.visible && css`
+  ${props.$visible && css`
     opacity: 1;
     pointer-events: auto;
   `}
 `);
 
 interface FooterProps {
-  visible?: boolean;
+  $visible?: boolean;
 }

@@ -188,3 +188,12 @@ export interface StateVideoObject extends APIMediaObject {
   next: APIMediaObject;
   video_poster: PhotoMedia;
 }
+
+export interface APIInfoObject {
+  id: number;
+  description: string;
+  published_at: Date;
+  created_at: Date;
+  updated_at: Date;
+  image: i.PhotoMedia;
+}

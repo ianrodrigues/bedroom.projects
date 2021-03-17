@@ -6,7 +6,7 @@ export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
+  z-index: 3;
   width: 100vw;
   height: 100vh;
   opacity: 0;

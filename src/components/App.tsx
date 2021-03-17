@@ -12,10 +12,11 @@ import RenderCanvas from 'common/presentation/RenderCanvas';
 import { Name } from 'common/presentation/Name';
 import Loader from './common/presentation/Loader';
 
-
 const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 const Grid = React.lazy(() => import('pages/Grid'));
+const Info = React.lazy(() => import('pages/Info'));
+
 
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
@@ -59,6 +60,7 @@ const App: React.VFC<RouteComponentProps> = () => {
           <Route path="/photos/:slug" component={PhotoDetail} />
           <Route path="/film/:slug" component={VideoDetail} />
           <Route path="/grid" component={Grid} />
+          <Route path="/info" component={Info} />
         </Switch>
       </React.Suspense>
       <Loader />

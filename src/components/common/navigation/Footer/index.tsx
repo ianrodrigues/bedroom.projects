@@ -18,8 +18,8 @@ const Footer: React.VFC = () => {
 
   return (
     <>
-      <InfoLink to="/info" visible={visible}>Info</InfoLink>
-      <SocialMediaLinksContainer visible={visible}>
+      <InfoLink to="/info" $visible={visible}>Info</InfoLink>
+      <SocialMediaLinksContainer $visible={visible}>
         <a href="https://www.instagram.com/bedroom.projects/" target="_blank" rel="noreferrer">
           <InstagramSvg />
         </a>
