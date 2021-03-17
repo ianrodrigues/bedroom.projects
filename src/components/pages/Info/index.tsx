@@ -48,10 +48,14 @@ const Info: React.VFC = () => {
         scroller.__private_3_event.y = 0;
       }
 
-      const PADDING_TOP = 105;
       const PADDING_BOTTOM = 20;
       const containerBounds = descriptionRef.current.getBoundingClientRect();
-      const bottomEdge = Math.abs(PADDING_TOP - PADDING_BOTTOM - Math.abs(window.innerHeight - containerBounds.height));
+      const bottomEdge = PADDING_BOTTOM + Math.abs(window.innerHeight - containerBounds.height);
+
+      // No need to scroll
+      if (20 + containerBounds.height < window.innerHeight) {
+        return;
+      }
 
       if (Math.abs(scroll.y) < bottomEdge) {
         descriptionRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;

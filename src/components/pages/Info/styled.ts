@@ -26,7 +26,7 @@ interface InfoContainerProps {
 
 export const InfoDescription = styled.div`
   width: 40%;
-  padding: 105px 20px;
+  padding: 105px 20px 0;
   color: #fff;
   font-family: 'Roboto';
   font-size: 18px;
