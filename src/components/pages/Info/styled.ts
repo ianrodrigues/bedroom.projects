@@ -31,6 +31,14 @@ export const InfoDescription = styled.div`
   font-family: 'Roboto';
   font-size: 18px;
   white-space: pre-wrap;
+
+  p {
+    line-height: 1.333em;
+  }
+
+  a {
+    color: #fff;
+  }
 `;
 
 export const InfoFigure = styled.figure`
