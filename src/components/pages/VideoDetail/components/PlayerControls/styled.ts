@@ -1,11 +1,19 @@
 import styled, { css } from 'styled-components';
 
 
-export const PlayerControlsContainer = styled.div`
+export const PlayerControlsContainer = styled.div<PlayerControlsContainerProps>((props) => css`
   position: relative;
   width: 100%;
   height: ${window.innerHeight - 50}px;
-`;
+
+  ${props.hideCursor && css`
+    cursor: none;
+  `}
+`);
+
+interface PlayerControlsContainerProps {
+  hideCursor?: boolean;
+}
 
 export const ControlsGridContainer = styled.div`
   position: absolute;

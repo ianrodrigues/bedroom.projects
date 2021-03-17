@@ -14,6 +14,8 @@ import {
 } from './styled';
 
 
+let timeoutId = -1;
+
 const PlayerControls: React.FC<Props> = (props) => {
   const state = useStore();
   const [visible, setVisible] = React.useState({
@@ -22,10 +24,35 @@ const PlayerControls: React.FC<Props> = (props) => {
   });
   const gridRef = React.useRef<HTMLDivElement>(null);
 
+  React.useEffect(() => {
+    handleAutoHide();
+  }, []);
+
   useEventListener('mouseover', setAllVisible, gridRef.current);
   useEventListener('mouseout', setAllInvisible, gridRef.current);
   useEventListener('pause', setOtherInvisible, props.videoRef?.current);
   useEventListener('play', setOtherVisible, props.videoRef?.current);
+  useEventListener('mousemove', handleMouseMove, gridRef.current);
+
+  function handleAutoHide() {
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      setVisible({
+        play: false,
+        other: false,
+      });
+    }, 5000);
+  }
+
+  function handleMouseMove() {
+    setVisible({
+      play: true,
+      other: true,
+    });
+
+    handleAutoHide();
+  }
 
   function setAllVisible() {
     setVisible({
@@ -64,7 +91,7 @@ const PlayerControls: React.FC<Props> = (props) => {
   }
 
   return (
-    <PlayerControlsContainer>
+    <PlayerControlsContainer hideCursor={!visible.play}>
       {props.children}
       {props.width != null && props.width > 0 && (
         <ControlsGridContainer id="controls-grid">
