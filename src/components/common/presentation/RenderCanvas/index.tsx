@@ -43,7 +43,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   });
   const prevSideSize = usePrevious(sizeData);
 
-  // Omega ugly but works for now :)
+  // Ugly but works for now :)
   function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
     if (!state.photo || !state.video) {
       return;
@@ -100,6 +100,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     }
   }
 
+  // Rendering the canvas
   useAnimationFrame(((animProps) => {
     const timestamp = animProps.time;
     const canvas = canvasRef.current;
@@ -133,12 +134,13 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
     // Animate position of divider
     if (startTime > 0) {
-      const duration = .75;
+      const duration = 1.25;
       const targetPos = canvas.width * dividerOffset;
       const runtime = timestamp - startTime;
       const distance = targetPos - dividerPos;
-      const relativeProgress = Math.min(runtime / duration, 1);
-      const relativeDistance = relativeProgress * Math.abs(dividerPos - targetPos);
+      const absoluteProgress = Math.min(runtime / duration, 1);
+      const ease = -(Math.cos(Math.PI * absoluteProgress) - 1) / 2;
+      const relativeDistance = ease * Math.abs(distance);
 
       if (distance >= 0) {
         dividerPos += relativeDistance;
@@ -147,7 +149,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       }
 
       // Done
-      if (relativeProgress === 1) {
+      if (absoluteProgress === 1) {
         startTime = 0;
       }
     }
