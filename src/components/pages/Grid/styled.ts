@@ -47,9 +47,10 @@ export const GridContainer = styled.div`
 `;
 
 export const GridTile = styled.div<GridTileProps>((props) => css`
+  visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 200ms;
+  transition: opacity 200ms, visibility 200ms 0ms;
 
   a {
     display: block;
@@ -60,13 +61,14 @@ export const GridTile = styled.div<GridTileProps>((props) => css`
     font-family: 'Caveat Brush';
   }
 
-  &:hover {
-    opacity: .75;
-  }
-
   ${props.visible && css`
+    visibility: visible;
     pointer-events: auto;
     opacity: 1;
+
+    &:hover {
+      opacity: .75;
+    }
   `}
 `);
 
@@ -99,6 +101,7 @@ export const Title = styled.h3`
   padding: 0;
   font-size: 25px;
   line-height: 1;
+  user-select: none;
 `;
 
 export const FilterContainer = styled.div`
