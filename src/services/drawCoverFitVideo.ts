@@ -1,11 +1,15 @@
-export function drawCoverFitVideo(ctx: CanvasRenderingContext2D, video: HTMLVideoElement): void {
+export function drawCoverFitVideo(
+  ctx: CanvasRenderingContext2D,
+  video: HTMLVideoElement,
+  x = 0,
+): void {
   const vidW = video.videoWidth;
   const vidH = video.videoHeight;
   const scale = Math.min(ctx.canvas.width / vidW, ctx.canvas.height / vidH);
 
   let nw = video.videoWidth * scale;
   let nh = video.videoHeight * scale;
-  let cw, ch, scale2 = 1;
+  let sw, sh, scale2 = 1;
 
   // Decide which gap to fill
   if (nw < ctx.canvas.width) {
@@ -20,12 +24,13 @@ export function drawCoverFitVideo(ctx: CanvasRenderingContext2D, video: HTMLVide
   nh *= scale2;
 
   // Calc source rectangle
-  cw = video.videoWidth / (nw / ctx.canvas.width);
-  ch = video.videoHeight / (nh / ctx.canvas.height);
+  sw = video.videoWidth / (nw / ctx.canvas.width);
+  sh = video.videoHeight / (nh / ctx.canvas.height);
+  const sx = (sw / nw) * x;
 
   // Make sure source rectangle is valid
-  if (cw > video.videoWidth) cw = video.videoWidth;
-  if (ch > video.videoHeight) ch = video.videoHeight;
+  if (sw > video.videoWidth) sw = video.videoWidth;
+  if (sh > video.videoHeight) sh = video.videoHeight;
 
-  ctx.drawImage(video, 0, 0, cw, ch, 0, 0, ctx.canvas.width, ctx.canvas.height);
+  ctx.drawImage(video, sx, 0, sw, sh, x, 0, ctx.canvas.width, ctx.canvas.height);
 }

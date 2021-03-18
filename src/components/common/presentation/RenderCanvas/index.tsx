@@ -74,6 +74,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         drawCoverFitVideo(
           ctx,
           collection[prevMedia!.id]!.element as HTMLVideoElement,
+          dividerPos,
         );
       } else {
         let width = Math.min(dividerPos, window.innerWidth);
@@ -163,7 +164,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
           mediaTransition(ctx, 'video', timestamp);
         }
 
-        drawCoverFitVideo(ctx, video.element);
+        drawCoverFitVideo(ctx, video.element, dividerPos);
       }
     }
 
