@@ -98,6 +98,10 @@ const VideoDetail: React.VFC = () => {
 
           setGoingNext('starting');
 
+          if (state.loading === false) {
+            state.setLoading('page');
+          }
+
           setTimeout(() => {
             setGoingNext('transition');
           }, 600);
@@ -136,10 +140,6 @@ const VideoDetail: React.VFC = () => {
     if (loaded >= loadAmt) {
       state.setLoading(false);
     }
-  }
-
-  if (state.loading) {
-    return null;
   }
 
   return (

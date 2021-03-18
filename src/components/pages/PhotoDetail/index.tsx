@@ -115,6 +115,10 @@ const PhotoDetail: React.VFC = () => {
         if (Math.abs(scroll.y) >= bottomEdge && !isGoingNext) {
           setGoingNext('starting');
 
+          if (state.loading === false) {
+            state.setLoading('page');
+          }
+
           // Set head piece to next's
           setSections((sections) => ({
             ...sections,
@@ -323,10 +327,6 @@ const PhotoDetail: React.VFC = () => {
     if (loaded >= photosAmt) {
       state.setLoading(false);
     }
-  }
-
-  if (state.loading) {
-    return null;
   }
 
   return (

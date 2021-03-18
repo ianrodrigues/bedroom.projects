@@ -38,8 +38,11 @@ const Frames = keyframes`
   50% {
     transform: scaleX(.75);
   }
+  75% {
+    transform: scaleX(.9);
+  }
   100% {
-    transform: scaleX(.99);
+    transform: scaleX(.999999);
   }
 `;
 
@@ -53,7 +56,8 @@ export const LoaderInner = styled.div<LoaderInnerProps>((props) => css`
 
   ${!props.done && css`
     animation-name: ${Frames};
-    animation-duration: 30s;
+    animation-duration: 60s;
+    animation-fill-mode: forwards;
   `}
 
   ${props.done && css`
