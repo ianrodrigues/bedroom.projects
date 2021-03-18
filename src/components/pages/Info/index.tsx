@@ -12,12 +12,14 @@ import { InfoContainer, InfoDescription, InfoFigure } from './styled';
 
 
 let scroller: VirtualScroll;
+let loaded = 0;
+const LOADED_AMT = 1;
 
 const Info: React.VFC = () => {
   const state = useStore();
   const [visible, setVisible] = React.useState(false);
   const descriptionRef = React.useRef<HTMLDivElement>(null);
-  const { isLoading, data } = useQuery<i.APIInfoObject, Error>('info', () =>
+  const { data } = useQuery<i.APIInfoObject, Error>('info', () =>
     fetch(CMS_URL + '/bedroom-infos/1')
       .then((res) => res.json())
       .then((data: i.APIInfoObject) => {
@@ -27,6 +29,10 @@ const Info: React.VFC = () => {
           ...data,
           description: html,
         };
+
+        const img = document.createElement('img');
+        img.onload = handleLoaded;
+        img.src = CMS_URL + newData.image.url;
 
         return newData;
       }),
@@ -77,15 +83,17 @@ const Info: React.VFC = () => {
     }
   }, [data]);
 
-  React.useEffect(() => {
-    if (!isLoading) {
+  function handleLoaded() {
+    loaded++;
+
+    if (loaded >= LOADED_AMT) {
       state.setLoading(false);
 
       setTimeout(() => {
         setVisible(true);
       }, 500);
     }
-  }, [isLoading]);
+  }
 
   if (!data || state.loading) {
     return null;
