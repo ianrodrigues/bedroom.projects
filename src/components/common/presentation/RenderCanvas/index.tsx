@@ -5,7 +5,7 @@ import { useLocation } from 'react-router';
 import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
-import { isVideo, isPhoto } from 'services/typeguards';
+import { isVideo, isPhoto, isHTMLVideoElement } from 'services/typeguards';
 
 import MediaOverlay from 'pages/Home/components/MediaOverlay';
 import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
@@ -308,7 +308,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     dividerPos = canvasRef.current!.width * 0.5;
   }, [canvasRef, location.pathname]);
 
-  function handleMediaLoaded() {
+  function handleMediaLoaded(this: GlobalEventHandlers) {
     const maxLoaded = Object.keys(videos).length + Object.keys(photos).length;
     loaded++;
 
@@ -316,6 +316,12 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       setTimeout(() => {
         state.setLoading(false);
       }, 1000);
+    }
+
+    // Chrome muted autoplay bugfix
+    if (isHTMLVideoElement(this)) {
+      this.muted = true;
+      this.play();
     }
   }
 
