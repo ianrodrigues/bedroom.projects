@@ -174,6 +174,7 @@ export interface APIMediaObject {
   media_cover: PhotoMedia | VideoMedia;
   full_video?: VideoMedia;
   video_poster?: PhotoMedia;
+  list_num: number;
 }
 
 export interface APIPhotosObject extends APIMediaObject {

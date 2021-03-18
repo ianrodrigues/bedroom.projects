@@ -63,6 +63,10 @@ export function fetchMedia(): void {
         videos[videos.length - 1]!.next = videos[0];
       }
 
+      // Sort
+      photos.sort((a, b) => a.list_num - b.list_num);
+      videos.sort((a, b) => a.list_num - b.list_num);
+
       useStore.getState().setAllMedia({
         photo: photos,
         video: videos,
