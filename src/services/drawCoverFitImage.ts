@@ -20,7 +20,7 @@ export function drawCoverFitImage(
   const scale = Math.min(ctx.canvas.width / img.width, height / img.height);
   let nw = img.width * scale;
   let nh = img.height * scale;
-  let cx, cy, cw, ch, scale2 = 1;
+  let sx, sy, sw, sh, scale2 = 1;
 
   // Decide which gap to fill
   if (nw < ctx.canvas.width) {
@@ -35,17 +35,23 @@ export function drawCoverFitImage(
   nh *= scale2;
 
   // Calc source rectangle
-  cw = img.width / (nw / width);
-  ch = img.height / (nh / height);
-  cx = (img.width - cw) * offsetX;
-  cy = (img.height - ch) * offsetY;
+  sw = img.width / (nw / width);
+  sh = img.height / (nh / height);
+  sx = (img.width - sw) * offsetX;
+  sy = (img.height - sh) * offsetY;
 
   // Make sure source rectangle is valid
-  if (cx < 0) cx = 0;
-  if (cy < 0) cy = 0;
-  if (cw > img.width) cw = img.width;
-  if (ch > img.height) ch = img.height;
+  if (sx < 0) sx = 0;
+  if (sy < 0) sy = 0;
+  if (sw > img.width) sw = img.width;
+  if (sh > img.height) sh = img.height;
+
+  // Check if we can center the image on y-axis
+  const diff = nh - window.innerHeight;
+  if (diff > 0) {
+    sy = diff / 2;
+  }
 
   // Draw on canvas
-  ctx.drawImage(img, cx, cy, cw, ch, x, y, width, height);
+  ctx.drawImage(img, sx, sy, sw, sh, x, y, width, height);
 }
