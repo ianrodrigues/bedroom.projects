@@ -11,9 +11,12 @@ export const ImgContainer = styled.div.attrs({
   flex-basis: 50%;
   max-width: 50%;
   opacity: 0;
-  transform: translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0);
-  transition: opacity 1s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-  scale: ${props.$scale || 1};
+  transform:
+    translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0)
+    scale(${props.$scale || 1});
+  transition:
+    opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
 
   &:first-child {
     padding-right: 10px;
@@ -39,7 +42,9 @@ export const ImgContainer = styled.div.attrs({
 
   &.visible {
     opacity: 1;
-    transform: translate3d(${props.offsetX || 0}px, ${props.offsetY || 0}px, 0);
+    transform:
+      translate3d(${props.offsetX || 0}px, ${props.offsetY || 0}px, 0)
+      scale(${props.$scale || 1});
   }
 `);
 
