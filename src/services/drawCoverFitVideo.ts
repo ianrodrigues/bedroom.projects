@@ -9,7 +9,7 @@ export function drawCoverFitVideo(
 
   let nw = video.videoWidth * scale;
   let nh = video.videoHeight * scale;
-  let sw, sh, scale2 = 1;
+  let sx, sw, sh, scale2 = 1;
 
   // Decide which gap to fill
   if (nw < ctx.canvas.width) {
@@ -26,9 +26,17 @@ export function drawCoverFitVideo(
   // Calc source rectangle
   sw = video.videoWidth / (nw / ctx.canvas.width);
   sh = video.videoHeight / (nh / ctx.canvas.height);
-  const sx = (sw / nw) * x;
+  sx = (sw / nw) * x;
+
+  // Safari has a bug with drawing out of bound
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if (isSafari) {
+    x = 0;
+    sx = 0;
+  }
 
   // Make sure source rectangle is valid
+  if (sx < 0) sx = 0;
   if (sw > video.videoWidth) sw = video.videoWidth;
   if (sh > video.videoHeight) sh = video.videoHeight;
 
