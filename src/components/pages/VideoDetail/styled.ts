@@ -60,7 +60,7 @@ export const VideoPoster = styled.div<VideoPosterProps>((props) => css`
   top: 0;
   width: 100%;
   height: 100%;
-  background: url(${props.$src}) no-repeat center center fixed; 
+  background: url(${props.$src}) no-repeat center center; 
   background-size: cover;
   transform: translate3d(0, 150px, 0);
   pointer-events: none;
