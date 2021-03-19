@@ -141,12 +141,12 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
     // Animate position of divider
     if (startTime > 0) {
-      const duration = 1.25;
+      const duration = 1250;
       const targetPos = canvas.width * dividerOffset;
       const runtime = timestamp - startTime;
       const distance = targetPos - dividerPos;
       const absoluteProgress = Math.min(runtime / duration, 1);
-      const ease = -(Math.cos(Math.PI * absoluteProgress) - 1) / 2;
+      const ease = 1 - Math.pow(1 - absoluteProgress, 3);
       const relativeDistance = ease * Math.abs(distance);
 
       if (distance >= 0) {

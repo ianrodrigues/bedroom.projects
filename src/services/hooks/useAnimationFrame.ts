@@ -15,9 +15,8 @@ export function useAnimationFrame(cb: (params: CbParams) => void, deps: any[]): 
 
   const animate = () => {
     const now = performance.now();
-    const time = (now - init.current) / 1000;
-    const delta = (now - last.current) / 1000;
-    // In seconds ~> you can do ms or anything in userland
+    const time = now - init.current;
+    const delta = now - last.current;
     cb({ time, delta });
     last.current = now;
     frame.current = requestAnimationFrame(animate);
