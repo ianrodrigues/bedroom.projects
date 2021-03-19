@@ -71,10 +71,16 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       ctx.globalAlpha = alpha1;
 
       if (mediaType === 'video') {
+        let x = dividerPos;
+
+        if (props.fullscreen === 'video') {
+          x = 0;
+        }
+
         drawCoverFitVideo(
           ctx,
           collection[prevMedia!.id]!.element as HTMLVideoElement,
-          dividerPos,
+          x,
         );
       } else {
         let width = Math.min(dividerPos, window.innerWidth);
@@ -164,7 +170,13 @@ const RenderCanvas: React.VFC<Props> = (props) => {
           mediaTransition(ctx, 'video', timestamp);
         }
 
-        drawCoverFitVideo(ctx, video.element, dividerPos);
+        let x = dividerPos;
+
+        if (props.fullscreen === 'video') {
+          x = 0;
+        }
+
+        drawCoverFitVideo(ctx, video.element, x);
       }
     }
 
