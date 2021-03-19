@@ -62,7 +62,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     }
 
     if (transitionStartTime > 0) {
-      const duration = .4;
+      const duration = 300;
       const runtime = timestamp - transitionStartTime;
       const relativeProgress = Math.min(runtime / duration, 1);
       const alpha1 = 1 - relativeProgress;
