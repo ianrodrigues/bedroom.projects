@@ -19,6 +19,7 @@ interface Media<T extends HTMLVideoElement | HTMLImageElement> {
 // React setState can't keep up with high screen refresh rates or quick changes to heavy objects
 // We also don't need these variables to fire renders
 let dividerPos = 0;
+let startPos = 0;
 let startTime = 0;
 let transitionStartTime = 0;
 let prevPhoto: i.APIMediaObject | undefined;
@@ -64,9 +65,9 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     if (transitionStartTime > 0) {
       const duration = 300;
       const runtime = timestamp - transitionStartTime;
-      const relativeProgress = Math.min(runtime / duration, 1);
-      const alpha1 = 1 - relativeProgress;
-      const alpha2 = relativeProgress;
+      const absoluteProgress = Math.min(runtime / duration, 1);
+      const alpha1 = 1 - absoluteProgress;
+      const alpha2 = absoluteProgress;
 
       ctx.globalAlpha = alpha1;
 
@@ -99,7 +100,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
       ctx.globalAlpha = alpha2;
 
-      if (relativeProgress === 1) {
+      if (absoluteProgress === 1) {
         transitionStartTime = 0;
         prevVideo = undefined;
         prevPhoto = undefined;
@@ -136,27 +137,21 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     if (prevSideSize) {
       if (sizeData.L !== prevSideSize.L || sizeData.R !== prevSideSize.R) {
         startTime = timestamp;
+        startPos = dividerPos;
       }
     }
 
     // Animate position of divider
     if (startTime > 0) {
-      const duration = 1250;
-      const targetPos = canvas.width * dividerOffset;
+      const duration = 1000;
       const runtime = timestamp - startTime;
-      const distance = targetPos - dividerPos;
-      const absoluteProgress = Math.min(runtime / duration, 1);
-      const ease = 1 - Math.pow(1 - absoluteProgress, 3);
-      const relativeDistance = ease * Math.abs(distance);
+      const targetPos = canvas.width * dividerOffset;
+      const dist = targetPos - startPos;
 
-      if (distance >= 0) {
-        dividerPos += relativeDistance;
-      } else {
-        dividerPos -= relativeDistance;
-      }
+      dividerPos = easeOutQuart(runtime / 1000, startPos, dist, duration / 1000);
 
       // Done
-      if (absoluteProgress === 1) {
+      if (runtime >= duration) {
         startTime = 0;
       }
     }
@@ -352,6 +347,10 @@ RenderCanvas.defaultProps = {
 interface Props {
   fullscreen?: 'photo' | 'video';
   show?: boolean;
+}
+
+function easeOutQuart(t: number, b: number, c: number, d: number): number {
+  return -c * ((t = t / d - 1) * t * t * t - 1) + b;
 }
 
 export default RenderCanvas;
