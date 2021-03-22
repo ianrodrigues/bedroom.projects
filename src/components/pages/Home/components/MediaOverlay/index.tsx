@@ -28,7 +28,7 @@ const MediaOverlay: React.VFC = () => {
 
   return (
     <MediaOverlayContainer>
-      <MediaTitle visible={state.isFullscreen} side={state.isMenuOpen.L ? 'L' : 'R'}>
+      <MediaTitle visible={state.isAnyMenuOpen()} side={state.isMenuOpen.L ? 'L' : 'R'}>
         {text}
       </MediaTitle>
     </MediaOverlayContainer>

@@ -2,7 +2,7 @@ import styled from 'styled-components';
 
 
 export const MediaOverlayContainer = styled.div`
-  position: fixed;
+  position: absolute;
   width: 100vw;
   height: 100vh;
   pointer-events: none;
