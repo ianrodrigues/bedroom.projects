@@ -1,7 +1,6 @@
 import * as i from 'types';
 import React from 'react';
 import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'react-router-dom';
-import styled from 'styled-components';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
@@ -18,14 +17,6 @@ const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 const Grid = React.lazy(() => import('pages/Grid'));
 const Info = React.lazy(() => import('pages/Info'));
-
-
-const OtherContainer = styled.div`
-  position: absolute;
-  top: 0;
-  width: 100vw;
-  height: 100vh;
-`;
 
 
 const App: React.VFC<RouteComponentProps> = () => {
@@ -87,13 +78,11 @@ const App: React.VFC<RouteComponentProps> = () => {
           <Route path="/info" component={Info} />
         </Switch>
       </React.Suspense>
-      <OtherContainer>
-        <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
-        <Header />
-        <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
-        <Loader />
-        <Footer />
-      </OtherContainer>
+      <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
+      <Header />
+      <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
+      <Loader />
+      <Footer />
     </main>
   );
 };
