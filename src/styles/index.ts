@@ -2,6 +2,9 @@ import { createGlobalStyle } from 'styled-components';
 
 const globalStyle = createGlobalStyle`
   body {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
     overflow-x: hidden;
     background-color: #000;
   }
@@ -10,6 +13,11 @@ const globalStyle = createGlobalStyle`
     box-sizing: border-box;
     min-height: 100%;
     height: 100%;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
   }
 
   main {
@@ -21,13 +29,6 @@ const globalStyle = createGlobalStyle`
   *::after,
   *::before {
     box-sizing: inherit;
-  }
-
-  body {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
   }
 
   button {
