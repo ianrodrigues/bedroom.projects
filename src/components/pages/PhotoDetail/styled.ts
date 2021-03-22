@@ -61,7 +61,7 @@ export const NextContainer = styled.div`
     h3 {
       position: absolute;
       /* Magic! */
-      bottom: calc(200vh - 96px);
+      bottom: calc(200vh - 95px);
     }
   }
 

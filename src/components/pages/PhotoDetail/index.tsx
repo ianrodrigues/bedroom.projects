@@ -148,6 +148,8 @@ const PhotoDetail: React.VFC = () => {
 
         // Reached bottom, start transition
         if (!isGoingNext && scrollY >= Math.floor(bodyBounds.height)) {
+          window.scrollTo(0, bodyBounds.height);
+
           setGoingNext('starting');
 
           if (state.loading === false) {
@@ -162,14 +164,14 @@ const PhotoDetail: React.VFC = () => {
             title.style.opacity = '0';
           }
 
+          // Remove visible class for transition animation
+          const curCover = document.getElementById('current-cover');
+          if (curCover) {
+            curCover.classList.remove('visible');
+          }
+
           setTimeout(() => {
             setGoingNext('ending');
-
-            // Remove visible class for transition animation
-            const curCover = document.getElementById('current-cover');
-            if (curCover) {
-              curCover.classList.remove('visible');
-            }
 
             const style = bodyEl.style.transition;
             bodyEl.style.transition = 'none';
