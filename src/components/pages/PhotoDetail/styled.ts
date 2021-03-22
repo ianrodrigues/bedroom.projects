@@ -60,8 +60,8 @@ export const NextContainer = styled.div`
 
     h3 {
       position: absolute;
-      top: calc(-100vh + 5px);
-      bottom: auto;
+      /* Magic! */
+      bottom: calc(200vh - 96px);
     }
   }
 
