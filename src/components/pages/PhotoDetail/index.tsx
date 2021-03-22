@@ -154,12 +154,17 @@ const PhotoDetail: React.VFC = () => {
             state.setLoading('page');
           }
 
+          // Fade out current title
           if (titleRef.current) {
-            titleRef.current.style.transition = 'none';
-            titleRef.current.style.transform = 'translate3d(0, 0, 0)';
+            const title = titleRef.current;
+
+            title.style.transition = 'opacity 500ms';
+            title.style.opacity = '0';
           }
 
           setTimeout(() => {
+            setGoingNext('ending');
+
             // Remove visible class for transition animation
             const curCover = document.getElementById('current-cover');
             if (curCover) {
@@ -180,6 +185,14 @@ const PhotoDetail: React.VFC = () => {
             setTimeout(() => {
               bodyEl.style.transition = style;
             }, 100);
+
+            if (titleRef.current) {
+              const title = titleRef.current;
+
+              title.style.opacity = '1';
+              title.style.transition = 'none';
+              title.style.transform = 'translate3d(0, 0, 0)';
+            }
 
             if (nextTitleRef.current) {
               nextTitleRef.current.style.transition = 'none';
@@ -342,7 +355,7 @@ const PhotoDetail: React.VFC = () => {
               <RowImg
                 id="current-cover"
                 layout={sections.head}
-                isNextHeader={isGoingNext === 'starting' || queries.has('next')}
+                isNextHeader={!!isGoingNext || queries.has('next')}
                 photo={sections.head.media[0]!}
               />
             </Row>
@@ -380,7 +393,7 @@ const PhotoDetail: React.VFC = () => {
           <MediaTitle
             ref={nextTitleRef}
             side="L"
-            visible={!isGoingNext && !state.isAnyMenuOpen() && sections.body.length > 0}
+            visible={!state.isAnyMenuOpen() && sections.body.length > 0}
             dataset={{ 'data-scroll': true }}
           >
             {detail?.next.title}
@@ -394,7 +407,7 @@ const PhotoDetail: React.VFC = () => {
         visible={!state.isAnyMenuOpen()}
         dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext === 'starting' ? detail?.next.title : detail?.title}
+        {isGoingNext === 'ending' ? detail?.next.title : detail?.title}
       </MediaTitle>
     </PhotoDetailContainer>
   );
