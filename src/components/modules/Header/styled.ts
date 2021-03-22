@@ -7,6 +7,7 @@ export const HeaderContainer = styled.header<HeaderContainerProps>((props) => cs
   left: 0;
   right: 0;
   margin: auto;
+  width: 100vw;
   cursor: default;
   user-select: none;
 
@@ -22,7 +23,7 @@ interface HeaderContainerProps {
 }
 
 export const Nav = styled.nav`
-  position: relative;
+  position: fixed;
   z-index: 2;
   display: grid;
   grid-template-columns: 33% 33% 33%;
@@ -30,6 +31,7 @@ export const Nav = styled.nav`
   justify-content: space-between;
   margin: 0 auto;
   padding: 0 20px;
+  width: 100vw;
   height: 50px;
   overflow: visible;
   mix-blend-mode: difference;

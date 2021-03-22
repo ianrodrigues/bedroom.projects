@@ -54,15 +54,20 @@ export const NextContainer = styled.div`
   }
 
   ${MediaTitleContainer} {
+    position: absolute;
     left: 0;
     right: 0;
-    top: auto;
-    bottom: ${window.innerHeight - 200}px;
+
+    h3 {
+      position: absolute;
+      top: calc(-100vh + 5px);
+      bottom: auto;
+    }
   }
 
-  > div {
+  div:first-of-type {
     position: relative;
-    max-height: 100%;
+    height: 100vh;
   }
 `;
 

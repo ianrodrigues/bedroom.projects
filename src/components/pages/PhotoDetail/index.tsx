@@ -1,11 +1,11 @@
 import * as i from 'types';
 import React from 'react';
 import { useHistory, useLocation, useParams } from 'react-router';
-import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
 import { useQuery } from 'hooks';
+import { SmoothScroll } from 'services';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
@@ -14,7 +14,7 @@ import RowImg from './components/RowImg';
 import { PhotoDetailContainer, FullContentContainer, NextContainer, Row } from './styled';
 
 
-let scroller: VirtualScroll;
+let scroller: SmoothScroll | undefined;
 let observers: IntersectionObserver[] = [];
 let loaded = 0;
 let photosAmt = 0;
@@ -26,7 +26,6 @@ interface Sections {
 
 type GoingNextPhases = false | 'starting' | 'ending';
 
-
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
   const params = useParams<i.DetailPageParams>();
@@ -34,11 +33,10 @@ const PhotoDetail: React.VFC = () => {
   const location = useLocation();
   const queries = useQuery();
   const containerRef = React.useRef<HTMLDivElement>(null);
-  const headRef = React.useRef<HTMLDivElement>(null);
-  const bodyRef = React.useRef<HTMLDivElement>(null);
+  const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
-  const nextPhotoRef = React.useRef<HTMLImageElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
+  const nextImageRef = React.useRef<HTMLDivElement>(null);
   const [sections, setSections] = React.useState<Sections>({
     head: undefined,
     body: [],
@@ -49,6 +47,7 @@ const PhotoDetail: React.VFC = () => {
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
     queries.has('next') ? 'ending' : false,
   );
+  const [, forceUpdate] = React.useState(0);
 
   // Initialise
   React.useEffect(() => {
@@ -65,147 +64,148 @@ const PhotoDetail: React.VFC = () => {
 
     observers = [];
 
-    setSections({ head: undefined, body: [] }); // Necessary for transitions between clicking photos pages
-    setDetail(getMediaObjectBySlug(params.slug, 'photo'));
+    window.scrollTo(0, 0);
 
-    if (scroller) {
-      scroller.__private_3_event.y = 0;
+    // Necessary for transitions between clicking photos pages
+    if (!isGoingNext) {
+      setSections({ head: undefined, body: [] });
     }
 
-    if (headRef.current) {
-      headRef.current.style.transform = 'translate3d(0, 0, 0)';
-    }
-    if (bodyRef.current) {
-      bodyRef.current.style.transform = 'translate3d(0, 0, 0)';
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.style.transition = 'none';
+      scrollContainerRef.current.style.transform = 'translateY(0)';
     }
     if (titleRef.current) {
+      titleRef.current.style.transition = 'none';
       titleRef.current.style.transform = 'translate3d(0, 0, 0)';
     }
     if (nextTitleRef.current) {
+      nextTitleRef.current.style.display = 'none';
+      nextTitleRef.current.style.transition = 'none';
       nextTitleRef.current.style.transform = 'translate3d(0, 0, 0)';
     }
-    if (nextPhotoRef.current) {
-      nextPhotoRef.current.style.transform = 'translate3d(0, 0, 0)';
+    if (nextImageRef.current) {
+      nextImageRef.current.style.transition = 'none';
+      nextImageRef.current.style.transform = 'translate3d(0, 0, 0)';
     }
 
-    setGoingNext(false);
+    setTimeout(() => {
+      setDetail(getMediaObjectBySlug(params.slug, 'photo'));
+      setGoingNext(false);
+
+      if (titleRef.current && !titleRef.current.style.transition.includes('opacity')) {
+        titleRef.current.style.transition += ', opacity 300ms';
+      }
+    }, 200);
   }, [location.pathname]);
 
   // Scroll logic
   React.useEffect(() => {
-    scroller = new VirtualScroll({
-      mouseMultiplier: 1,
-    });
+    if (containerRef.current && !state.loading) {
+      scroller = new SmoothScroll('#photos-container', {
+        duration: 1000,
+        timingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
+      });
 
-    scroller.on((scroll) => {
-      // Disable scrolling past top
-      if (scroll.y > 0) {
-        scroll.y = 0;
-        scroller.__private_3_event.y = 0;
-      }
+      scroller.on((scrollY, bodyEl, bottomEdge) => {
+        const bodyBounds = bodyEl.getBoundingClientRect();
+        const titleBounds = titleRef.current?.getBoundingClientRect();
 
-      // Disable scrolling if transitioning
-      if (!isGoingNext && !state.loading && containerRef.current && bodyRef.current && titleRef.current) {
-        const containerBounds = containerRef.current.getBoundingClientRect();
-        const bodyBounds = bodyRef.current.getBoundingClientRect();
-        const titleBounds = titleRef.current.getBoundingClientRect();
-        const bottomEdge = containerBounds.height - window.innerHeight;
+        if (!titleBounds) {
+          return;
+        }
 
-        // Start transition to next page
-        if (Math.abs(scroll.y) >= bottomEdge && !isGoingNext) {
+        const PADDING = 200;
+        const topEdge = window.innerHeight - PADDING - titleBounds.height;
+        const bodyHeight = bodyBounds.height - window.innerHeight - PADDING;
+        const titleY = (scrollY / bodyHeight) * topEdge;
+
+        if (titleRef.current) {
+          if (titleY < topEdge) {
+            titleRef.current.style.transform = `translate3d(0, ${-titleY}px, 0)`;
+          } else {
+            titleRef.current.style.transform = `translate3d(0, ${-topEdge}px, 0)`;
+          }
+        }
+
+        if (nextImageRef.current) {
+          nextImageRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
+        }
+
+        const nextTitleEdge = bottomEdge - window.innerHeight * 2 + 200;
+
+        if (nextTitleRef.current) {
+          if (scrollY < nextTitleEdge) {
+            if (nextTitleRef.current.style.display !== 'block') {
+              nextTitleRef.current.style.display = 'block';
+            }
+
+            nextTitleRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
+          } else {
+            nextTitleRef.current.style.transform = `translate3d(0, ${-nextTitleEdge}px, 0)`;
+          }
+        }
+
+        // Reached bottom, start transition
+        if (!isGoingNext && scrollY >= Math.floor(bodyBounds.height)) {
           setGoingNext('starting');
 
           if (state.loading === false) {
             state.setLoading('page');
           }
 
-          // Set head piece to next's
-          setSections((sections) => ({
-            ...sections,
-            head: detail?.next.bedroom_media_layouts[0],
-          }));
-
-          // Remove visible class for transition animation
-          const curCover = document.getElementById('current-cover');
-          if (curCover) {
-            curCover.classList.remove('visible');
-          }
-
-          // Set scroll positions to top
-          scroller.__private_3_event.y = 0;
-          scroll.y = 0;
-
-          if (headRef.current) {
-            headRef.current.style.transform = 'translate3d(0, 0, 0)';
-          }
-          if (bodyRef.current) {
-            bodyRef.current.style.transform = 'translate3d(0, 0, 0)';
-          }
-          if (nextPhotoRef.current) {
-            nextPhotoRef.current.style.transform = 'translate3d(0, 0, 0)';
-          }
           if (titleRef.current) {
+            titleRef.current.style.transition = 'none';
             titleRef.current.style.transform = 'translate3d(0, 0, 0)';
           }
-          if (nextTitleRef.current) {
-            nextTitleRef.current.style.transform = 'translate3d(0, 0, 0)';
-          }
 
-          // Route to next page
           setTimeout(() => {
-            history.push(`/photos/${detail?.next.slug}?next=1`);
-          }, 2000);
+            // Remove visible class for transition animation
+            const curCover = document.getElementById('current-cover');
+            if (curCover) {
+              curCover.classList.remove('visible');
+            }
 
-          // Prevent other scroll effects from happening
-          return;
+            const style = bodyEl.style.transition;
+            bodyEl.style.transition = 'none';
+            bodyEl.style.transform = 'translateY(0)';
+
+            window.scrollTo(0, 0);
+
+            setSections({
+              head: detail?.next.bedroom_media_layouts[0],
+              body: [],
+            });
+
+            setTimeout(() => {
+              bodyEl.style.transition = style;
+            }, 100);
+
+            if (nextTitleRef.current) {
+              nextTitleRef.current.style.transition = 'none';
+              nextTitleRef.current.style.transform = 'translate3d(0, 0, 0)';
+            }
+
+            if (nextImageRef.current) {
+              nextImageRef.current.style.transition = 'none';
+              nextImageRef.current.style.transform = 'translate3d(0, 0, 0)';
+            }
+
+            forceUpdate((i) => i + 1);
+
+            // Route to next page
+            setTimeout(() => {
+              history.push(`/photos/${detail?.next.slug}?next=1`);
+            }, 2000);
+          }, 1500);
         }
-
-        // With 100px clearance top & bottom
-        const PHOTO_PADDING = window.innerHeight * .3;
-        const CONTAINER_PADDING = 200;
-        const topEdge = window.innerHeight - titleBounds.height - 100 * 2;
-
-        const titleY =
-          (Math.abs(scroll.y) / (bodyBounds.height + CONTAINER_PADDING + PHOTO_PADDING)) * topEdge;
-
-        // Top edge
-        if (titleY < topEdge) {
-          titleRef.current.style.transform = `translate3d(0, -${titleY}px, 0)`;
-        }
-
-        const TOP_POS = 110;
-        const deltaBottomScrollDist = bottomEdge - Math.abs(scroll.y);
-        const nextTitleEdge = (window.innerHeight - CONTAINER_PADDING - TOP_POS);
-
-        if (nextTitleEdge < deltaBottomScrollDist) {
-          nextTitleRef.current!.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
-        }
-
-        if (headRef.current) {
-          headRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
-        }
-
-        bodyRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
-
-        if (nextPhotoRef.current) {
-          nextPhotoRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
-        }
-      }
-    });
-
-    return function cleanup() {
-      scroller.destroy();
-    };
-  }, [bodyRef, detail, isGoingNext, state.mouseMultiplier, state.loading]);
-
-  React.useEffect(() => {
-    if (queries.has('next')) {
-      setSections({
-        head: detail?.bedroom_media_layouts[0],
-        body: [],
       });
     }
-  }, [params.slug, state.allMedia, state.templates]);
+
+    return function cleanup() {
+      scroller?.destroy();
+    };
+  }, [containerRef, state.loading, isGoingNext]);
 
   React.useEffect(() => {
     if (!detail) {
@@ -272,6 +272,10 @@ const PhotoDetail: React.VFC = () => {
 
       // Observe position of all images
       for (const imgEl of imgEls) {
+        if (imgEl.id === 'next-cover') {
+          continue;
+        }
+
         const observer = new IntersectionObserver((entries, obs) => {
           const entry = entries[0];
 
@@ -331,9 +335,9 @@ const PhotoDetail: React.VFC = () => {
 
   return (
     <PhotoDetailContainer>
-      <DetailContainer ref={containerRef}>
-        {sections.head && (
-          <div ref={headRef}>
+      <DetailContainer id="photos-container" ref={containerRef}>
+        <div ref={scrollContainerRef} id="photos-container__body">
+          {sections.head && (
             <Row $height={sections.head.media[0]!.height}>
               <RowImg
                 id="current-cover"
@@ -342,54 +346,55 @@ const PhotoDetail: React.VFC = () => {
                 photo={sections.head.media[0]!}
               />
             </Row>
-          </div>
-        )}
-        {sections.body && (
-          <FullContentContainer ref={bodyRef} id="full-content">
-            {sections.body.map((row) => (
-              <Row key={row.id} displayType={row.display_type} location={row.row_location}>
-                {row.media.map((photo, i) => (
-                  <RowImg
-                    key={photo.id}
-                    layout={row}
-                    photo={photo}
-                    index={i}
-                  />
-                ))}
-              </Row>
-            ))}
-          </FullContentContainer>
-        )}
-        <NextContainer>
-          <div>
-            {detail?.next.bedroom_media_layouts[0] && (
-              <div ref={nextPhotoRef}>
-                <RowImg
-                  id="next-cover"
-                  layout={detail.next.bedroom_media_layouts[0]}
-                  photo={detail.next.bedroom_media_layouts[0].media[0]!}
-                  isNextHeader
-                />
-              </div>
-            )}
+          )}
+          {sections.body && (
+            <FullContentContainer id="full-content">
+              {sections.body.map((row) => (
+                <Row key={row.id} displayType={row.display_type} location={row.row_location}>
+                  {row.media.map((photo, i) => (
+                    <RowImg
+                      key={photo.id}
+                      layout={row}
+                      photo={photo}
+                      index={i}
+                    />
+                  ))}
+                </Row>
+              ))}
+            </FullContentContainer>
+          )}
+        </div>
 
-            <MediaTitle
-              ref={nextTitleRef}
-              side="L"
-              visible={!state.isAnyMenuOpen() && sections.body.length > 0}
-            >
-              {detail?.next.title}
-            </MediaTitle>
-          </div>
+        <NextContainer data-scroll-container>
+          {detail?.next.bedroom_media_layouts[0] && (
+            <div ref={nextImageRef} data-scroll>
+              <RowImg
+                id="next-cover"
+                layout={detail.next.bedroom_media_layouts[0]}
+                photo={detail.next.bedroom_media_layouts[0].media[0]!}
+                isNextHeader
+              />
+            </div>
+          )}
+
+          <MediaTitle
+            ref={nextTitleRef}
+            side="L"
+            visible={!isGoingNext && !state.isAnyMenuOpen() && sections.body.length > 0}
+            dataset={{ 'data-scroll': true }}
+          >
+            {detail?.next.title}
+          </MediaTitle>
         </NextContainer>
       </DetailContainer>
+      <div id="photos-container--hitbox" />
       <MediaTitle
         ref={titleRef}
         side="L"
         visible={!state.isAnyMenuOpen()}
-        autoHide
+        dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext ? detail?.next.title : detail?.title}
+        {isGoingNext === 'starting' ? detail?.next.title : detail?.title}
       </MediaTitle>
     </PhotoDetailContainer>
   );

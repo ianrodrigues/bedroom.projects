@@ -33,12 +33,6 @@ export interface AppState extends State {
 
 export type LoadingState = false | 'site' | 'page';
 
-export type PhotoDetailTemplate = [undefined, ...i.Layout[][]];
-
-export interface PhotoDetailTemplates {
-  [slug: string]: i.PhotoDetailTemplate;
-}
-
 export interface AllMedia {
   photo: i.StatePhotoObject[];
   video: i.StateVideoObject[];

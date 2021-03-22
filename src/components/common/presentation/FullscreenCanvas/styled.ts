@@ -2,7 +2,7 @@ import styled, { css } from 'styled-components';
 
 
 export const Canvas = styled.canvas<CanvasProps>((props) => css`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1;

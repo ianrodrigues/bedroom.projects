@@ -1,7 +1,7 @@
 import styled, { css } from 'styled-components';
 
 export const Name = styled.h1<NameProps>((props) => css`
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   z-index: 4;

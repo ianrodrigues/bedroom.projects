@@ -1,6 +1,8 @@
 import * as i from 'types';
 import React from 'react';
 import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'react-router-dom';
+import styled from 'styled-components';
+import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
 import useStore from 'state';
@@ -18,12 +20,21 @@ const Grid = React.lazy(() => import('pages/Grid'));
 const Info = React.lazy(() => import('pages/Info'));
 
 
+const OtherContainer = styled.div`
+  position: absolute;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+`;
+
+
 const App: React.VFC<RouteComponentProps> = () => {
   const state = useStore();
   const location = useLocation();
   const [isHomepage, setIsHomepage] = React.useState(location.pathname === '/');
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
   const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.isAnyMenuOpen());
+  const mainRef = React.useRef<HTMLElement>(null);
 
   React.useEffect(() => {
     setIsHomepage(location.pathname === '/');
@@ -49,12 +60,25 @@ const App: React.VFC<RouteComponentProps> = () => {
     }
   }, [isHomepage, state.isMenuOpen]);
 
+  React.useEffect(() => {
+    if (mainRef.current) {
+      if (state.loading) {
+        disableBodyScroll(mainRef.current);
+      } else {
+        enableBodyScroll(mainRef.current);
+      }
+    }
+
+    return function cleanup() {
+      if (mainRef.current) {
+        enableBodyScroll(mainRef.current);
+      }
+    };
+  }, [mainRef, state.loading]);
+
   return (
-    <main>
+    <main ref={mainRef}>
       <GlobalStyle />
-      <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
-      <Header />
-      <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
       <React.Suspense fallback={<div />}>
         <Switch>
           <Route path="/photos/:slug" component={PhotoDetail} />
@@ -63,8 +87,13 @@ const App: React.VFC<RouteComponentProps> = () => {
           <Route path="/info" component={Info} />
         </Switch>
       </React.Suspense>
-      <Loader />
-      <Footer />
+      <OtherContainer>
+        <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
+        <Header />
+        <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
+        <Loader />
+        <Footer />
+      </OtherContainer>
     </main>
   );
 };

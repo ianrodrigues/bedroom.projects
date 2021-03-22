@@ -1,3 +1,6 @@
+import { isSafari } from './isSafari';
+
+
 export function drawCoverFitVideo(
   ctx: CanvasRenderingContext2D,
   video: HTMLVideoElement,
@@ -29,8 +32,7 @@ export function drawCoverFitVideo(
   sx = (sw / nw) * x;
 
   // Safari has a bug with drawing out of bound
-  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-  if (isSafari) {
+  if (isSafari()) {
     x = 0;
     sx = 0;
   }

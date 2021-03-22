@@ -6,7 +6,6 @@ export const MediaTitleContainer = styled.div`
   position: absolute;
   left: 20px;
   right: 20px;
-  bottom: 105px;
   margin: auto;
   padding: 0;
   pointer-events: none;
@@ -22,9 +21,9 @@ export const MediaTitleInner = styled.div`
 `;
 
 export const Title = styled.h3<TitleProps>((props) => css`
-  position: absolute;
+  position: fixed;
   z-index: 1;
-  bottom: 0;
+  bottom: 105px;
   margin: 0;
   width: 50%;
   max-width: 800px;
@@ -47,5 +46,5 @@ export const Title = styled.h3<TitleProps>((props) => css`
 
 interface TitleProps {
   side: i.Side;
-  show: boolean;
+  show?: boolean;
 }

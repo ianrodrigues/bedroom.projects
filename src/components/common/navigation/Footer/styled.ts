@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 
 export const SocialMediaLinksContainer = styled.div<FooterProps>((props) => css`
-  position: absolute;
+  position: fixed;
   bottom: 15px;
   right: 0;
   padding: 0 20px;
@@ -37,7 +37,7 @@ export const SocialMediaLinksContainer = styled.div<FooterProps>((props) => css`
 `);
 
 export const InfoLink = styled(Link)<FooterProps>((props) => css`
-  position: absolute;
+  position: fixed;
   bottom: 15px;
   z-index: 2;
   padding: 0 20px;

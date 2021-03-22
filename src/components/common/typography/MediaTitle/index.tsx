@@ -48,7 +48,7 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
   return (
     <MediaTitleContainer>
       <MediaTitleInner>
-        <Title ref={ref} show={show && props.visible} side={props.side}>
+        <Title ref={ref} show={show && props.visible} side={props.side} {...props.dataset}>
           {props.children}
         </Title>
       </MediaTitleInner>
@@ -61,6 +61,7 @@ export type Props = {
   visible: boolean;
   autoHide?: boolean;
   children?: string;
+  dataset?: Record<string, true>;
 };
 
 export default MediaTitle;
