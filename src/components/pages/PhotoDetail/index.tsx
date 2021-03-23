@@ -151,6 +151,12 @@ const PhotoDetail: React.VFC = () => {
 
         // Reached bottom, start transition
         if (!isGoingNext && scrollY >= nextEdge) {
+          window.scrollTo(0, nextEdge);
+
+          if (nextImageRef.current) {
+            nextImageRef.current.style.transform = `translate3d(0, ${-nextEdge}px, 0)`;
+          }
+
           setGoingNext('starting');
 
           if (state.loading === false) {
@@ -159,7 +165,7 @@ const PhotoDetail: React.VFC = () => {
 
           // Fade out current title
           if (titleRef.current) {
-            titleRef.current.style.transition = 'opacity 500ms';
+            titleRef.current.style.transition = 'opacity 500ms 500ms';
             titleRef.current.style.opacity = '0';
           }
 
