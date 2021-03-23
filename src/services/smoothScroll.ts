@@ -23,13 +23,13 @@ export class SmoothScroll {
 
   params = {
     containerHeight: 0,
-    duration: 0,
-    timingFunction: '',
+    duration: 1000,
+    timingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
   }
 
   private onFn?: () => void;
 
-  constructor(_containerSelector: string, _params: { duration: number, timingFunction: string }) {
+  constructor(_containerSelector: string) {
     // Init DOM elements
     this.$ = {
       container: document.querySelector<HTMLDivElement>(_containerSelector),
@@ -39,20 +39,12 @@ export class SmoothScroll {
       scrollers: document.querySelectorAll<HTMLDivElement>('[data-scroll]'),
     };
 
-    // Init params
-    this.params = {
-      containerHeight: this.$.containerBody!.offsetHeight,
-      duration: _params.duration,
-      timingFunction: _params.timingFunction,
-    };
-
     this.initStyle();
     this.initListeners();
   }
 
   destroy(): void {
     window.removeEventListener('scroll', this.handleScroll);
-    window.removeEventListener('resize', this.handleResize);
 
     if (this.onFn) {
       window.removeEventListener('scroll', this.onFn);
@@ -68,15 +60,13 @@ export class SmoothScroll {
   }
 
   private initStyle(): void {
-    const currentScrollY = window.scrollY;
-
     // Set container style
     this.$.container!.style.overflow = 'hidden';
     this.$.container!.style.position = 'fixed';
     this.$.container!.style.height = '100vh';
 
     // Set containerBody style
-    this.$.containerBody!.style.transform = `translateY(${-window.scrollY}px)`; // Scroll to current scroll
+    this.$.containerBody!.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
 
     // Add transtion after scroll to
     const addTransition = () => {
@@ -85,7 +75,7 @@ export class SmoothScroll {
       const splitTransform = getComputedStyle(this.$.containerBody!).transform.split(regex);
       const currentTranslateY = parseInt(splitTransform[splitTransform.length - 1]!);
 
-      if (-currentTranslateY !== currentScrollY) {
+      if (-currentTranslateY !== window.scrollY) {
         setTimeout(() => {
           addTransition();
         }, 10);
@@ -104,18 +94,8 @@ export class SmoothScroll {
     // Run addTranstion
     addTransition();
 
-    const setHitboxHeight = () => {
-      let heightFromContainers = this.$.containerBody!.offsetHeight;
-
-      this.loopScrollContainers((el) => {
-        heightFromContainers += el.offsetHeight;
-      });
-
-      this.$.hitbox!.style.height = `${heightFromContainers}px`;
-    };
-
     const observer = new ResizeObserver((entries) => {
-      setHitboxHeight();
+      this.setHitboxHeight();
     });
 
     observer.observe(this.$.containerBody!);
@@ -124,24 +104,26 @@ export class SmoothScroll {
       observer.observe(el);
     });
 
-    setHitboxHeight();
+    this.setHitboxHeight();
   }
 
   private initListeners(): void {
     window.addEventListener('scroll', this.handleScroll);
-    window.addEventListener('resize', this.handleResize);
+    window.addEventListener('resize', this.setHitboxHeight);
   }
 
   private handleScroll = (): void => {
-    this.$.containerBody!.style.transform = `translateY(${-window.scrollY}px)`;
+    this.$.containerBody!.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
   }
 
-  private handleResize(): void {
-    // Update usefull params
-    this.params.containerHeight = this.$.containerBody!.offsetHeight;
+  private setHitboxHeight() {
+    let heightFromContainers = this.$.containerBody!.offsetHeight;
 
-    // Update usefull style
-    this.$.hitbox!.style.height = `${this.params.containerHeight}px`;
+    this.loopScrollContainers((el) => {
+      heightFromContainers += el.offsetHeight;
+    });
+
+    this.$.hitbox!.style.height = `${heightFromContainers}px`;
   }
 
   private loopScrollContainers(cb: (el: HTMLDivElement) => void) {

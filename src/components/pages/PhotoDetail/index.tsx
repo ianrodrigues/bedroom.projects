@@ -47,7 +47,6 @@ const PhotoDetail: React.VFC = () => {
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
     queries.has('next') ? 'ending' : false,
   );
-  const [, forceUpdate] = React.useState(0);
 
   // Initialise
   React.useEffect(() => {
@@ -102,13 +101,13 @@ const PhotoDetail: React.VFC = () => {
   // Scroll logic
   React.useEffect(() => {
     if (containerRef.current && !state.loading) {
-      scroller = new SmoothScroll('#photos-container', {
-        duration: 1000,
-        timingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
-      });
+      scroller = new SmoothScroll('#photos-container');
 
       scroller.on((scrollY, bodyEl, bottomEdge) => {
-        const bodyBounds = bodyEl.getBoundingClientRect();
+        if (isGoingNext) {
+          return;
+        }
+
         const titleBounds = titleRef.current?.getBoundingClientRect();
 
         if (!titleBounds) {
@@ -117,7 +116,7 @@ const PhotoDetail: React.VFC = () => {
 
         const PADDING = 200;
         const topEdge = window.innerHeight - PADDING - titleBounds.height;
-        const bodyHeight = bodyBounds.height - window.innerHeight - PADDING;
+        const bodyHeight = bodyEl.offsetHeight - window.innerHeight - PADDING;
         const titleY = (scrollY / bodyHeight) * topEdge;
 
         if (titleRef.current) {
@@ -146,10 +145,12 @@ const PhotoDetail: React.VFC = () => {
           }
         }
 
-        // Reached bottom, start transition
-        if (!isGoingNext && scrollY >= Math.floor(bodyBounds.height)) {
-          window.scrollTo(0, bodyBounds.height);
+        const nextEdge = Math.round(bodyEl.offsetHeight);
 
+        // console.log(nextEdge);
+
+        // Reached bottom, start transition
+        if (!isGoingNext && scrollY >= nextEdge) {
           setGoingNext('starting');
 
           if (state.loading === false) {
@@ -158,10 +159,8 @@ const PhotoDetail: React.VFC = () => {
 
           // Fade out current title
           if (titleRef.current) {
-            const title = titleRef.current;
-
-            title.style.transition = 'opacity 500ms';
-            title.style.opacity = '0';
+            titleRef.current.style.transition = 'opacity 500ms';
+            titleRef.current.style.opacity = '0';
           }
 
           // Remove visible class for transition animation
@@ -189,11 +188,9 @@ const PhotoDetail: React.VFC = () => {
             }, 100);
 
             if (titleRef.current) {
-              const title = titleRef.current;
-
-              title.style.opacity = '1';
-              title.style.transition = 'none';
-              title.style.transform = 'translate3d(0, 0, 0)';
+              titleRef.current.style.opacity = '1';
+              titleRef.current.style.transition = 'none';
+              titleRef.current.style.transform = 'translate3d(0, 0, 0)';
             }
 
             if (nextTitleRef.current) {
@@ -205,8 +202,6 @@ const PhotoDetail: React.VFC = () => {
               nextImageRef.current.style.transition = 'none';
               nextImageRef.current.style.transform = 'translate3d(0, 0, 0)';
             }
-
-            forceUpdate((i) => i + 1);
 
             // Route to next page
             setTimeout(() => {
