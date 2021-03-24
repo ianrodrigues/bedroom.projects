@@ -3,7 +3,7 @@ import styled, { css, keyframes } from 'styled-components';
 
 
 export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 3;
