@@ -1,24 +1,27 @@
 import * as i from 'types';
 import React from 'react';
 import { useHistory, useParams } from 'react-router';
-import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
+import { getMediaObjectBySlug } from 'state/utils';
 import { useQuery } from 'hooks';
+import { SmoothScroll } from 'services';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import { DetailContainer } from 'common/presentation/DetailPage';
-import { getMediaObjectBySlug } from 'state/utils';
 
 import Player from './components/Player';
-import { DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer, VideoDetailContainer } from './styled';
+import {
+  DescriptionContainer, DetailPlayerContainer, DetailPlayerOverlay, VideoPoster, NextContainer,
+  VideoDetailContainer,
+} from './styled';
 
 
 const loadAmt = 2; // Video poster & video canplay event
 let loaded = 0;
-let scroller: VirtualScroll;
+let scroller: SmoothScroll | undefined;
 
-export type GoingNext = false | 'starting' | 'transition';
+export type GoingNext = false | 'starting' | 'ending';
 
 const VideoDetail: React.VFC = () => {
   const state = useStore();
@@ -26,7 +29,10 @@ const VideoDetail: React.VFC = () => {
   const queries = useQuery();
   const params = useParams<i.DetailPageParams>();
   const containerRef = React.useRef<HTMLDivElement>(null);
+  const bodyRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
+  const nextVideoRef = React.useRef<HTMLDivElement>(null);
+  const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
   const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
   const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
 
@@ -59,42 +65,73 @@ const VideoDetail: React.VFC = () => {
   }, [detail]);
 
   React.useEffect(() => {
-    setDetail(getMediaObjectBySlug(params.slug, 'video'));
-    setGoingNext(false);
-
-    if (scroller) {
-      scroller.__private_3_event.y = 0;
+    const bodyEl = bodyRef.current;
+    if (bodyEl) {
+      bodyEl.style.transition = 'none';
     }
 
-    if (containerRef.current) {
-      containerRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
-    }
-    if (titleRef.current) {
-      titleRef.current.style.transform = 'translate3d(0px, 0px, 0px)';
-    }
+    window.scrollTo(0, 0);
+
+    setTimeout(() => {
+      setDetail(getMediaObjectBySlug(params.slug, 'video'));
+      setGoingNext(false);
+
+      if (titleRef.current) {
+        titleRef.current.style.removeProperty('opacity');
+      }
+    }, 200);
   }, [params.slug, state.allMedia?.video]);
 
   React.useEffect(() => {
-    scroller = new VirtualScroll({
-      mouseMultiplier: 1,
-    });
+    scroller = new SmoothScroll('#film-container');
 
-    scroller.on((scroll) => {
-      if (scroll.y > 0) {
-        scroll.y = 0;
-        scroller.__private_3_event.y = 0;
+    scroller.on((scrollY, bodyEl, bottomEdge) => {
+      if (nextVideoRef.current) {
+        nextVideoRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
       }
 
-      if (!isGoingNext && !state.isLoading && containerRef.current) {
-        const containerBounds = containerRef.current.getBoundingClientRect();
-        const VIDEO_BOTTOM_PADDING = 50;
-        const bottomEdge = containerBounds.height - window.innerHeight + VIDEO_BOTTOM_PADDING;
+      if (titleRef.current) {
+        const PADDING = 200;
+        const topEdge = window.innerHeight - PADDING - titleRef.current.offsetHeight;
+        const bodyHeight = bodyEl.offsetHeight - window.innerHeight;
+        const y = (scrollY / bodyHeight) * topEdge;
 
-        if (Math.abs(scroll.y) >= bottomEdge) {
-          scroll.y = -bottomEdge;
-          scroller.__private_3_event.y = -bottomEdge;
+        if (y < topEdge) {
+          titleRef.current.style.transform = `translate3d(0, ${-y}px, 0)`;
+        } else {
+          titleRef.current.style.transform = `translate3d(0, ${-topEdge}px, 0)`;
+        }
 
-          containerRef.current.style.transform = `translate3d(0px, ${scroll.y}px, 0px)`;
+        if (!titleRef.current.style.transition.includes('opacity')) {
+          titleRef.current.style.transition = titleRef.current.style.transition + ', opacity 300ms';
+        }
+      }
+
+
+      if (nextTitleRef.current) {
+        const PADDING = 200 - 50;
+        const nextTitleEdge = bottomEdge - window.innerHeight + PADDING;
+
+        nextTitleRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
+
+        if (scrollY < nextTitleEdge) {
+          if (nextTitleRef.current.style.display !== 'block') {
+            nextTitleRef.current.style.display = 'block';
+          }
+
+          nextTitleRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
+        } else {
+          nextTitleRef.current.style.transform = `translate3d(0, ${-nextTitleEdge}px, 0)`;
+        }
+      }
+
+      if (!isGoingNext) {
+        if (Math.abs(scrollY) >= bottomEdge) {
+          window.scrollTo(0, bottomEdge);
+
+          if (nextVideoRef.current) {
+            nextVideoRef.current.style.transform = `translate3d(0, ${-bottomEdge}px, 0)`;
+          }
 
           setGoingNext('starting');
 
@@ -102,37 +139,37 @@ const VideoDetail: React.VFC = () => {
             state.setLoading('page');
           }
 
+          // Fade out current title
+          if (titleRef.current) {
+            titleRef.current.style.opacity = '0';
+          }
+
           setTimeout(() => {
-            setGoingNext('transition');
-          }, 600);
+            setGoingNext('ending');
+
+            if (titleRef.current) {
+              titleRef.current.style.transition = 'none';
+              titleRef.current.style.opacity = '1';
+              titleRef.current.style.transform = 'translate3d(0, 0, 0)';
+            }
+
+            if (nextTitleRef.current) {
+              nextTitleRef.current.style.transition = 'none';
+              nextTitleRef.current.style.transform = 'translate3d(0, 0, 0)';
+            }
+          }, 2100);
 
           setTimeout(() => {
             history.push(`/film/${detail?.next.slug}?next=1`);
-          }, 1300);
-
-          return;
-        }
-
-        containerRef.current.style.transform = `translate3d(0px, ${scroll.y}px, 0px)`;
-
-        if (titleRef.current) {
-          const containerBounds = containerRef.current.getBoundingClientRect();
-          const titleBounds = titleRef.current.getBoundingClientRect();
-          const TOP_BOTTOM_PADDING = 100 * 2;
-          const titleDistance = window.innerHeight - TOP_BOTTOM_PADDING;
-          const y = (Math.abs(scroll.y) / (containerBounds.height - window.innerHeight)) * titleDistance;
-
-          if (y < titleDistance - titleBounds.height) {
-            titleRef.current.style.transform = `translate3d(0px, -${y}px, 0px)`;
-          }
+          }, 2500);
         }
       }
     });
 
     return function cleanup() {
-      scroller.destroy();
+      scroller?.destroy();
     };
-  }, [containerRef, isGoingNext, detail, state.loading]);
+  }, [detail, isGoingNext]);
 
   function handleLoad() {
     loaded++;
@@ -144,24 +181,26 @@ const VideoDetail: React.VFC = () => {
 
   return (
     <VideoDetailContainer isNext={isGoingNext}>
-      <DetailContainer ref={containerRef}>
-        <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
-          {detail && (
-            <>
-              <VideoPoster $src={CMS_URL + detail.video_poster?.url} />
-              <Player videoObject={detail} />
-              <DetailPlayerOverlay />
-            </>
-          )}
-        </DetailPlayerContainer>
+      <DetailContainer id="film-container" ref={containerRef}>
+        <div ref={bodyRef} id="film-container__body">
+          <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
+            {detail && (
+              <>
+                <VideoPoster $src={CMS_URL + detail.video_poster?.url} />
+                <Player videoObject={detail} />
+                <DetailPlayerOverlay />
+              </>
+            )}
+          </DetailPlayerContainer>
 
-        <DescriptionContainer>
-          <div dangerouslySetInnerHTML={{ __html: detail?.description || '' }} />
-          <div dangerouslySetInnerHTML={{ __html: detail?.credits || '' }} />
-        </DescriptionContainer>
+          <DescriptionContainer>
+            <div dangerouslySetInnerHTML={{ __html: detail?.description || '' }} />
+            <div dangerouslySetInnerHTML={{ __html: detail?.credits || '' }} />
+          </DescriptionContainer>
+        </div>
 
-        <NextContainer isGoingNext={isGoingNext}>
-          <DetailPlayerContainer>
+        <NextContainer id="next-container" isGoingNext={isGoingNext}>
+          <DetailPlayerContainer ref={nextVideoRef} data-scroll>
             {(detail?.next && (
               <>
                 <VideoPoster $src={CMS_URL + detail.next.video_poster?.url} />
@@ -170,19 +209,25 @@ const VideoDetail: React.VFC = () => {
             ))}
           </DetailPlayerContainer>
 
-          <MediaTitle side="R" visible={!state.isAnyMenuOpen()}>
+          <MediaTitle
+            ref={nextTitleRef}
+            side="R"
+            visible={!state.isAnyMenuOpen()}
+            dataset={{ 'data-scroll': true }}
+          >
             {detail?.next.title}
           </MediaTitle>
         </NextContainer>
       </DetailContainer>
-
+      <div id="film-container--hitbox" />
       <MediaTitle
         ref={titleRef}
         side="R"
         visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
         autoHide
+        dataset={{ 'data-scroll': true }}
       >
-        {detail?.title}
+        {isGoingNext === 'ending' ? detail?.next.title : detail?.title}
       </MediaTitle>
     </VideoDetailContainer>
   );

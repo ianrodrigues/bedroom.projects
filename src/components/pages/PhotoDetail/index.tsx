@@ -131,9 +131,9 @@ const PhotoDetail: React.VFC = () => {
           nextImageRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
         }
 
-        const nextTitleEdge = bottomEdge - window.innerHeight * 2 + 200;
-
         if (nextTitleRef.current) {
+          const nextTitleEdge = bottomEdge - window.innerHeight * 2 + 200;
+
           if (scrollY < nextTitleEdge) {
             if (nextTitleRef.current.style.display !== 'block') {
               nextTitleRef.current.style.display = 'block';
@@ -182,16 +182,14 @@ const PhotoDetail: React.VFC = () => {
             bodyEl.style.transition = 'none';
             bodyEl.style.transform = 'translateY(0)';
 
-            window.scrollTo(0, 0);
+            setTimeout(() => {
+              bodyEl.style.transition = style;
+            }, 100);
 
             setSections({
               head: detail?.next.bedroom_media_layouts[0],
               body: [],
             });
-
-            setTimeout(() => {
-              bodyEl.style.transition = style;
-            }, 100);
 
             if (titleRef.current) {
               titleRef.current.style.opacity = '1';
@@ -208,6 +206,8 @@ const PhotoDetail: React.VFC = () => {
               nextImageRef.current.style.transition = 'none';
               nextImageRef.current.style.transform = 'translate3d(0, 0, 0)';
             }
+
+            window.scrollTo(0, 0);
 
             // Route to next page
             setTimeout(() => {

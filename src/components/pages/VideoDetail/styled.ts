@@ -15,6 +15,10 @@ export const VideoDetailContainer = styled.div<VideoDetailContainerProps>((props
       transition: opacity 300ms;
     }
   `}
+
+  > ${MediaTitleContainer} h3 {
+    right: 20px;
+  }
 `);
 
 interface VideoDetailContainerProps {
@@ -27,7 +31,8 @@ export const DescriptionContainer = styled.div`
   grid-template-rows: 1fr;
   gap: 0px 20px;
   grid-template-areas: "description credits";
-  padding: 100px 0;
+  padding: 100px 0 200px;
+  min-height: 100vh;
 
   div {
     color: #fff;
@@ -113,12 +118,18 @@ interface DetailPlayerContainerProps {
 
 export const NextContainer = styled.div<NextContainerProps>((props) => css`
   position: relative;
+  width: 100%;
+  height: 100vh;
+
+  ${DetailPlayerContainer} {
+    padding: ${Math.floor(window.innerHeight * .3)}px 0 0;
+  }
   
   ${VideoPoster} {
     transform: translate3d(0, 0, 0);
 
     ${!!props.isGoingNext && css`
-      transition: opacity 600ms 1000ms ${EASING};
+      transition: opacity 600ms 1500ms ${EASING};
       opacity: 0;
     `}
   }
@@ -127,14 +138,24 @@ export const NextContainer = styled.div<NextContainerProps>((props) => css`
     transform: scaleY(.5);
 
     ${!!props.isGoingNext && css`
-      transition: transform 600ms ease-in-out;
+      transition: transform 600ms 300ms ease-in-out;
       transform: scaleY(0);
     `}
   }
 
   ${MediaTitleContainer} {
+    position: absolute;
     right: 0;
-    bottom: 55px;
+    left: 0;
+
+    > div {
+      height: 100vh;
+    }
+
+    h3 {
+      position: absolute;
+      bottom: calc(200vh - 95px);
+    }
   }
 `);
 
