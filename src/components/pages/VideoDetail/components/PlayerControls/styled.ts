@@ -4,7 +4,7 @@ import styled, { css } from 'styled-components';
 export const PlayerControlsContainer = styled.div<PlayerControlsContainerProps>((props) => css`
   position: relative;
   width: 100%;
-  height: ${window.innerHeight - 50}px;
+  height: calc(100vh - 50px);
 
   ${props.hideCursor && css`
     cursor: none;

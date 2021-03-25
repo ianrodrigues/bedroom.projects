@@ -78,7 +78,7 @@ interface VideoPosterProps {
 export const DetailPlayerContainer = styled.div<DetailPlayerContainerProps>((props) => css`
   position: relative;
   width: 100%;
-  height: ${window.innerHeight - 50}px;
+  height: calc(100vh - 50px);
 
   ${PlayerContainer} {
     opacity: 0;

@@ -67,6 +67,15 @@ const Player: React.VFC<Props> = (props) => {
         state.videoPlayer.setPlaying(true);
       }, 2200);
     });
+
+    window.addEventListener('resize', () => {
+      if (videoRef.current) {
+        setControlsDimensions({
+          width: videoRef.current.clientWidth,
+          height: videoRef.current.clientHeight,
+        });
+      }
+    });
   }, [videoRef]);
 
   // Play/pause state
