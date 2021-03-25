@@ -1,13 +1,13 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 
-export const HomeLinkAnchor = styled(Link)`
+export const HomeLinkAnchor = styled(Link)((props) => css`
   display: block;
   margin: 0 auto;
   font-size: 30px;
   color: #fff;
   text-decoration: none;
   mix-blend-mode: difference;
-  font-family: 'Caveat Brush';  
-`;
+  font-family: ${props.theme.fonts.primary};
+`);

@@ -55,7 +55,7 @@ export const GridTile = styled.div<GridTileProps>((props) => css`
     height: 100%;
     color: #fff;
     text-decoration: none;
-    font-family: 'Caveat Brush';
+    font-family: ${props.theme.fonts.tertiary};
   }
 
   ${props.visible && css`

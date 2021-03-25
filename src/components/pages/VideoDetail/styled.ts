@@ -26,7 +26,7 @@ interface VideoDetailContainerProps {
   isNext?: GoingNext;
 }
 
-export const DescriptionContainer = styled.div`
+export const DescriptionContainer = styled.div((props) => css`
   display: grid;
   grid-template-columns: 20% 20%;
   grid-template-rows: 1fr;
@@ -37,7 +37,7 @@ export const DescriptionContainer = styled.div`
 
   div {
     color: #fff;
-    font-family: 'Roboto';
+    font-family: ${props.theme.fonts.secondary};
     font-size: 18px;
     line-height: 1.333em;
     white-space: pre-wrap;
@@ -50,7 +50,7 @@ export const DescriptionContainer = styled.div`
       color: #fff;
     }
   }
-`;
+`);
 
 export const DetailPlayerOverlay = styled.div`
   position: absolute;

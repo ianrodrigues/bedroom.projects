@@ -10,7 +10,7 @@ export const LinkCSS = css<FooterProps>((props) => css`
   position: fixed;
   bottom: 15px;
   z-index: 2;
-  font-family: 'Roboto';
+  font-family: ${props.theme.fonts.secondary};
   font-size: 24px;
   color: #fff;
   text-decoration: none;

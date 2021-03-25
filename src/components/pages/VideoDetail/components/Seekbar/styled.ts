@@ -36,14 +36,14 @@ export const SeekbarTimeIndicator = styled.span.attrs<ProgressProps>((props) => 
   style: {
     left: `${props.progress}%`,
   },
-}))<ProgressProps>`
+}))<ProgressProps>((props) => css`
   position: absolute;
   top: 50%;
   transform: translate3d(-50%, -150%, 0);
   pointer-events: none;
-  font-family: 'Roboto';
+  font-family: ${props.theme.fonts.secondary};
   transition: left 100ms;
-`;
+`);
 
 interface ProgressProps {
   progress: number;

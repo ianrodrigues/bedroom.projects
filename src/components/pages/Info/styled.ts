@@ -19,11 +19,11 @@ interface InfoContainerProps {
   $visible?: boolean;
 }
 
-export const InfoDescription = styled.div`
+export const InfoDescription = styled.div((props) => css`
   width: 40%;
   padding: 105px 20px 0;
   color: #fff;
-  font-family: 'Roboto';
+  font-family: ${props.theme.fonts.secondary};
   font-size: 18px;
   white-space: pre-wrap;
 
@@ -35,7 +35,7 @@ export const InfoDescription = styled.div`
   a {
     color: #fff;
   }
-`;
+`);
 
 export const InfoFigure = styled.figure`
   position: fixed;

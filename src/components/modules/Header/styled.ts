@@ -22,7 +22,7 @@ interface HeaderContainerProps {
   isOpen?: boolean;
 }
 
-export const Nav = styled.nav`
+export const Nav = styled.nav((props) => css`
   position: fixed;
   z-index: 2;
   display: grid;
@@ -35,12 +35,12 @@ export const Nav = styled.nav`
   height: 50px;
   overflow: visible;
   mix-blend-mode: difference;
-  font-family: 'Roboto';
+  font-family: ${props.theme.fonts.secondary};
 
   div {
     height: 0;
   }
-`;
+`);
 
 function setListAnimations(props: NavContainerProps) {
   const MAX = 10;

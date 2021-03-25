@@ -8,7 +8,7 @@ export const Name = styled.h1<NameProps>((props) => css`
   margin: 0 50% 0 0;
   transform: translate(-50%, -50%);
   padding: 0;
-  font-family: 'Caveat Brush';
+  font-family: ${props.theme.fonts.primary};
   mix-blend-mode: difference;
   color: #fff;
   font-size: 150px;
