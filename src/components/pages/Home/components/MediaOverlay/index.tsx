@@ -26,7 +26,7 @@ const MediaOverlay: React.VFC = () => {
     text = state.video?.title;
   }
 
-  const containerVisible = state.isAnyMenuOpen() || !location.pathname.includes('info');
+  const containerVisible = state.isAnyMenuOpen() || (!location.pathname.includes('info') && !location.pathname.includes('grid'));
 
   return (
     <MediaOverlayContainer $visible={containerVisible}>

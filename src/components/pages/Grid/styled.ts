@@ -2,12 +2,8 @@ import styled, { css } from 'styled-components';
 
 
 export const GridPageContainer = styled.div<GridPageContainerProps>((props) => css`
-  position: absolute;
-  top: 105px;
-  left: 20px;
-  right: 20px;
-  margin: auto;
-  padding: 0;
+  margin: 105px auto;
+  padding: 0 20px 200px;
 
   > div {
     opacity: 0;
