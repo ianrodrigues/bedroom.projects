@@ -25,7 +25,6 @@ const App: React.VFC<RouteComponentProps> = () => {
   const [isHomepage, setIsHomepage] = React.useState(location.pathname === '/');
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
   const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.isAnyMenuOpen());
-  const mainRef = React.useRef<HTMLElement>(null);
 
   React.useEffect(() => {
     setIsHomepage(location.pathname === '/');
@@ -52,23 +51,25 @@ const App: React.VFC<RouteComponentProps> = () => {
   }, [isHomepage, state.isMenuOpen]);
 
   React.useEffect(() => {
-    if (mainRef.current) {
+    const body = document.querySelector('body');
+
+    if (body) {
       if (state.loading) {
-        disableBodyScroll(mainRef.current);
+        disableBodyScroll(body);
       } else {
-        enableBodyScroll(mainRef.current);
+        enableBodyScroll(body);
       }
     }
 
     return function cleanup() {
-      if (mainRef.current) {
-        enableBodyScroll(mainRef.current);
+      if (body) {
+        enableBodyScroll(body);
       }
     };
-  }, [mainRef, state.loading]);
+  }, [state.loading]);
 
   return (
-    <main ref={mainRef}>
+    <main>
       <GlobalStyle />
       <React.Suspense fallback={<div />}>
         <Switch>

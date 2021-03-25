@@ -6,12 +6,13 @@ import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
 export const InfoContainer = styled.div<InfoContainerProps>((props) => css`
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   opacity: 0;
   transform: translate3d(0, 25px, 0);
   transition: opacity 500ms, transform 500ms;
 
-  ${MediaTitleContainer} {
-    bottom: 20px;
+  ${MediaTitleContainer} h3 {
+    right: 20px;
   }
 
   ${props.$visible && css`
@@ -43,7 +44,7 @@ export const InfoDescription = styled.div`
 `;
 
 export const InfoFigure = styled.figure`
-  position: absolute;
+  position: fixed;
   bottom: 0;
   left: 40%;
 

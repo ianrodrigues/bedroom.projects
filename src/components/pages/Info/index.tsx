@@ -2,16 +2,16 @@ import * as i from 'types';
 import React from 'react';
 import { useQuery } from 'react-query';
 import Showdown from 'showdown';
-import VirtualScroll from 'virtual-scroll';
 
 import useStore from 'state';
+import { SmoothScroll } from 'services';
 
 import MediaTitle from 'common/typography/MediaTitle';
 
 import { InfoContainer, InfoDescription, InfoFigure } from './styled';
 
 
-let scroller: VirtualScroll;
+let scroller: SmoothScroll | undefined;
 let loaded = 0;
 const LOADED_AMT = 1;
 
@@ -39,49 +39,18 @@ const Info: React.VFC = () => {
   );
 
   React.useEffect(() => {
-    scroller = new VirtualScroll({
-      mouseMultiplier: 1,
-    });
-
-    scroller.on((scroll) => {
-      if (!descriptionRef.current) {
-        return;
-      }
-
-      // Disable scrolling past top
-      if (scroll.y > 0) {
-        scroll.y = 0;
-        scroller.__private_3_event.y = 0;
-      }
-
-      const PADDING_BOTTOM = 20;
-      const containerBounds = descriptionRef.current.getBoundingClientRect();
-      const bottomEdge = PADDING_BOTTOM + Math.abs(window.innerHeight - containerBounds.height);
-
-      // No need to scroll
-      if (20 + containerBounds.height < window.innerHeight) {
-        return;
-      }
-
-      if (Math.abs(scroll.y) < bottomEdge) {
-        descriptionRef.current.style.transform = `translate3d(0, ${scroll.y}px, 0)`;
-      } else {
-        // Stop scroll momentum
-        scroll.y = -bottomEdge;
-        scroller.__private_3_event.y = -bottomEdge;
-      }
-    });
-
-    return function cleanup() {
-      scroller.destroy();
-    };
-  }, []);
-
-  React.useEffect(() => {
     if (!data && !state.loading) {
       state.setLoading('page');
     }
-  }, [data]);
+
+    if (data && !state.loading) {
+      scroller = new SmoothScroll('#info-container');
+
+      return function cleanup() {
+        scroller?.destroy();
+      };
+    }
+  }, [data, state.loading]);
 
   function handleLoaded() {
     loaded++;
@@ -101,10 +70,12 @@ const Info: React.VFC = () => {
 
   return (
     <InfoContainer $visible={visible}>
-      <InfoDescription ref={descriptionRef} dangerouslySetInnerHTML={{ __html: data.description }} />
+      <div id="info-container">
+        <InfoDescription id="info-container__body" ref={descriptionRef} dangerouslySetInnerHTML={{ __html: data.description }} />
+      </div>
+      <div id="info-container--hitbox" />
 
       <InfoFigure>
-        {/* eslint-disable-next-line jsx-a11y/img-redundant-alt */}
         <img src={CMS_URL + data.image.url} alt={data.image.alternativeText} />
       </InfoFigure>
 
