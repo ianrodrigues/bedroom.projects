@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import InstagramSvg from 'vectors/instagram-brands.svg';
 import VimeoSvg from 'vectors/vimeo-v-brands.svg';
 
-import { InfoLink, SocialMediaLinksContainer } from './styled';
+import { InfoLink, SocialMediaLink } from './styled';
 
 
 const Footer: React.VFC = () => {
@@ -19,14 +19,12 @@ const Footer: React.VFC = () => {
   return (
     <>
       <InfoLink to="/info" $visible={visible}>Info</InfoLink>
-      <SocialMediaLinksContainer $visible={visible}>
-        <a href="https://www.instagram.com/bedroom.projects/" target="_blank" rel="noreferrer">
-          <InstagramSvg />
-        </a>
-        <a href="https://vimeo.com/bedroomprojects" target="_blank" rel="noreferrer">
-          <VimeoSvg />
-        </a>
-      </SocialMediaLinksContainer>
+      <SocialMediaLink href="https://www.instagram.com/bedroom.projects/" $visible={visible}>
+        <InstagramSvg />
+      </SocialMediaLink>
+      <SocialMediaLink href="https://vimeo.com/bedroomprojects" $visible={visible}>
+        <VimeoSvg />
+      </SocialMediaLink>
     </>
   );
 };

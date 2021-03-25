@@ -2,45 +2,14 @@ import styled, { css } from 'styled-components';
 import { Link } from 'react-router-dom';
 
 
-export const SocialMediaLinksContainer = styled.div<FooterProps>((props) => css`
-  position: fixed;
-  bottom: 15px;
-  right: 0;
-  padding: 0 20px;
-  opacity: 0;
-  transition: opacity 300ms;
-  pointer-events: none;
+interface FooterProps {
+  $visible?: boolean;
+}
 
-  a {
-    position: relative;
-    z-index: 2;
-    mix-blend-mode: difference;
-    color: #fff;
-
-    svg {
-      height: 24px;
-    
-      path {
-        fill: #fff;
-      }
-    }
-
-    &:not(:last-child) {
-      padding-right: 10px;
-    }
-  }
-
-  ${props.$visible && css`
-    opacity: 1;
-    pointer-events: auto;
-  `}
-`);
-
-export const InfoLink = styled(Link)<FooterProps>((props) => css`
+export const LinkCSS = css<FooterProps>((props) => css`
   position: fixed;
   bottom: 15px;
   z-index: 2;
-  padding: 0 20px;
   font-family: 'Roboto';
   font-size: 24px;
   color: #fff;
@@ -56,6 +25,27 @@ export const InfoLink = styled(Link)<FooterProps>((props) => css`
   `}
 `);
 
-interface FooterProps {
-  $visible?: boolean;
-}
+export const InfoLink = styled(Link)<FooterProps>`
+  ${LinkCSS};
+  left: 20px;
+`;
+
+export const SocialMediaLink = styled.a.attrs({
+  target: '_blank',
+  rel: 'noreferrer',
+})`
+  ${LinkCSS};
+  right: 20px;
+
+  &:last-of-type {
+    right: 50px;
+  }
+
+  svg {
+    height: 24px;
+  
+    path {
+      fill: #fff;
+    }
+  }
+`;
