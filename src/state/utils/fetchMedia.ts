@@ -2,7 +2,7 @@ import * as i from 'types';
 import Showdown from 'showdown';
 
 import useStore from 'state';
-import { isAPIPhotoObject, isStatePhotoObject, isStateVideoObject } from 'services/typeguards';
+import { isAPIPhotoObject } from 'services/typeguards';
 
 
 export function fetchMedia(): void {
@@ -20,11 +20,6 @@ export function fetchMedia(): void {
           const tempMedia = media as i.StatePhotoObject;
           tempMedia.next = {} as i.StatePhotoObject;
 
-          if (isStatePhotoObject(prevPhotoObj)) {
-            prevPhotoObj.next = tempMedia;
-          }
-
-          prevPhotoObj = tempMedia;
           photos.push(tempMedia);
         } else {
           const tempMedia = media as i.StateVideoObject;
@@ -45,13 +40,29 @@ export function fetchMedia(): void {
             tempMedia.credits = html;
           }
 
-          if (isStateVideoObject(prevVideoObj)) {
-            prevVideoObj.next = tempMedia;
-          }
-
-          prevVideoObj = tempMedia;
           videos.push(tempMedia);
         }
+      }
+
+      // Sort
+      photos.sort((a, b) => a.list_num - b.list_num);
+      videos.sort((a, b) => a.list_num - b.list_num);
+
+      // Make linked list
+      for (const photo of photos) {
+        if (prevPhotoObj) {
+          prevPhotoObj.next = photo;
+        }
+
+        prevPhotoObj = photo;
+      }
+
+      for (const video of videos) {
+        if (prevVideoObj) {
+          prevVideoObj.next = video;
+        }
+
+        prevVideoObj = video;
       }
 
       // Link last to first
@@ -62,10 +73,6 @@ export function fetchMedia(): void {
       if (videos[videos.length - 1] && videos[0]) {
         videos[videos.length - 1]!.next = videos[0];
       }
-
-      // Sort
-      photos.sort((a, b) => a.list_num - b.list_num);
-      videos.sort((a, b) => a.list_num - b.list_num);
 
       useStore.getState().setAllMedia({
         photo: photos,
