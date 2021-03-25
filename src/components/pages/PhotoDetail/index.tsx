@@ -8,6 +8,7 @@ import { useQuery } from 'hooks';
 import { SmoothScroll } from 'services';
 
 import MediaTitle from 'common/typography/MediaTitle';
+import SEO from 'common/SEO';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
 import RowImg from './components/RowImg';
@@ -351,6 +352,11 @@ const PhotoDetail: React.VFC = () => {
 
   return (
     <PhotoDetailContainer>
+      <SEO
+        pageTitle={detail?.title}
+        ogDescription={detail?.title}
+        ogImg={CMS_URL + detail?.media_cover.formats?.medium?.url}
+      />
       <DetailContainer id="photos-container" ref={containerRef}>
         <div ref={scrollContainerRef} id="photos-container__body">
           {sections.head && (

@@ -8,6 +8,7 @@ import { useQuery } from 'hooks';
 import { SmoothScroll } from 'services';
 
 import MediaTitle from 'common/typography/MediaTitle';
+import SEO from 'common/SEO';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
 import Player from './components/Player';
@@ -185,6 +186,11 @@ const VideoDetail: React.VFC = () => {
 
   return (
     <VideoDetailContainer isNext={isGoingNext}>
+      <SEO
+        pageTitle={detail?.title}
+        ogDescription={detail?.title}
+        ogImg={CMS_URL + detail?.video_poster?.formats.medium?.url}
+      />
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
           <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
