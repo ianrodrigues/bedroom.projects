@@ -116,7 +116,7 @@ export class SmoothScroll {
     this.$.containerBody!.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
   }
 
-  private setHitboxHeight() {
+  private setHitboxHeight = () => {
     let heightFromContainers = this.$.containerBody!.offsetHeight;
 
     this.loopScrollContainers((el) => {
