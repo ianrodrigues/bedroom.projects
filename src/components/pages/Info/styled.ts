@@ -1,7 +1,5 @@
 import styled, { css } from 'styled-components';
 
-import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
-
 
 export const InfoContainer = styled.div<InfoContainerProps>((props) => css`
   width: 100vw;
@@ -10,10 +8,6 @@ export const InfoContainer = styled.div<InfoContainerProps>((props) => css`
   opacity: 0;
   transform: translate3d(0, 25px, 0);
   transition: opacity 500ms, transform 500ms;
-
-  ${MediaTitleContainer} h3 {
-    right: 20px;
-  }
 
   ${props.$visible && css`
     opacity: 1;

@@ -35,7 +35,7 @@ export const Title = styled.h3<TitleProps>((props) => css`
   mix-blend-mode: difference;
 
   ${props.side === 'R' && css`
-    right: 0;
+    right: 20px;
     text-align: right;
   `}
 

@@ -1,6 +1,7 @@
 import styled, { css } from 'styled-components';
 
 import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
+import { DetailContainer } from 'common/presentation/DetailPage';
 
 import { GoingNext } from '.';
 import { PlayerContainer } from './components/Player/styled';
@@ -16,8 +17,8 @@ export const VideoDetailContainer = styled.div<VideoDetailContainerProps>((props
     }
   `}
 
-  > ${MediaTitleContainer} h3 {
-    right: 20px;
+  ${DetailContainer} {
+    padding: 0;
   }
 `);
 
@@ -31,7 +32,7 @@ export const DescriptionContainer = styled.div`
   grid-template-rows: 1fr;
   gap: 0px 20px;
   grid-template-areas: "description credits";
-  padding: 100px 0 200px;
+  padding: 100px 20px 200px;
   min-height: 100vh;
 
   div {

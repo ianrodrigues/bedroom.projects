@@ -1,6 +1,7 @@
 import * as i from 'types';
 import { GetState, SetState, StateCreator, StoreApi } from 'zustand';
 
+
 // Log every time state is changed
 export const log = (config: StateCreator<i.AppState>) => (
   set: SetState<i.AppState>,

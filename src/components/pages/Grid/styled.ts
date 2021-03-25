@@ -4,6 +4,7 @@ import styled, { css } from 'styled-components';
 export const GridPageContainer = styled.div<GridPageContainerProps>((props) => css`
   margin: 105px auto;
   padding: 0 20px 200px;
+  width: 100vw;
 
   > div {
     opacity: 0;

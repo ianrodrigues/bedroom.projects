@@ -24,10 +24,10 @@ const MediaOverlay: React.VFC = () => {
 
   return (
     <MediaOverlayContainer $visible={containerVisible}>
-      <MediaTitle visible={state.isMenuOpen.L} side="L">
+      <MediaTitle visible={state.isFullscreen && state.isMenuOpen.L} side="L">
         {state.photo?.title}
       </MediaTitle>
-      <MediaTitle visible={state.isMenuOpen.R} side="R">
+      <MediaTitle visible={state.isFullscreen && state.isMenuOpen.R} side="R">
         {state.video?.title}
       </MediaTitle>
     </MediaOverlayContainer>
