@@ -1,5 +1,7 @@
 import styled, { css } from 'styled-components';
 
+import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
+
 
 export const MediaOverlayContainer = styled.div<MediaOverlayContainerProps>((props) => css`
   display: none;
@@ -11,6 +13,10 @@ export const MediaOverlayContainer = styled.div<MediaOverlayContainerProps>((pro
   ${props.$visible && css`
     display: block;
   `}
+
+  ${MediaTitleContainer} h3 {
+    transition: opacity 300ms;
+  }
 `);
 
 interface MediaOverlayContainerProps {

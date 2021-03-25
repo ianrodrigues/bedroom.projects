@@ -18,20 +18,17 @@ const MediaOverlay: React.VFC = () => {
   }, [location.pathname]);
 
 
-  let text: string | undefined = undefined;
-
-  if (state.isMenuOpen.L) {
-    text = state.photo?.title;
-  } else if (state.isMenuOpen.R) {
-    text = state.video?.title;
-  }
-
-  const containerVisible = state.isAnyMenuOpen() || (!location.pathname.includes('info') && !location.pathname.includes('grid'));
+  const containerVisible =
+    state.isAnyMenuOpen() ||
+    (!location.pathname.includes('info') && !location.pathname.includes('grid'));
 
   return (
     <MediaOverlayContainer $visible={containerVisible}>
-      <MediaTitle visible={state.isAnyMenuOpen()} side={state.isMenuOpen.L ? 'L' : 'R'}>
-        {text}
+      <MediaTitle visible={state.isMenuOpen.L} side="L">
+        {state.photo?.title}
+      </MediaTitle>
+      <MediaTitle visible={state.isMenuOpen.R} side="R">
+        {state.video?.title}
       </MediaTitle>
     </MediaOverlayContainer>
   );
