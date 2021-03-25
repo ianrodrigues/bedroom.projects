@@ -90,6 +90,10 @@ const VideoDetail: React.VFC = () => {
         nextVideoRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
       }
 
+      if (state.videoPlayer.isPlaying && scrollY >= window.innerHeight * .75) {
+        state.videoPlayer.setPlaying(false);
+      }
+
       if (titleRef.current) {
         const PADDING = 200;
         const topEdge = window.innerHeight - PADDING - titleRef.current.offsetHeight;
@@ -169,7 +173,7 @@ const VideoDetail: React.VFC = () => {
     return function cleanup() {
       scroller?.destroy();
     };
-  }, [detail, isGoingNext]);
+  }, [detail, isGoingNext, state.videoPlayer.isPlaying]);
 
   function handleLoad() {
     loaded++;
