@@ -12,6 +12,7 @@ const SEO: React.VFC<SEOProps> = (props) => {
       <meta property="og:description" content={desc} />
       <meta property="og:image" content={props.ogImg} />
       <meta property="og:url" content={window.location.href} />
+      <meta name="twitter:card" content="summary_large_image" />
     </Helmet>
   );
 };
