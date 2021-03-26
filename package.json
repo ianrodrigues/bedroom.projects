@@ -20,7 +20,6 @@
     "react-router-dom": "5.2.0",
     "showdown": "1.9.1",
     "styled-components": "5.2.1",
-    "virtual-scroll": "2.1.0",
     "zustand": "3.3.2"
   },
   "devDependencies": {
