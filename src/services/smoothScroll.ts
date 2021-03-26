@@ -43,7 +43,7 @@ export class SmoothScroll {
     this.initListeners();
   }
 
-  destroy(): void {
+  destroy = (): void => {
     window.removeEventListener('scroll', this.handleScroll);
 
     if (this.onFn) {
@@ -59,7 +59,7 @@ export class SmoothScroll {
     window.addEventListener('scroll', this.onFn);
   }
 
-  private initStyle(): void {
+  private initStyle = (): void => {
     // Set container style
     this.$.container!.style.overflow = 'hidden';
     this.$.container!.style.position = 'fixed';
@@ -107,7 +107,7 @@ export class SmoothScroll {
     this.setHitboxHeight();
   }
 
-  private initListeners(): void {
+  private initListeners = (): void => {
     window.addEventListener('scroll', this.handleScroll);
     window.addEventListener('resize', this.setHitboxHeight);
   }
@@ -116,7 +116,7 @@ export class SmoothScroll {
     this.$.containerBody!.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
   }
 
-  private setHitboxHeight = () => {
+  private setHitboxHeight = (): void => {
     let heightFromContainers = this.$.containerBody!.offsetHeight;
 
     this.loopScrollContainers((el) => {
@@ -126,7 +126,7 @@ export class SmoothScroll {
     this.$.hitbox!.style.height = `${heightFromContainers}px`;
   }
 
-  private loopScrollContainers(cb: (el: HTMLDivElement) => void) {
+  private loopScrollContainers = (cb: (el: HTMLDivElement) => void): void => {
     if (this.$.scrollContainers) {
       for (const el of this.$.scrollContainers) {
         cb(el);
@@ -134,7 +134,7 @@ export class SmoothScroll {
     }
   }
 
-  private loopScrollers(cb: (el: HTMLDivElement) => void) {
+  private loopScrollers = (cb: (el: HTMLDivElement) => void): void => {
     if (this.$.scrollers) {
       for (const el of this.$.scrollers) {
         cb(el);
