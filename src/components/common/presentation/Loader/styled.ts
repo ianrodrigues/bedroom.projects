@@ -17,14 +17,14 @@ export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
     background-color: #000;
   `}
 
-  ${props.visible && css`
+  ${props.$visible && css`
     transition: opacity 0s;
     opacity: 1;
   `}
 `);
 
 interface LoaderContainerProps {
-  visible?: boolean;
+  $visible?: boolean;
   $type: i.LoadingState;
 }
 

@@ -109,7 +109,7 @@ export interface VideoMedia {
   url: string;
   previewUrl?: string;
   provider: string;
-  provider_metadata?: any;
+  provider_metadata?: unknown;
   created_at: Date;
   updated_at: Date;
 }
@@ -129,7 +129,7 @@ export interface PhotoMedia {
   url: string;
   previewUrl?: string;
   provider: string;
-  provider_metadata?: any;
+  provider_metadata?: unknown;
   created_at: Date;
   updated_at: Date;
 }

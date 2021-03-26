@@ -26,7 +26,7 @@ export const Nav = styled.nav((props) => css`
   position: fixed;
   z-index: 2;
   display: grid;
-  grid-template-columns: 33% 33% 33%;
+  grid-template-columns: repeat(3, 1fr);
   grid-template-rows: 1fr;
   justify-content: space-between;
   margin: 0 auto;
@@ -43,14 +43,14 @@ export const Nav = styled.nav((props) => css`
 `);
 
 function setListAnimations(props: NavContainerProps) {
-  const MAX = 10;
+  const MAX_LIST_NUM = 10;
   const DELAY = 30;
   let str = '';
 
-  for (let i = 0; i < MAX; i++) {
+  for (let i = 0; i < MAX_LIST_NUM; i++) {
     const delay = props.isOpen
       ? DELAY * i
-      : DELAY * MAX - (i * DELAY);
+      : DELAY * MAX_LIST_NUM - (i * DELAY);
 
     str += `
       li:nth-child(${i + 1}) {

@@ -1,3 +1,4 @@
+import * as i from 'types';
 import React from 'react';
 
 import useStore from 'state';
@@ -8,7 +9,7 @@ import { LoaderContainer, LoaderInner } from './styled';
 const Loader: React.VFC = () => {
   const state = useStore();
   const [visible, setVisible] = React.useState(true);
-  const [loadType, setLoadType] = React.useState<'site' | 'page'>('site');
+  const [loadType, setLoadType] = React.useState<i.LoadingState>('site');
 
   React.useEffect(() => {
     if (!state.loading) {
@@ -22,7 +23,7 @@ const Loader: React.VFC = () => {
   }, [state.loading]);
 
   return (
-    <LoaderContainer visible={visible} $type={loadType}>
+    <LoaderContainer $visible={visible} $type={loadType}>
       <LoaderInner done={!state.loading} />
     </LoaderContainer>
   );

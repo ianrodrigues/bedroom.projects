@@ -1,5 +1,6 @@
 import styled, { css } from 'styled-components';
 
+
 export const Name = styled.h1<NameProps>((props) => css`
   position: fixed;
   top: 50%;
@@ -12,13 +13,13 @@ export const Name = styled.h1<NameProps>((props) => css`
   mix-blend-mode: difference;
   color: #fff;
   font-size: 150px;
-  opacity: 1;
+  opacity: 0;
   transition: opacity 500ms;
   user-select: none;
   pointer-events: none;
 
-  ${!props.show && css`
-    opacity: 0;
+  ${props.show && css`
+    opacity: 1;
   `}
 `);
 

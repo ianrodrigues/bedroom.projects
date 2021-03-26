@@ -16,15 +16,10 @@ const Seekbar: React.VFC<Props> = (props) => {
 
   React.useEffect(() => {
     const video = props.videoRef?.current;
-
-    if (!video) {
-      return;
-    }
-
-    video.addEventListener('timeupdate', onTimeUpdate);
+    video?.addEventListener('timeupdate', onTimeUpdate);
 
     return function cleanup() {
-      video.removeEventListener('timeupdate', onTimeUpdate);
+      video?.removeEventListener('timeupdate', onTimeUpdate);
     };
   }, [props.videoRef]);
 
@@ -59,9 +54,8 @@ const Seekbar: React.VFC<Props> = (props) => {
     }
 
     const bounds = e.currentTarget.getBoundingClientRect();
-    const { left, width } = bounds;
-    const clickX = e.pageX - left;
-    const prct = clickX / width;
+    const clickX = e.pageX - bounds.left;
+    const prct = clickX / bounds.width;
     const time = prct * video.duration;
 
     video.currentTime = time;

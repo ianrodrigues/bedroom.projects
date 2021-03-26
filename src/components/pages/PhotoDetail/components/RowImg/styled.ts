@@ -2,21 +2,20 @@ import * as i from 'types';
 import styled, { css } from 'styled-components';
 
 
+const EASING = 'cubic-bezier(0.25, 1, 0.5, 1)';
+
 export const ImgContainer = styled.div.attrs({
   'data-img-container': true,
 })<ImgContainerProps>((props) => css`
-  box-sizing: border-box;
   flex: 0 0 auto;
-  padding: ${Math.floor(window.innerHeight * .3)}px 0 0;
   flex-basis: 50%;
+  padding: calc(100vh * .3) 0 0;
   max-width: 50%;
   opacity: 0;
   transform:
     translate3d(${props.offsetX || 0}px, ${(props.offsetY || 0) + 150}px, 0)
     scale(${props.$scale || 1});
-  transition:
-    opacity 1s cubic-bezier(0.25, 1, 0.5, 1),
-    transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+  transition: opacity 1s ${EASING}, transform 1.2s ${EASING};
 
   &:first-child {
     padding-right: 10px;
@@ -26,8 +25,8 @@ export const ImgContainer = styled.div.attrs({
   }
 
   ${props.displayType === 'together' && css`
-    flex-basis: ${100 / 3}%;
-    max-width: ${100 / 3}%;
+    flex-basis: calc(100% / 3);
+    max-width: calc(100% / 3);
   `}
 
   ${props.displayType === 'fill' && css`

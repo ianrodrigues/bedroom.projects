@@ -83,13 +83,15 @@ const Grid: React.VFC<Props> = () => {
       const previewUrl = isStatePhotoObject(media)
         ? media.media_cover.formats?.small.url
         : media.video_poster.formats.small.url;
-      let visible = false;
 
-      if (
-        !filtered ||
-        (linkPrefix === 'photos' && filtered === 'photo') ||
-        (linkPrefix === 'film' && filtered === 'video')
-      ) {
+      let visible = false;
+      if (!filtered) {
+        visible = true;
+      }
+      if (linkPrefix === 'photos' && filtered === 'photo') {
+        visible = true;
+      }
+      if (linkPrefix === 'film' && filtered === 'video') {
         visible = true;
       }
 
@@ -108,7 +110,7 @@ const Grid: React.VFC<Props> = () => {
     <>
       <div id="grid-container">
         <div id="grid-container__body">
-          <GridPageContainer ref={containerRef} visible={fadeIn}>
+          <GridPageContainer ref={containerRef} $visible={fadeIn}>
             <FilterContainer>
               <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
               Photos ({state.allMedia?.photo.length})

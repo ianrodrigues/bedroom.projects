@@ -3,8 +3,6 @@ import create from 'zustand';
 
 import { log } from 'services';
 
-import { fetchMedia } from './utils';
-
 
 const useStore = create<i.AppState>(log((set, get) => ({
   loading: 'site',
@@ -68,7 +66,5 @@ const useStore = create<i.AppState>(log((set, get) => ({
     })),
   },
 })));
-
-fetchMedia();
 
 export default useStore;

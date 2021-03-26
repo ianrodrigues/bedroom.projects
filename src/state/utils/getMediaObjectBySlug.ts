@@ -3,10 +3,11 @@ import * as i from 'types';
 import useStore from 'state';
 
 
-export function getMediaObjectBySlug<T extends i.MediaType>(slug: string, type: T): (T extends 'photo' ? i.StatePhotoObject : i.StateVideoObject) | undefined {
-  const state = useStore.getState();
+type MediaReturnType<T extends i.MediaType> = (T extends 'photo' ? i.StatePhotoObject : i.StateVideoObject);
 
-  // Cba fixing this, it works.
-  // @ts-ignore
-  return state.allMedia?.[type].find((val) => val.slug === slug);
+export function getMediaObjectBySlug<T extends i.MediaType>(slug: string, type: T): MediaReturnType<T> | undefined {
+  const state = useStore.getState();
+  const mediaArr = state.allMedia?.[type] as MediaReturnType<T>[] | undefined;
+
+  return mediaArr?.find((val) => val.slug === slug);
 }

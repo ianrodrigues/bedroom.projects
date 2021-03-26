@@ -4,10 +4,10 @@ import { useLocation } from 'react-router';
 import useStore from 'state';
 import MediaTitle from 'common/typography/MediaTitle';
 
-import { MediaOverlayContainer } from './styled';
+import { MediaTitleOverlayContainer } from './styled';
 
 
-const MediaOverlay: React.VFC = () => {
+const MediaTitleOverlay: React.VFC = () => {
   const state = useStore();
   const location = useLocation();
 
@@ -23,15 +23,15 @@ const MediaOverlay: React.VFC = () => {
     (!location.pathname.includes('info') && !location.pathname.includes('grid'));
 
   return (
-    <MediaOverlayContainer $visible={containerVisible}>
+    <MediaTitleOverlayContainer $visible={containerVisible}>
       <MediaTitle visible={state.isFullscreen && state.isMenuOpen.L} side="L">
         {state.photo?.title}
       </MediaTitle>
       <MediaTitle visible={state.isFullscreen && state.isMenuOpen.R} side="R">
         {state.video?.title}
       </MediaTitle>
-    </MediaOverlayContainer>
+    </MediaTitleOverlayContainer>
   );
 };
 
-export default MediaOverlay;
+export default MediaTitleOverlay;

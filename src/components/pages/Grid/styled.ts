@@ -16,7 +16,7 @@ export const GridPageContainer = styled.div<GridPageContainerProps>((props) => c
     }
   }
 
-  ${props.visible && css`
+  ${props.$visible && css`
     > div {
       opacity: 1;
       transform: translate3d(0, 0, 0);
@@ -29,7 +29,7 @@ export const GridPageContainer = styled.div<GridPageContainerProps>((props) => c
 `);
 
 interface GridPageContainerProps {
-  visible?: boolean;
+  $visible?: boolean;
 }
 
 export const GridContainer = styled.div`
@@ -47,7 +47,7 @@ export const GridTile = styled.div<GridTileProps>((props) => css`
   visibility: hidden;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 200ms, visibility 200ms 0ms;
+  transition: opacity 200ms, visibility 200ms;
 
   a {
     display: block;
@@ -78,7 +78,7 @@ export const Figure = styled.figure<FigureProps>((props) => css`
   padding: 0;
   width: 100%;
   margin-bottom: 15px;
-  background-image: url("${props.src}");
+  background-image: url(${props.src});
   background-size: cover;
   background-position: 50%;
 

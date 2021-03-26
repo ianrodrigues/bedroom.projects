@@ -11,7 +11,7 @@ const Fullscreen: React.VFC<Props> = (props) => {
   }
 
   return (
-    <FullscreenButton onClick={handleClick} visible={props.visible}>
+    <FullscreenButton onClick={handleClick} $visible={props.visible}>
       <FullscreenSvg />
     </FullscreenButton>
   );

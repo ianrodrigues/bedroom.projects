@@ -9,11 +9,7 @@ const Volume: React.VFC<Props> = (props) => {
   const containerRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
-    if (!props.videoRef?.current) {
-      return;
-    }
-
-    props.videoRef.current.addEventListener('volumechange', handleVolumeChange);
+    props.videoRef?.current?.addEventListener('volumechange', handleVolumeChange);
 
     return function cleanup() {
       props.videoRef?.current?.removeEventListener('volumechange', handleVolumeChange);
@@ -30,9 +26,8 @@ const Volume: React.VFC<Props> = (props) => {
     }
 
     const bounds = containerRef.current.getBoundingClientRect();
-    const { left, width } = bounds;
-    const clickX = e.pageX - left;
-    const prct = clickX / width;
+    const clickX = e.pageX - bounds.left;
+    const prct = clickX / bounds.width;
 
     props.videoRef.current.volume = prct;
   }

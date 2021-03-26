@@ -8,7 +8,7 @@ export const FullscreenButton = styled.button<FullscreenButtonProps>((props) => 
   opacity: 0;
   transition: opacity 300ms;
 
-  ${props.visible && css`
+  ${props.$visible && css`
     opacity: 1;
   `}
 
@@ -22,5 +22,5 @@ export const FullscreenButton = styled.button<FullscreenButtonProps>((props) => 
 `);
 
 interface FullscreenButtonProps {
-  visible?: boolean;
+  $visible?: boolean;
 }

@@ -11,7 +11,7 @@ const EASING = 'cubic-bezier(0, 0.55, 0.45, 1)';
 
 
 export const VideoDetailContainer = styled.div<VideoDetailContainerProps>((props) => css`
-  ${(props.isNext === false || props.isNext === 'starting') && css`
+  ${(props.isNext !== 'ending') && css`
     ${MediaTitleContainer} h3 {
       transition: opacity 300ms;
     }
@@ -123,14 +123,14 @@ export const NextContainer = styled.div<NextContainerProps>((props) => css`
   height: 100vh;
 
   ${DetailPlayerContainer} {
-    padding: ${Math.floor(window.innerHeight * .3)}px 0 0;
+    padding: calc(100vh * .3) 0 0;
   }
   
   ${VideoPoster} {
     transform: translate3d(0, 0, 0);
 
     ${!!props.isGoingNext && css`
-      transition: opacity 600ms 1500ms ${EASING};
+      transition: opacity 600ms 1.5s ${EASING};
       opacity: 0;
     `}
   }

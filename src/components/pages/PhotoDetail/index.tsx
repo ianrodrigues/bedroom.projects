@@ -148,8 +148,6 @@ const PhotoDetail: React.VFC = () => {
 
         const nextEdge = Math.round(bodyEl.offsetHeight);
 
-        // console.log(nextEdge);
-
         // Reached bottom, start transition
         if (!isGoingNext && scrollY >= nextEdge) {
           window.scrollTo(0, nextEdge);

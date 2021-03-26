@@ -20,6 +20,10 @@ export function isStatePhotoObject(object?: i.StatePhotoObject | i.StateVideoObj
   return !!object && object.full_video == null && 'next' in object;
 }
 
+export function isStatePhotoObjectList(list?: i.StatePhotoObject[] | i.StateVideoObject[]): list is i.StatePhotoObject[] {
+  return !!list && !!list[0] && list[0].full_video == null && 'next' in list[0];
+}
+
 export function isStateVideoObject(object?: i.StatePhotoObject | i.StateVideoObject): object is i.StateVideoObject {
   return !!object && (object.full_video != null || object.video_url != null) && 'next' in object;
 }

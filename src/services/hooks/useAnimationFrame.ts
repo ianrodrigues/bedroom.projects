@@ -8,7 +8,8 @@ type CbParams = {
 }
 
 // Reusable component that also takes dependencies
-export function useAnimationFrame(cb: (params: CbParams) => void, deps: any[]): void {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function useAnimationFrame(cb: (params: CbParams) => void, deps: unknown[]): void {
   const frame = useRef(-1);
   const last = useRef(performance.now());
   const init = useRef(performance.now());

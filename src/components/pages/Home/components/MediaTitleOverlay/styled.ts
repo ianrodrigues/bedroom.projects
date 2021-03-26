@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
 
 
-export const MediaOverlayContainer = styled.div<MediaOverlayContainerProps>((props) => css`
+export const MediaTitleOverlayContainer = styled.div<MediaTitleOverlayContainerProps>((props) => css`
   display: none;
   position: absolute;
   width: 100vw;
@@ -19,6 +19,6 @@ export const MediaOverlayContainer = styled.div<MediaOverlayContainerProps>((pro
   }
 `);
 
-interface MediaOverlayContainerProps {
+interface MediaTitleOverlayContainerProps {
   $visible?: boolean;
 }

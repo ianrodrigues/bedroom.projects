@@ -9,9 +9,9 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
   const savedHandler = useRef<any>(); // eslint-disable-line @typescript-eslint/no-explicit-any
 
   // Update ref.current value if handler changes.
-  // This allows our effect below to always get latest handler ...
-  // ... without us needing to pass it in effect deps array ...
-  // ... and potentially cause effect to re-run every render.
+  // This allows our effect below to always get latest handler
+  // without us needing to pass it in effect deps array
+  // and potentially cause effect to re-run every render.
   useEffect(() => {
     savedHandler.current = handler;
   }, [handler]);
@@ -22,7 +22,8 @@ export function useEventListener<K extends keyof HTMLElementEventMap>(
     if (!isSupported) return;
 
     // Create event listener that calls handler function stored in ref
-    const eventListener = (event: any) => savedHandler.current(event); // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const eventListener = (event: any) => savedHandler.current(event);
 
     // Add event listener
     element?.addEventListener(eventName, eventListener);

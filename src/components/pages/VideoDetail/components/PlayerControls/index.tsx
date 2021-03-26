@@ -61,13 +61,13 @@ const PlayerControls: React.FC<Props> = (props) => {
   function setAllVisible() {
     setVisible({
       play: true,
-      other: props.videoRef?.current?.paused ? false : true,
+      other: !props.videoRef?.current?.paused,
     });
   }
 
   function setAllInvisible() {
     setVisible({
-      play: props.videoRef?.current?.paused ? true : false,
+      play: !!props.videoRef?.current?.paused,
       other: false,
     });
   }

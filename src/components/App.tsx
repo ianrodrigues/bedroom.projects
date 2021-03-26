@@ -5,6 +5,7 @@ import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
 import useStore from 'state';
+import { fetchMedia } from 'state/utils';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -27,6 +28,10 @@ const App: React.VFC<RouteComponentProps> = () => {
   const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.isAnyMenuOpen());
 
   React.useEffect(() => {
+    fetchMedia();
+  }, []);
+
+  React.useEffect(() => {
     setIsHomepage(location.pathname === '/');
 
     if (['/', '/grid'].includes(location.pathname)) {
@@ -39,14 +44,12 @@ const App: React.VFC<RouteComponentProps> = () => {
   React.useEffect(() => {
     setShowCanvas(isHomepage || state.isAnyMenuOpen());
 
-    if (isHomepage) {
+    if (isHomepage || !state.isAnyMenuOpen()) {
       setFullscreenMedia(undefined);
     } else if (state.isMenuOpen.L) {
       setFullscreenMedia('photo');
     } else if (state.isMenuOpen.R) {
       setFullscreenMedia('video');
-    } else {
-      setFullscreenMedia(undefined);
     }
   }, [isHomepage, state.isMenuOpen]);
 

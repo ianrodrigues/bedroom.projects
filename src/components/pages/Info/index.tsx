@@ -45,11 +45,11 @@ const Info: React.VFC = () => {
 
     if (data && !state.loading) {
       scroller = new SmoothScroll('#info-container');
-
-      return function cleanup() {
-        scroller?.destroy();
-      };
     }
+
+    return function cleanup() {
+      scroller?.destroy();
+    };
   }, [data, state.loading]);
 
   function handleLoaded() {

@@ -7,7 +7,7 @@ import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { isVideo, isPhoto, isHTMLVideoElement } from 'services/typeguards';
 
-import MediaOverlay from 'pages/Home/components/MediaOverlay';
+import MediaTitleOverlay from 'pages/Home/components/MediaTitleOverlay';
 import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
 
 interface Media<T extends HTMLVideoElement | HTMLImageElement> {
@@ -335,7 +335,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   return (
     <>
       <FullscreenCanvas ref={canvasRef} show={props.show} />
-      <MediaOverlay />
+      <MediaTitleOverlay />
     </>
   );
 };
@@ -345,7 +345,7 @@ RenderCanvas.defaultProps = {
 };
 
 interface Props {
-  fullscreen?: 'photo' | 'video';
+  fullscreen?: i.MediaType;
   show?: boolean;
 }
 
