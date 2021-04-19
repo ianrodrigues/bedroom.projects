@@ -2,6 +2,7 @@ import * as i from 'types';
 import React from 'react';
 import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'react-router-dom';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
+import { hotjar } from 'react-hotjar';
 
 import GlobalStyle from 'styles';
 import useStore from 'state';
@@ -18,6 +19,11 @@ const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
 const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
 const Grid = React.lazy(() => import('pages/Grid'));
 const Info = React.lazy(() => import('pages/Info'));
+
+
+if (__PROD__) {
+  hotjar.initialize(HOTJAR_ID, HOTJAR_SNIPPET_V);
+}
 
 
 const App: React.VFC<RouteComponentProps> = () => {

@@ -1,9 +1,3 @@
-import dotenv from 'dotenv';
-
-dotenv.config({
-  path: process.env.NODE_ENV === 'production' ? './.env' : './.env.dev',
-});
-
 const env = process.env.NODE_ENV || 'development';
 const appEnv = process.env.APP_ENV || 'development';
 
@@ -17,7 +11,9 @@ const globals = {
   __TEST__: appEnv === 'test',
   __ACC__: appEnv === 'acceptation',
   __PROD__: appEnv === 'production',
-  CMS_URL: JSON.stringify(process.env.CMS_URL),
+  CMS_URL: JSON.stringify('https://cms.sandervispoel.com'),
+  HOTJAR_ID: JSON.stringify(2357623),
+  HOTJAR_SNIPPET_V: JSON.stringify(6),
 };
 
 export default globals;
