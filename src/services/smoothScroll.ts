@@ -94,7 +94,7 @@ export class SmoothScroll {
     // Run addTranstion
     addTransition();
 
-    const observer = new ResizeObserver((entries) => {
+    const observer = new ResizeObserver(() => {
       this.setHitboxHeight();
     });
 
