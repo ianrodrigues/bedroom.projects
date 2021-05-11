@@ -7,7 +7,8 @@
     "serve": "vite preview",
     "postinstall": "npx patch-package",
     "typecheck": "tsc --noEmit",
-    "tc": "tsc --noEmit"
+    "tc": "npm run typecheck",
+    "lint": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx src/"
   },
   "dependencies": {
     "@welldone-software/why-did-you-render": "6.1.1",

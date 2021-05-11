@@ -35,7 +35,9 @@ const actions: i.ActionsCreator<Actions> = (set, get) => ({
   isAnyMenuOpen: () => get().ui.isMenuOpen.L || get().ui.isMenuOpen.R,
 });
 
-export default {
+const store = {
   state,
   actions,
 };
+
+export default store;

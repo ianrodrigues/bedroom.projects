@@ -17,7 +17,9 @@ const actions: i.ActionsCreator<Actions> = (set) => ({
   }),
 });
 
-export default {
+const store = {
   state,
   actions,
 };
+
+export default store;
