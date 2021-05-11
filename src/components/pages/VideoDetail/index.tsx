@@ -240,7 +240,7 @@ const VideoDetail: React.VFC = () => {
         autoHide
         dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext === 'ending' ? nextDetail?.title || detail?.title : ''}
+        {isGoingNext === 'ending' ? nextDetail?.title || '' : detail?.title || ''}
       </MediaTitle>
     </VideoDetailContainer>
   );

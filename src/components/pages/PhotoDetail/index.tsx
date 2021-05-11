@@ -423,7 +423,7 @@ const PhotoDetail: React.VFC = () => {
         visible={!state.ui.isAnyMenuOpen()}
         dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext === 'ending' ? nextDetail?.title || detail?.title : ''}
+        {isGoingNext === 'ending' ? nextDetail?.title || '' : detail?.title || ''}
       </MediaTitle>
     </PhotoDetailContainer>
   );
