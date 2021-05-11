@@ -1,42 +1,21 @@
 import * as i from 'types';
-import { State } from 'zustand';
+import { GetState } from 'zustand';
 
-export interface AppState extends State {
-  loading: i.LoadingState;
-  setLoading: (loading: i.LoadingState) => void;
+export * from './stores/types';
 
-  allMedia?: i.AllMedia;
-  setAllMedia: (media: i.AllMedia) => void;
+export type Set = ((fn: (state: i.AppState) => void) => void);
+export type Get = GetState<i.AppState>;
 
-  photo?: i.APIPhotosObject;
-  video?: i.APIMediaObject;
-  setMedia: <T extends i.MediaType>(type: T, media: T extends 'photo' ? i.StatePhotoObject : i.StateVideoObject) => void;
+export type ActionsCreator<A> = (set: i.Set, get: i.Get) => A;
 
-  showName: boolean;
-  setShowName: (showName: boolean) => void;
-
-  isFullscreen: boolean;
-  setFullscreen: (bool: boolean) => void;
-
-  isMenuOpen: Record<i.Side, boolean>;
-  setMenuOpen: (side: i.Side, open: boolean) => void;
-  closeMenus: () => void;
-  isAnyMenuOpen: () => boolean;
-
-  videoPlayer: {
-    isPlaying: boolean;
-    setPlaying: (isPlaying: boolean) => void;
-    isReady: boolean;
-    setReady: (isReady: boolean) => void;
-  };
-}
-
-export type LoadingState = false | 'site' | 'page';
+export type GlobalLoadingState = false | 'site' | 'page';
 
 export interface AllMedia {
   photo: i.StatePhotoObject[];
   video: i.StateVideoObject[];
 }
+
+type Slug = string;
 
 interface Thumbnail {
   name: string;
@@ -157,7 +136,7 @@ export interface Layout extends ImgAttributes {
 export interface APIMediaObject {
   id: number;
   title: string;
-  slug: string;
+  slug: Slug;
   description?: string;
   credits?: string;
   video_url?: string;
@@ -176,11 +155,11 @@ export interface APIPhotosObject extends APIMediaObject {
 }
 
 export interface StatePhotoObject extends APIPhotosObject {
-  next: StatePhotoObject;
+  next: Slug;
 }
 
 export interface StateVideoObject extends APIMediaObject {
-  next: APIMediaObject;
+  next: Slug;
   video_poster: PhotoMedia;
 }
 

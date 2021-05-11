@@ -1,70 +1,24 @@
 import * as i from 'types';
 import create from 'zustand';
 
-import { log } from 'services';
+import { log, immer } from './middleware';
 
+import * as stores from './stores';
 
-const useStore = create<i.AppState>(log((set, get) => ({
-  loading: 'site',
-  setLoading: (loading) => set(() => ({
-    loading,
-  })),
+const useStore = create<i.AppState>(log(immer((set, get) => {
+  type storeKeys = keyof typeof stores;
 
-  allMedia: undefined,
-  setAllMedia: (media) => set(() => ({
-    allMedia: media,
-  })),
+  const state = {} as i.AppState;
 
-  photo: undefined,
-  video: undefined,
-  setMedia: (type, media) => set(() => ({
-    [type]: media,
-  })),
+  let storeKey: storeKeys;
+  for (storeKey in stores) {
+    state[storeKey] = {
+      ...(stores as i.StringKeyObject)[storeKey].state,
+      ...(stores as i.StringKeyObject)[storeKey].actions(set, get),
+    };
+  }
 
-  showName: false,
-  setShowName: (showName) => set(() => ({
-    showName,
-  })),
-
-  isFullscreen: false,
-  setFullscreen: (bool) => set(() => ({
-    isFullscreen: bool,
-  })),
-
-  isMenuOpen: {
-    L: false,
-    R: false,
-  },
-  setMenuOpen: (side, open) => set((state) => ({
-    isMenuOpen: {
-      ...state.isMenuOpen,
-      [side]: open,
-    },
-  })),
-  closeMenus: () => set(() => ({
-    isMenuOpen: {
-      L: false,
-      R: false,
-    },
-  })),
-  isAnyMenuOpen: () => get().isMenuOpen.L || get().isMenuOpen.R,
-
-  videoPlayer: {
-    isPlaying: false,
-    setPlaying: (isPlaying) => set((state) => ({
-      videoPlayer: {
-        ...state.videoPlayer,
-        isPlaying,
-      },
-    })),
-    isReady: false,
-    setReady: (isReady) => set((state) => ({
-      videoPlayer: {
-        ...state.videoPlayer,
-        isReady,
-      },
-    })),
-  },
+  return state;
 })));
 
 export default useStore;

@@ -12,23 +12,23 @@ const MediaTitleOverlay: React.VFC = () => {
   const location = useLocation();
 
   React.useEffect(() => {
-    if (location.pathname === '/' && !state.showName) {
-      state.setShowName(true);
+    if (location.pathname === '/' && !state.ui.showName) {
+      state.ui.setShowName(true);
     }
   }, [location.pathname]);
 
 
   const containerVisible =
-    state.isAnyMenuOpen() ||
+    state.ui.isAnyMenuOpen() ||
     (!location.pathname.includes('info') && !location.pathname.includes('grid'));
 
   return (
     <MediaTitleOverlayContainer $visible={containerVisible}>
-      <MediaTitle visible={state.isFullscreen && state.isMenuOpen.L} side="L">
-        {state.photo?.title}
+      <MediaTitle visible={state.ui.isFullscreen && state.ui.isMenuOpen.L} side="L">
+        {state.media.photo?.title}
       </MediaTitle>
-      <MediaTitle visible={state.isFullscreen && state.isMenuOpen.R} side="R">
-        {state.video?.title}
+      <MediaTitle visible={state.ui.isFullscreen && state.ui.isMenuOpen.R} side="R">
+        {state.media.video?.title}
       </MediaTitle>
     </MediaTitleOverlayContainer>
   );

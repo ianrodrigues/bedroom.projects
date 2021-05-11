@@ -6,12 +6,13 @@
     "build": "tsc && NODE_ENV=production APP_ENV=production vite build",
     "serve": "vite preview",
     "postinstall": "npx patch-package",
-    "typecheck": "tsc",
-    "tc": "tsc"
+    "typecheck": "tsc --noEmit",
+    "tc": "tsc --noEmit"
   },
   "dependencies": {
     "@welldone-software/why-did-you-render": "6.1.1",
     "body-scroll-lock": "3.1.5",
+    "immer": "9.0.2",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
     "react-helmet": "6.1.0",
@@ -21,7 +22,7 @@
     "react-router-dom": "5.2.0",
     "showdown": "1.9.1",
     "styled-components": "5.2.1",
-    "zustand": "3.3.2"
+    "zustand": "3.5.1"
   },
   "devDependencies": {
     "@types/body-scroll-lock": "2.6.1",

@@ -39,24 +39,24 @@ const Info: React.VFC = () => {
   );
 
   React.useEffect(() => {
-    if (!data && !state.loading) {
-      state.setLoading('page');
+    if (!data && !state.ui.loading) {
+      state.ui.setLoading('page');
     }
 
-    if (data && !state.loading) {
+    if (data && !state.ui.loading) {
       scroller = new SmoothScroll('#info-container');
     }
 
     return function cleanup() {
       scroller?.destroy();
     };
-  }, [data, state.loading]);
+  }, [data, state.ui.loading]);
 
   function handleLoaded() {
     loaded++;
 
     if (loaded >= LOADED_AMT) {
-      state.setLoading(false);
+      state.ui.setLoading(false);
 
       setTimeout(() => {
         setVisible(true);
@@ -64,7 +64,7 @@ const Info: React.VFC = () => {
     }
   }
 
-  if (!data || state.loading) {
+  if (!data || state.ui.loading) {
     return null;
   }
 

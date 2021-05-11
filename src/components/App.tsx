@@ -31,7 +31,7 @@ const App: React.VFC<RouteComponentProps> = () => {
   const location = useLocation();
   const [isHomepage, setIsHomepage] = React.useState(location.pathname === '/');
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
-  const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.isAnyMenuOpen());
+  const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.ui.isAnyMenuOpen());
 
   React.useEffect(() => {
     fetchMedia();
@@ -41,29 +41,29 @@ const App: React.VFC<RouteComponentProps> = () => {
     setIsHomepage(location.pathname === '/');
 
     if (['/', '/grid'].includes(location.pathname)) {
-      state.setShowName(true);
+      state.ui.setShowName(true);
     } else {
-      state.setShowName(false);
+      state.ui.setShowName(false);
     }
   }, [location.pathname]);
 
   React.useEffect(() => {
-    setShowCanvas(isHomepage || state.isAnyMenuOpen());
+    setShowCanvas(isHomepage || state.ui.isAnyMenuOpen());
 
-    if (isHomepage || !state.isAnyMenuOpen()) {
+    if (isHomepage || !state.ui.isAnyMenuOpen()) {
       setFullscreenMedia(undefined);
-    } else if (state.isMenuOpen.L) {
+    } else if (state.ui.isMenuOpen.L) {
       setFullscreenMedia('photo');
-    } else if (state.isMenuOpen.R) {
+    } else if (state.ui.isMenuOpen.R) {
       setFullscreenMedia('video');
     }
-  }, [isHomepage, state.isMenuOpen]);
+  }, [isHomepage, state.ui.isMenuOpen]);
 
   React.useEffect(() => {
     const body = document.querySelector('body');
 
     if (body) {
-      if (state.loading) {
+      if (state.ui.loading) {
         disableBodyScroll(body);
       } else {
         enableBodyScroll(body);
@@ -75,7 +75,7 @@ const App: React.VFC<RouteComponentProps> = () => {
         enableBodyScroll(body);
       }
     };
-  }, [state.loading]);
+  }, [state.ui.loading]);
 
   return (
     <main>
@@ -90,7 +90,7 @@ const App: React.VFC<RouteComponentProps> = () => {
       </React.Suspense>
       <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
       <Header />
-      <Name show={state.loading === 'site' || state.showName}>bedroom</Name>
+      <Name show={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
       <Loader />
       <Footer />
     </main>

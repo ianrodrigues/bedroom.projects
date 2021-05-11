@@ -35,6 +35,7 @@ const VideoDetail: React.VFC = () => {
   const nextVideoRef = React.useRef<HTMLDivElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
   const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
+  const [nextDetail, setNextDetail] = React.useState(getMediaObjectBySlug(detail?.next || '', 'video'));
   const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
 
   // Initialise
@@ -42,12 +43,14 @@ const VideoDetail: React.VFC = () => {
     if (!detail) {
       setDetail(getMediaObjectBySlug(params.slug, 'video'));
     }
-  }, [state.allMedia]);
+  }, [state.media.allMedia]);
 
   React.useEffect(() => {
     if (detail) {
-      if (state.loading === false) {
-        state.setLoading('page');
+      setNextDetail(getMediaObjectBySlug(detail.next, 'video'));
+
+      if (state.ui.loading === false) {
+        state.ui.setLoading('page');
       }
 
       const img = document.createElement('img');
@@ -61,7 +64,7 @@ const VideoDetail: React.VFC = () => {
 
     return function cleanup() {
       loaded = 0;
-      state.setLoading(false);
+      state.ui.setLoading(false);
     };
   }, [detail]);
 
@@ -81,7 +84,7 @@ const VideoDetail: React.VFC = () => {
         titleRef.current.style.removeProperty('opacity');
       }
     }, 200);
-  }, [params.slug, state.allMedia?.video]);
+  }, [params.slug, state.media.allMedia?.video]);
 
   React.useEffect(() => {
     scroller = new SmoothScroll('#film-container');
@@ -140,8 +143,8 @@ const VideoDetail: React.VFC = () => {
 
           setGoingNext('starting');
 
-          if (state.loading === false) {
-            state.setLoading('page');
+          if (state.ui.loading === false) {
+            state.ui.setLoading('page');
           }
 
           // Fade out current title
@@ -165,7 +168,7 @@ const VideoDetail: React.VFC = () => {
           }, 2100);
 
           setTimeout(() => {
-            history.push(`/film/${detail?.next.slug}?next=1`);
+            history.push(`/film/${detail?.next}?next=1`);
           }, 2500);
         }
       }
@@ -180,7 +183,7 @@ const VideoDetail: React.VFC = () => {
     loaded++;
 
     if (loaded >= loadAmt) {
-      state.setLoading(false);
+      state.ui.setLoading(false);
     }
   }
 
@@ -209,35 +212,35 @@ const VideoDetail: React.VFC = () => {
           </DescriptionContainer>
         </div>
 
-        <NextContainer id="next-container" isGoingNext={isGoingNext}>
-          <DetailPlayerContainer ref={nextVideoRef} data-scroll>
-            {(detail?.next && (
+        {nextDetail && (
+          <NextContainer id="next-container" isGoingNext={isGoingNext}>
+            <DetailPlayerContainer ref={nextVideoRef} data-scroll>
               <>
-                <VideoPoster $src={CMS_URL + detail.next.video_poster?.url} />
+                <VideoPoster $src={CMS_URL + nextDetail.video_poster?.url} />
                 <DetailPlayerOverlay />
               </>
-            ))}
-          </DetailPlayerContainer>
+            </DetailPlayerContainer>
 
-          <MediaTitle
-            ref={nextTitleRef}
-            side="R"
-            visible={!state.isAnyMenuOpen()}
-            dataset={{ 'data-scroll': true }}
-          >
-            {detail?.next.title}
-          </MediaTitle>
-        </NextContainer>
+            <MediaTitle
+              ref={nextTitleRef}
+              side="R"
+              visible={!state.ui.isAnyMenuOpen()}
+              dataset={{ 'data-scroll': true }}
+            >
+              {nextDetail.title}
+            </MediaTitle>
+          </NextContainer>
+        )}
       </DetailContainer>
       <div id="film-container--hitbox" />
       <MediaTitle
         ref={titleRef}
         side="R"
-        visible={!state.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
+        visible={!state.ui.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
         autoHide
         dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext === 'ending' ? detail?.next.title : detail?.title}
+        {isGoingNext === 'ending' ? nextDetail?.title || detail?.title : ''}
       </MediaTitle>
     </VideoDetailContainer>
   );

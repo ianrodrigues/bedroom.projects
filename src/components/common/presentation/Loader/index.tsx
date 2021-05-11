@@ -9,22 +9,22 @@ import { LoaderContainer, LoaderInner } from './styled';
 const Loader: React.VFC = () => {
   const state = useStore();
   const [visible, setVisible] = React.useState(true);
-  const [loadType, setLoadType] = React.useState<i.LoadingState>('site');
+  const [loadType, setLoadType] = React.useState<i.GlobalLoadingState>('site');
 
   React.useEffect(() => {
-    if (!state.loading) {
+    if (!state.ui.loading) {
       setTimeout(() => {
         setVisible(false);
       }, 300);
     } else {
-      setLoadType(state.loading);
+      setLoadType(state.ui.loading);
       setVisible(true);
     }
-  }, [state.loading]);
+  }, [state.ui.loading]);
 
   return (
     <LoaderContainer $visible={visible} $type={loadType}>
-      <LoaderInner done={!state.loading} />
+      <LoaderInner done={!state.ui.loading} />
     </LoaderContainer>
   );
 };

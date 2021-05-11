@@ -25,7 +25,7 @@ export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
 
 interface LoaderContainerProps {
   $visible?: boolean;
-  $type: i.LoadingState;
+  $type: i.GlobalLoadingState;
 }
 
 const Frames = keyframes`

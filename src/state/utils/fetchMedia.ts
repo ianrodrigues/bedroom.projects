@@ -18,12 +18,12 @@ export function fetchMedia(): void {
       for (const media of data) {
         if (isAPIPhotoObject(media)) {
           const tempMedia = media as i.StatePhotoObject;
-          tempMedia.next = {} as i.StatePhotoObject;
+          tempMedia.next = '';
 
           photos.push(tempMedia);
         } else {
           const tempMedia = media as i.StateVideoObject;
-          tempMedia.next = {} as i.StatePhotoObject;
+          tempMedia.next = '';
 
           // Convert markdown to html
           if (tempMedia.description) {
@@ -51,7 +51,7 @@ export function fetchMedia(): void {
       // Make linked list
       for (const photo of photos) {
         if (prevPhotoObj) {
-          prevPhotoObj.next = photo;
+          prevPhotoObj.next = photo.slug;
         }
 
         prevPhotoObj = photo;
@@ -59,7 +59,7 @@ export function fetchMedia(): void {
 
       for (const video of videos) {
         if (prevVideoObj) {
-          prevVideoObj.next = video;
+          prevVideoObj.next = video.slug;
         }
 
         prevVideoObj = video;
@@ -67,24 +67,24 @@ export function fetchMedia(): void {
 
       // Link last to first
       if (photos[photos.length - 1] && photos[0]) {
-        photos[photos.length - 1]!.next = photos[0];
+        photos[photos.length - 1]!.next = photos[0].slug;
       }
 
       if (videos[videos.length - 1] && videos[0]) {
-        videos[videos.length - 1]!.next = videos[0];
+        videos[videos.length - 1]!.next = videos[0].slug;
       }
 
-      useStore.getState().setAllMedia({
+      useStore.getState().media.setAllMedia({
         photo: photos,
         video: videos,
       });
 
       if (photos[0]) {
-        useStore.getState().setMedia('photo', photos[0]);
+        useStore.getState().media.setMedia('photo', photos[0]);
       }
 
       if (videos[0]) {
-        useStore.getState().setMedia('video', videos[0]);
+        useStore.getState().media.setMedia('video', videos[0]);
       }
     });
 }

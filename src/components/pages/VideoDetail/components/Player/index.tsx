@@ -51,7 +51,7 @@ const Player: React.VFC<Props> = (props) => {
     });
 
     video.addEventListener('playing', function () {
-      state.setLoading(false);
+      state.ui.setLoading(false);
       state.videoPlayer.setPlaying(true);
 
       setControlsDimensions({
@@ -61,7 +61,7 @@ const Player: React.VFC<Props> = (props) => {
     });
 
     video.addEventListener('canplay', function () {
-      state.setLoading(false);
+      state.ui.setLoading(false);
 
       setTimeout(() => {
         state.videoPlayer.setPlaying(true);

@@ -7,7 +7,7 @@ type MediaReturnType<T extends i.MediaType> = (T extends 'photo' ? i.StatePhotoO
 
 export function getMediaObjectBySlug<T extends i.MediaType>(slug: string, type: T): MediaReturnType<T> | undefined {
   const state = useStore.getState();
-  const mediaArr = state.allMedia?.[type] as MediaReturnType<T>[] | undefined;
+  const mediaArr = state.media.allMedia?.[type] as MediaReturnType<T>[] | undefined;
 
   return mediaArr?.find((val) => val.slug === slug);
 }

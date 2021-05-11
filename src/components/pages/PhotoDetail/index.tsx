@@ -45,6 +45,9 @@ const PhotoDetail: React.VFC = () => {
   const [detail, setDetail] = React.useState<i.StatePhotoObject | undefined>(
     getMediaObjectBySlug(params.slug, 'photo'),
   );
+  const [nextDetail, setNextDetail] = React.useState<i.StatePhotoObject | undefined>(
+    getMediaObjectBySlug(detail?.next || '', 'photo'),
+  );
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
     queries.has('next') ? 'ending' : false,
   );
@@ -54,7 +57,7 @@ const PhotoDetail: React.VFC = () => {
     if (!detail) {
       setDetail(getMediaObjectBySlug(params.slug, 'photo'));
     }
-  }, [state.allMedia]);
+  }, [state.media.allMedia]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -101,7 +104,7 @@ const PhotoDetail: React.VFC = () => {
 
   // Scroll logic
   React.useEffect(() => {
-    if (containerRef.current && !state.loading) {
+    if (containerRef.current && !state.ui.loading) {
       scroller = new SmoothScroll('#photos-container');
 
       scroller.on((scrollY, bodyEl, bottomEdge) => {
@@ -158,8 +161,8 @@ const PhotoDetail: React.VFC = () => {
 
           setGoingNext('starting');
 
-          if (state.loading === false) {
-            state.setLoading('page');
+          if (state.ui.loading === false) {
+            state.ui.setLoading('page');
           }
 
           // Fade out current title
@@ -185,10 +188,12 @@ const PhotoDetail: React.VFC = () => {
               bodyEl.style.transition = style;
             }, 100);
 
-            setSections({
-              head: detail?.next.bedroom_media_layouts[0],
-              body: [],
-            });
+            if (detail) {
+              setSections({
+                head: nextDetail?.bedroom_media_layouts[0],
+                body: [],
+              });
+            }
 
             if (titleRef.current) {
               titleRef.current.style.opacity = '1';
@@ -210,7 +215,7 @@ const PhotoDetail: React.VFC = () => {
 
             // Route to next page
             setTimeout(() => {
-              history.push(`/photos/${detail?.next.slug}?next=1`);
+              history.push(`/photos/${detail?.next}?next=1`);
             }, 2000);
           }, 1500);
         }
@@ -220,15 +225,17 @@ const PhotoDetail: React.VFC = () => {
     return function cleanup() {
       scroller?.destroy();
     };
-  }, [containerRef, state.loading, isGoingNext]);
+  }, [containerRef, state.ui.loading, isGoingNext]);
 
   React.useEffect(() => {
     if (!detail) {
       return;
     }
 
-    if (state.loading === false) {
-      state.setLoading('page');
+    setNextDetail(getMediaObjectBySlug(detail.next, 'photo'));
+
+    if (state.ui.loading === false) {
+      state.ui.setLoading('page');
     }
 
     const head = detail.bedroom_media_layouts[0];
@@ -266,7 +273,7 @@ const PhotoDetail: React.VFC = () => {
   }, [detail]);
 
   React.useEffect(() => {
-    if (state.loading) {
+    if (state.ui.loading) {
       return;
     }
 
@@ -338,13 +345,13 @@ const PhotoDetail: React.VFC = () => {
         observer.disconnect();
       }
     };
-  }, [sections, state.loading]);
+  }, [sections, state.ui.loading]);
 
   function handleLoad() {
     loaded++;
 
     if (loaded >= photosAmt) {
-      state.setLoading(false);
+      state.ui.setLoading(false);
     }
   }
 
@@ -385,36 +392,38 @@ const PhotoDetail: React.VFC = () => {
           )}
         </div>
 
-        <NextContainer data-scroll-container>
-          {detail?.next.bedroom_media_layouts[0] && (
-            <div ref={nextImageRef} data-scroll>
-              <RowImg
-                id="next-cover"
-                layout={detail.next.bedroom_media_layouts[0]}
-                photo={detail.next.bedroom_media_layouts[0].media[0]!}
-                isNextHeader
-              />
-            </div>
-          )}
+        {nextDetail && (
+          <NextContainer data-scroll-container>
+            {nextDetail.bedroom_media_layouts[0] && (
+              <div ref={nextImageRef} data-scroll>
+                <RowImg
+                  id="next-cover"
+                  layout={nextDetail.bedroom_media_layouts[0]}
+                  photo={nextDetail.bedroom_media_layouts[0].media[0]!}
+                  isNextHeader
+                />
+              </div>
+            )}
 
-          <MediaTitle
-            ref={nextTitleRef}
-            side="L"
-            visible={!state.isAnyMenuOpen() && sections.body.length > 0}
-            dataset={{ 'data-scroll': true }}
-          >
-            {detail?.next.title}
-          </MediaTitle>
-        </NextContainer>
+            <MediaTitle
+              ref={nextTitleRef}
+              side="L"
+              visible={!state.ui.isAnyMenuOpen() && sections.body.length > 0}
+              dataset={{ 'data-scroll': true }}
+            >
+              {nextDetail.title}
+            </MediaTitle>
+          </NextContainer>
+        )}
       </DetailContainer>
       <div id="photos-container--hitbox" />
       <MediaTitle
         ref={titleRef}
         side="L"
-        visible={!state.isAnyMenuOpen()}
+        visible={!state.ui.isAnyMenuOpen()}
         dataset={{ 'data-scroll': true }}
       >
-        {isGoingNext === 'ending' ? detail?.next.title : detail?.title}
+        {isGoingNext === 'ending' ? nextDetail?.title || detail?.title : ''}
       </MediaTitle>
     </PhotoDetailContainer>
   );

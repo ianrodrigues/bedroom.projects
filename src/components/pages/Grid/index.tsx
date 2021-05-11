@@ -31,15 +31,15 @@ const Grid: React.VFC<Props> = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!state.allMedia) {
+    if (!state.media.allMedia) {
       return;
     }
 
-    combinedMedia.current = [...state.allMedia.photo, ...state.allMedia.video];
+    combinedMedia.current = [...state.media.allMedia.photo, ...state.media.allMedia.video];
 
     if (loaded === 0) {
-      if (state.loading === false) {
-        state.setLoading('page');
+      if (state.ui.loading === false) {
+        state.ui.setLoading('page');
       }
 
       for (const media of combinedMedia.current) {
@@ -55,13 +55,13 @@ const Grid: React.VFC<Props> = () => {
     } else {
       handleMediaLoaded();
     }
-  }, [state.allMedia]);
+  }, [state.media.allMedia]);
 
   function handleMediaLoaded() {
     loaded++;
 
     if (loaded >= combinedMedia.current.length) {
-      state.setLoading(false);
+      state.ui.setLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
@@ -113,10 +113,10 @@ const Grid: React.VFC<Props> = () => {
           <GridPageContainer ref={containerRef} $visible={fadeIn}>
             <FilterContainer>
               <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
-              Photos ({state.allMedia?.photo.length})
+              Photos ({state.media.allMedia?.photo.length})
               </FilterButton>
               <FilterButton onClick={() => toggleFilter('video')} toggled={filtered === 'video'}>
-              Films ({state.allMedia?.video.length})
+              Films ({state.media.allMedia?.video.length})
               </FilterButton>
             </FilterContainer>
 
