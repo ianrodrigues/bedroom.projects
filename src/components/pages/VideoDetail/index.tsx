@@ -4,7 +4,7 @@ import { useHistory, useParams } from 'react-router';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery } from 'hooks';
+import { usePageAssetLoadCounter, useQuery } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -37,11 +37,11 @@ const VideoDetail: React.VFC = () => {
   const [nextDetail, setNextDetail] = React.useState(getMediaObjectBySlug(detail?.next || '', 'video'));
   const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
   const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
 
   React.useEffect(() => {
     return function cleanup() {
       state.ui.setLoading(false);
-      loader?.pageLoader.reset();
     };
   }, []);
 
@@ -53,14 +53,14 @@ const VideoDetail: React.VFC = () => {
   }, [state.media.allMedia]);
 
   React.useEffect(() => {
-    if (loader?.pageLoader.loaded === 3) {
+    if (assetLoadCounter.loaded === 3) {
       if (__DEV__) {
         console.info('page loaded');
       }
 
       state.ui.setLoading(false);
     }
-  }, [loader?.pageLoader.loaded]);
+  }, [assetLoadCounter.loaded]);
 
   React.useEffect(() => {
     if (detail) {
@@ -75,13 +75,13 @@ const VideoDetail: React.VFC = () => {
         ?.addVideoAsset((video) => {
           video.src = CMS_URL + detail.full_video!.url;
         })
-        .then(loader?.pageLoader.addLoaded);
+        .then(assetLoadCounter.addLoaded);
 
       loader
         ?.addImageAsset((img) => {
           img.src = CMS_URL + detail.video_poster.url;
         })
-        .then(loader?.pageLoader.addLoaded);
+        .then(assetLoadCounter.addLoaded);
     }
   }, [detail]);
 
@@ -92,7 +92,7 @@ const VideoDetail: React.VFC = () => {
         ?.addImageAsset((img) => {
           img.src = CMS_URL + nextDetail.video_poster?.url;
         })
-        .then(loader?.pageLoader.addLoaded);
+        .then(assetLoadCounter.addLoaded);
     }
   }, [nextDetail]);
 
@@ -170,7 +170,7 @@ const VideoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
-          loader?.pageLoader.reset();
+          assetLoadCounter.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');

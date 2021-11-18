@@ -1,12 +1,17 @@
 import React from 'react';
 
+import useStore from 'state';
+
+
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-function usePageLoader() {
+export function usePageAssetLoadCounter() {
+  const state = useStore();
   const [amount, setAmount] = React.useState(0);
   const [loaded, setLoaded] = React.useState(0);
 
   React.useEffect(() => {
     return function cleanup() {
+      state.ui.setLoading(false);
       reset();
     };
   }, []);
@@ -28,5 +33,3 @@ function usePageLoader() {
     done: loaded >= amount,
   };
 }
-
-export default usePageLoader;

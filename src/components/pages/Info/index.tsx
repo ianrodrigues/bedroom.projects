@@ -5,6 +5,7 @@ import Showdown from 'showdown';
 
 import useStore from 'state';
 import { SmoothScroll } from 'services';
+import { usePageAssetLoadCounter } from 'hooks';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
@@ -19,6 +20,7 @@ const Info: React.VFC = () => {
   const [visible, setVisible] = React.useState(false);
   const descriptionRef = React.useRef<HTMLDivElement>(null);
   const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
   const { data } = useQuery<i.APIInfoObject, Error>('info', () =>
     fetch(CMS_URL + '/bedroom-infos/1')
       .then((res) => res.json())
@@ -34,7 +36,7 @@ const Info: React.VFC = () => {
           ?.addImageAsset((img) => {
             img.src = CMS_URL + newData.image.url;
           })
-          .then(loader?.pageLoader.addLoaded);
+          .then(assetLoadCounter.addLoaded);
 
         return newData;
       }),
@@ -42,19 +44,19 @@ const Info: React.VFC = () => {
 
   React.useEffect(() => {
     return function cleanup() {
-      loader?.pageLoader.reset();
+      assetLoadCounter.reset();
     };
   }, []);
 
   React.useEffect(() => {
-    if (loader?.pageLoader.loaded === 1) {
+    if (assetLoadCounter.loaded === 1) {
       state.ui.setLoading(false);
 
       setTimeout(() => {
         setVisible(true);
       }, 500);
     }
-  }, [loader?.pageLoader.loaded]);
+  }, [assetLoadCounter.loaded]);
 
   React.useEffect(() => {
     if (!data && !state.ui.loading) {

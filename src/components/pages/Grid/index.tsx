@@ -4,6 +4,7 @@ import { RouteProps } from 'react-router';
 import { Link } from 'react-router-dom';
 
 import useStore from 'state';
+import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
@@ -22,29 +23,29 @@ const Grid: React.VFC<Props> = () => {
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
   const [fadeIn, setFadeIn] = React.useState(false);
   const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
 
   React.useEffect(() => {
     scroller = new SmoothScroll('#grid-container');
 
     return function cleanup() {
       scroller?.destroy();
-      loader?.pageLoader.reset();
     };
   }, []);
 
   React.useEffect(() => {
-    if (combinedMedia.current.length === 0 || !loader) {
+    if (combinedMedia.current.length === 0) {
       return;
     }
 
-    if (loader.pageLoader.loaded === combinedMedia.current.length) {
+    if (assetLoadCounter.loaded === combinedMedia.current.length) {
       state.ui.setLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
       }, 750);
     }
-  }, [combinedMedia.current, loader?.pageLoader.loaded]);
+  }, [combinedMedia.current, assetLoadCounter.loaded]);
 
   React.useEffect(() => {
     if (!state.media.allMedia) {
@@ -66,7 +67,7 @@ const Grid: React.VFC<Props> = () => {
             img.src = CMS_URL + media.video_poster.formats!.small.url;
           }
         })
-        .then(loader?.pageLoader.addLoaded);
+        .then(assetLoadCounter.addLoaded);
     }
   }, [state.media.allMedia]);
 

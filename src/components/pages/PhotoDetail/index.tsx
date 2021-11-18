@@ -4,7 +4,7 @@ import { useHistory, useLocation, useParams } from 'react-router';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery } from 'hooks';
+import { useQuery, usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -51,12 +51,7 @@ const PhotoDetail: React.VFC = () => {
     queries.has('next') ? 'ending' : false,
   );
   const loader = React.useContext(AssetsLoaderContext);
-
-  React.useEffect(() => {
-    return function cleanup() {
-      loader?.pageLoader.reset();
-    };
-  }, []);
+  const assetLoadCounter = usePageAssetLoadCounter();
 
   // Initialise
   React.useEffect(() => {
@@ -67,7 +62,7 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     if (detail) {
-      if (loader?.pageLoader.loaded === detail.bedroom_media_layouts.length) {
+      if (assetLoadCounter.loaded === detail.bedroom_media_layouts.length) {
         if (__DEV__) {
           console.info('page loaded');
         }
@@ -75,7 +70,7 @@ const PhotoDetail: React.VFC = () => {
         state.ui.setLoading(false);
       }
     }
-  }, [loader?.pageLoader.loaded, detail]);
+  }, [assetLoadCounter.loaded, detail]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -178,7 +173,7 @@ const PhotoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
-          loader?.pageLoader.reset();
+          assetLoadCounter.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
@@ -262,7 +257,7 @@ const PhotoDetail: React.VFC = () => {
       ?.addImageAsset((img) => {
         img.src = CMS_URL + head!.media[0]!.url;
       })
-      .then(loader?.pageLoader.addLoaded);
+      .then(assetLoadCounter.addLoaded);
 
     const body: i.Layout[] = [];
     for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
@@ -275,7 +270,7 @@ const PhotoDetail: React.VFC = () => {
           ?.addImageAsset((img) => {
             img.src = CMS_URL + photo.url;
           })
-          .then(loader?.pageLoader.addLoaded);
+          .then(assetLoadCounter.addLoaded);
       }
     }
 
