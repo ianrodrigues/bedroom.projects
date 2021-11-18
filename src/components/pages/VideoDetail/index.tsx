@@ -68,13 +68,13 @@ const VideoDetail: React.VFC = () => {
 
       // Current video + poster
       loader
-        .addVideoAsset((video) => {
+        ?.addVideoAsset((video) => {
           video.src = CMS_URL + detail.full_video!.url;
         })
         .then(assetLoaded);
 
       loader
-        .addImageAsset((img) => {
+        ?.addImageAsset((img) => {
           img.src = CMS_URL + detail.video_poster.url;
         })
         .then(assetLoaded);
@@ -85,7 +85,7 @@ const VideoDetail: React.VFC = () => {
     if (nextDetail) {
       // Next video poster
       loader
-        .addImageAsset((img) => {
+        ?.addImageAsset((img) => {
           img.src = CMS_URL + nextDetail.video_poster?.url;
         })
         .then(assetLoaded);
@@ -165,8 +165,8 @@ const VideoDetail: React.VFC = () => {
             nextVideoRef.current.style.transform = `translate3d(0, ${-bottomEdge}px, 0)`;
           }
 
-          setPageAssetsLoaded(0);
           setGoingNext('starting');
+          setPageAssetsLoaded(0);
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
