@@ -30,23 +30,31 @@ const Info: React.VFC = () => {
           description: html,
         };
 
-        loader.addImageAsset((img) => {
-          img.src = CMS_URL + newData.image.url;
-        });
+        loader
+          ?.addImageAsset((img) => {
+            img.src = CMS_URL + newData.image.url;
+          })
+          .then(loader?.pageLoader.addLoaded);
 
         return newData;
       }),
   );
 
   React.useEffect(() => {
-    if (loader.allLoaded) {
+    return function cleanup() {
+      loader?.pageLoader.reset();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (loader?.pageLoader.loaded === 1) {
       state.ui.setLoading(false);
 
       setTimeout(() => {
         setVisible(true);
       }, 500);
     }
-  }, [loader.allLoaded]);
+  }, [loader?.pageLoader.loaded]);
 
   React.useEffect(() => {
     if (!data && !state.ui.loading) {
