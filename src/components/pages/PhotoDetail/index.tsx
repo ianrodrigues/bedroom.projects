@@ -1,5 +1,6 @@
 import * as i from 'types';
 import React from 'react';
+import { hotjar } from 'react-hotjar';
 import { useHistory, useLocation, useParams } from 'react-router';
 
 import useStore from 'state';
@@ -229,6 +230,10 @@ const PhotoDetail: React.VFC = () => {
 
             // Route to next page
             setTimeout(() => {
+              if (__PROD__) {
+                hotjar.stateChange(location.pathname);
+              }
+
               history.push(`/photos/${detail?.next}?next=1`);
             }, 2000);
           }, 1500);

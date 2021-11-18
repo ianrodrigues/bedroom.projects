@@ -1,6 +1,7 @@
 import * as i from 'types';
 import React from 'react';
 import { Link, Route, useLocation } from 'react-router-dom';
+import { hotjar } from 'react-hotjar';
 
 import useStore from 'state';
 
@@ -71,7 +72,10 @@ const Header: React.VFC = () => {
                 key={photo.id}
                 onMouseEnter={() => onMouseEnter('photo', photo)}
               >
-                <Link to={`/photos/${photo.slug}`}>
+                <Link
+                  to={`/photos/${photo.slug}`}
+                  onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+                >
                   {photo.title}
                 </Link>
               </ListItem>
@@ -99,7 +103,10 @@ const Header: React.VFC = () => {
                 key={video.id}
                 onMouseEnter={() => onMouseEnter('video', video)}
               >
-                <Link to={`/film/${video.slug}`}>
+                <Link
+                  to={`/film/${video.slug}`}
+                  onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+                >
                   {video.title}
                 </Link>
               </ListItem>

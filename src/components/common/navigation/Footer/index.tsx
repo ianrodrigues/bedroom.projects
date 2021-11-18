@@ -1,4 +1,5 @@
 import React from 'react';
+import { hotjar } from 'react-hotjar';
 import { useLocation } from 'react-router-dom';
 
 import InstagramSvg from 'vectors/instagram-brands.svg';
@@ -18,7 +19,13 @@ const Footer: React.VFC = () => {
 
   return (
     <>
-      <InfoLink to="/info" $visible={visible}>Info</InfoLink>
+      <InfoLink
+        to="/info"
+        $visible={visible}
+        onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+      >
+          Info
+      </InfoLink>
       <SocialMediaLink href="https://www.instagram.com/bedroom.projects/" $visible={visible}>
         <InstagramSvg />
       </SocialMediaLink>

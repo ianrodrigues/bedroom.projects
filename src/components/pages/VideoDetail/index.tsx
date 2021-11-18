@@ -1,6 +1,7 @@
 import * as i from 'types';
 import React from 'react';
-import { useHistory, useParams } from 'react-router';
+import { hotjar } from 'react-hotjar';
+import { useHistory, useParams, useLocation } from 'react-router';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
@@ -27,6 +28,7 @@ const VideoDetail: React.VFC = () => {
   const state = useStore();
   const history = useHistory();
   const queries = useQuery();
+  const location = useLocation();
   const params = useParams<i.DetailPageParams>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
@@ -197,6 +199,10 @@ const VideoDetail: React.VFC = () => {
           }, 2100);
 
           setTimeout(() => {
+            if (__PROD__) {
+              hotjar.stateChange(location.pathname);
+            }
+
             history.push(`/film/${detail?.next}?next=1`);
           }, 2500);
         }

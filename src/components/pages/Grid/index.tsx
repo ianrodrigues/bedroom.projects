@@ -1,7 +1,8 @@
 import * as i from 'types';
 import React from 'react';
-import { RouteProps } from 'react-router';
+import { RouteProps, useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
+import { hotjar } from 'react-hotjar';
 
 import useStore from 'state';
 import { usePageAssetLoadCounter } from 'hooks';
@@ -18,6 +19,7 @@ let scroller: SmoothScroll | undefined;
 
 const Grid: React.VFC<Props> = () => {
   const state = useStore();
+  const location = useLocation();
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
@@ -99,7 +101,10 @@ const Grid: React.VFC<Props> = () => {
 
       return (
         <GridTile key={media.id} visible={visible}>
-          <Link to={`${linkPrefix}/${media.slug}`}>
+          <Link
+            to={`${linkPrefix}/${media.slug}`}
+            onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+          >
             <Figure src={CMS_URL + previewUrl} />
             <Title>{media.title}</Title>
           </Link>
