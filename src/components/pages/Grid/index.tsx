@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import useStore from 'state';
 import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import {
   Figure, FilterContainer, GridContainer, GridPageContainer, GridTile, Title, FilterButton,
@@ -13,7 +14,6 @@ import {
 
 
 let scroller: SmoothScroll | undefined;
-let loaded = 0;
 
 const Grid: React.VFC<Props> = () => {
   const state = useStore();
@@ -21,6 +21,7 @@ const Grid: React.VFC<Props> = () => {
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
   const [fadeIn, setFadeIn] = React.useState(false);
+  const loader = React.useContext(AssetsLoaderContext);
 
   React.useEffect(() => {
     scroller = new SmoothScroll('#grid-container');
@@ -31,43 +32,38 @@ const Grid: React.VFC<Props> = () => {
   }, []);
 
   React.useEffect(() => {
-    if (!state.media.allMedia) {
-      return;
-    }
-
-    combinedMedia.current = [...state.media.allMedia.photo, ...state.media.allMedia.video];
-
-    if (loaded === 0) {
-      if (state.ui.loading === false) {
-        state.ui.setLoading('page');
-      }
-
-      for (const media of combinedMedia.current) {
-        const img = document.createElement('img');
-        img.onload = handleMediaLoaded;
-
-        if (isStatePhotoObject(media)) {
-          img.src = CMS_URL + media.media_cover.formats!.small.url;
-        } else {
-          img.src = CMS_URL + media.video_poster.formats!.small.url;
-        }
-      }
-    } else {
-      handleMediaLoaded();
-    }
-  }, [state.media.allMedia]);
-
-  function handleMediaLoaded() {
-    loaded++;
-
-    if (loaded >= combinedMedia.current.length) {
+    if (loader.allLoaded) {
       state.ui.setLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
       }, 750);
     }
-  }
+  }, [loader.allLoaded]);
+
+  React.useEffect(() => {
+    if (!state.media.allMedia) {
+      return;
+    }
+
+    combinedMedia.current = [...state.media.allMedia.photo, ...state.media.allMedia.video];
+
+    if (!loader.allLoaded) {
+      if (state.ui.loading === false) {
+        state.ui.setLoading('page');
+      }
+
+      for (const media of combinedMedia.current) {
+        loader.addImageAsset((img) => {
+          if (isStatePhotoObject(media)) {
+            img.src = CMS_URL + media.media_cover.formats!.small.url;
+          } else {
+            img.src = CMS_URL + media.video_poster.formats!.small.url;
+          }
+        });
+      }
+    }
+  }, [state.media.allMedia]);
 
   function toggleFilter(type: i.MediaType) {
     if (filtered === type) {

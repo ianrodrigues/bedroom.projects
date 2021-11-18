@@ -19,6 +19,7 @@
     "baseUrl": "src",
     "paths": {
       "common/*": ["components/common/*"],
+      "context/*": ["services/context/*"],
       "ducks/*": ["ducks/*"],
       "hooks": ["services/hooks/index"],
       "images/*": ["static/images/*"],

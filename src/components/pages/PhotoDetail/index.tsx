@@ -6,6 +6,7 @@ import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
 import { useQuery } from 'hooks';
 import { SmoothScroll } from 'services';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import SEO from 'common/SEO';
@@ -17,8 +18,6 @@ import { PhotoDetailContainer, FullContentContainer, NextContainer, Row } from '
 
 let scroller: SmoothScroll | undefined;
 let observers: IntersectionObserver[] = [];
-let loaded = 0;
-let photosAmt = 0;
 
 interface Sections {
   head?: i.Layout;
@@ -51,6 +50,7 @@ const PhotoDetail: React.VFC = () => {
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
     queries.has('next') ? 'ending' : false,
   );
+  const loader = React.useContext(AssetsLoaderContext);
 
   // Initialise
   React.useEffect(() => {
@@ -58,6 +58,12 @@ const PhotoDetail: React.VFC = () => {
       setDetail(getMediaObjectBySlug(params.slug, 'photo'));
     }
   }, [state.media.allMedia]);
+
+  React.useEffect(() => {
+    if (loader.allLoaded) {
+      state.ui.setLoading(false);
+    }
+  }, [loader.allLoaded]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -239,10 +245,9 @@ const PhotoDetail: React.VFC = () => {
     }
 
     const head = detail.bedroom_media_layouts[0];
-    const img = document.createElement('img');
-    img.onload = handleLoad;
-    img.src = CMS_URL + head!.media[0]!.url;
-    photosAmt++;
+    loader.addImageAsset((img) => {
+      img.src = CMS_URL + head!.media[0]!.url;
+    });
 
     const body: i.Layout[] = [];
     for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
@@ -251,10 +256,9 @@ const PhotoDetail: React.VFC = () => {
       body.push(row);
 
       for (const photo of row.media) {
-        const img = document.createElement('img');
-        img.onload = handleLoad;
-        img.src = CMS_URL + photo.url;
-        photosAmt++;
+        loader.addImageAsset((img) => {
+          img.src = CMS_URL + photo.url;
+        });
       }
     }
 
@@ -265,11 +269,6 @@ const PhotoDetail: React.VFC = () => {
     setTimeout(() => {
       setSections({ head, body });
     }, 100);
-
-    return function cleanup() {
-      loaded = 0;
-      photosAmt = 0;
-    };
   }, [detail]);
 
   React.useEffect(() => {
@@ -346,14 +345,6 @@ const PhotoDetail: React.VFC = () => {
       }
     };
   }, [sections, state.ui.loading]);
-
-  function handleLoad() {
-    loaded++;
-
-    if (loaded >= photosAmt) {
-      state.ui.setLoading(false);
-    }
-  }
 
   return (
     <PhotoDetailContainer>

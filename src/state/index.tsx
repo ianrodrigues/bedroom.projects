@@ -5,7 +5,7 @@ import { log, immer } from './middleware';
 
 import * as stores from './stores';
 
-const useStore = create<i.AppState>(log(immer((set, get) => {
+const useStore = create<i.AppState>(immer((set, get) => {
   type storeKeys = keyof typeof stores;
 
   const state = {} as i.AppState;
@@ -19,6 +19,6 @@ const useStore = create<i.AppState>(log(immer((set, get) => {
   }
 
   return state;
-})));
+}));
 
 export default useStore;
