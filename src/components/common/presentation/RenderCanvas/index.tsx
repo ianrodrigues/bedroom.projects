@@ -1,6 +1,6 @@
 import * as i from 'types';
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
 
 import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
@@ -238,7 +238,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   });
 
   React.useEffect(() => {
-    if (location.pathname !== '/') {
+    if (location.current.pathname !== '/') {
       return;
     }
 
@@ -299,7 +299,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
   // Show "bedroom" title
   React.useEffect(() => {
-    if (location.pathname !== '/') {
+    if (location.current.pathname !== '/') {
       return;
     }
 
@@ -322,7 +322,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   // Init divider position
   React.useEffect(() => {
     dividerPos = canvasRef.current!.width * 0.5;
-  }, [canvasRef, location.pathname]);
+  }, [canvasRef, location.current.pathname]);
 
   return (
     <>

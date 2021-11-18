@@ -1,11 +1,10 @@
 import * as i from 'types';
 import React from 'react';
-import { hotjar } from 'react-hotjar';
-import { useHistory, useLocation, useParams } from 'react-router';
+import { useNavigate, useMatch, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery, usePageAssetLoadCounter } from 'hooks';
+import { useHotjar, usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -29,10 +28,10 @@ type GoingNextPhases = false | 'starting' | 'ending';
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
-  const params = useParams<i.DetailPageParams>();
-  const history = useHistory();
-  const location = useLocation();
-  const queries = useQuery();
+  const { params } = useMatch<i.DetailPageGenerics>();
+  const search = useSearch<i.DetailPageGenerics>();
+  const navigate = useNavigate();
+  const hotjar = useHotjar();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -49,10 +48,22 @@ const PhotoDetail: React.VFC = () => {
     getMediaObjectBySlug(detail?.next || '', 'photo'),
   );
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
-    queries.has('next') ? 'ending' : false,
+    !!search.next ? 'ending' : false,
   );
   const loader = React.useContext(AssetsLoaderContext);
   const assetLoadCounter = usePageAssetLoadCounter();
+
+
+  React.useEffect(() => {
+    return function cleanup() {
+      state.ui.setLoading(false);
+      scroller?.destroy();
+
+      for (const observer of observers) {
+        observer.disconnect();
+      }
+    };
+  }, []);
 
   // Initialise
   React.useEffect(() => {
@@ -71,7 +82,7 @@ const PhotoDetail: React.VFC = () => {
         state.ui.setLoading(false);
       }
     }
-  }, [assetLoadCounter.loaded, detail]);
+  }, [assetLoadCounter.loaded, detail?.bedroom_media_layouts.length]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -114,7 +125,7 @@ const PhotoDetail: React.VFC = () => {
         titleRef.current.style.transition += ', opacity 300ms';
       }
     }, 200);
-  }, [location.pathname]);
+  }, [params.slug]);
 
   // Scroll logic
   React.useEffect(() => {
@@ -230,20 +241,19 @@ const PhotoDetail: React.VFC = () => {
 
             // Route to next page
             setTimeout(() => {
-              if (__PROD__) {
-                hotjar.stateChange(location.pathname);
-              }
+              hotjar.stateChange();
 
-              history.push(`/photos/${detail?.next}?next=1`);
-            }, 2000);
-          }, 1500);
+              navigate({
+                to: `/photos/${detail?.next}`,
+                search: {
+                  next: 1,
+                },
+              });
+            }, 500);
+          }, 1000);
         }
       });
     }
-
-    return function cleanup() {
-      scroller?.destroy();
-    };
   }, [containerRef, state.ui.loading, isGoingNext]);
 
   React.useEffect(() => {
@@ -355,12 +365,6 @@ const PhotoDetail: React.VFC = () => {
         }
       }
     }, 500);
-
-    return function cleanup() {
-      for (const observer of observers) {
-        observer.disconnect();
-      }
-    };
   }, [sections, state.ui.loading]);
 
   return (
@@ -377,7 +381,7 @@ const PhotoDetail: React.VFC = () => {
               <RowImg
                 id="current-cover"
                 layout={sections.head}
-                isNextHeader={!!isGoingNext || queries.has('next')}
+                isNextHeader={!!isGoingNext || !!search.next}
                 photo={sections.head.media[0]!}
               />
             </Row>

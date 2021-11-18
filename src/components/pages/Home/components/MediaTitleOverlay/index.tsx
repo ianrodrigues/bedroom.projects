@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
 
 import useStore from 'state';
 import MediaTitle from 'common/typography/MediaTitle';
@@ -12,15 +12,13 @@ const MediaTitleOverlay: React.VFC = () => {
   const location = useLocation();
 
   React.useEffect(() => {
-    if (location.pathname === '/' && !state.ui.showName) {
+    if (location.current.pathname === '/' && !state.ui.showName) {
       state.ui.setShowName(true);
     }
-  }, [location.pathname]);
-
+  }, [location.current.pathname]);
 
   const containerVisible =
-    state.ui.isAnyMenuOpen() ||
-    (!location.pathname.includes('info') && !location.pathname.includes('grid'));
+    state.ui.isAnyMenuOpen() || ['/info', '/grid'].every((p) => p !== location.current.pathname);
 
   return (
     <MediaTitleOverlayContainer $visible={containerVisible}>

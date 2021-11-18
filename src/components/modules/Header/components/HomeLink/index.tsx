@@ -1,21 +1,23 @@
 import React from 'react';
-import { hotjar } from 'react-hotjar';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
+
+import { useHotjar } from 'hooks';
 
 import { HomeLinkAnchor } from './styled';
 
 
 const HomeLink: React.VFC = () => {
   const location = useLocation();
+  const hotjar = useHotjar();
 
-  if (['/', '/grid'].includes(location.pathname)) {
+  if (['/', '/grid'].includes(location.current.pathname)) {
     return null;
   }
 
   return (
     <HomeLinkAnchor
       to="/"
-      onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+      onClick={hotjar.stateChange}
     >
       bedroom
     </HomeLinkAnchor>

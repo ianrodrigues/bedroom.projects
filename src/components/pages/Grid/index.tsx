@@ -1,11 +1,9 @@
 import * as i from 'types';
 import React from 'react';
-import { RouteProps, useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
-import { hotjar } from 'react-hotjar';
+import { Link } from 'react-location';
 
 import useStore from 'state';
-import { usePageAssetLoadCounter } from 'hooks';
+import { useHotjar, usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
@@ -17,9 +15,9 @@ import {
 
 let scroller: SmoothScroll | undefined;
 
-const Grid: React.VFC<Props> = () => {
+const Grid: React.VFC = () => {
   const state = useStore();
-  const location = useLocation();
+  const hotjar = useHotjar();
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
@@ -102,8 +100,8 @@ const Grid: React.VFC<Props> = () => {
       return (
         <GridTile key={media.id} visible={visible}>
           <Link
-            to={`${linkPrefix}/${media.slug}`}
-            onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+            to={`../${linkPrefix}/${media.slug}`}
+            onClick={hotjar.stateChange}
           >
             <Figure src={CMS_URL + previewUrl} />
             <Title>{media.title}</Title>
@@ -137,7 +135,5 @@ const Grid: React.VFC<Props> = () => {
     </>
   );
 };
-
-interface Props extends RouteProps {}
 
 export default Grid;

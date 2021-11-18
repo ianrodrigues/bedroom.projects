@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link } from 'react-location';
 
 
 export const HomeLinkAnchor = styled(Link)((props) => css`

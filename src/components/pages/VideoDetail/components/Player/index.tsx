@@ -1,6 +1,6 @@
 import * as i from 'types';
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
 
 import useStore from 'state';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
@@ -59,7 +59,7 @@ const Player: React.VFC<Props> = (props) => {
       appLoaded: false,
       videoLoaded: false,
     });
-  }, [location.pathname]);
+  }, [location.current.pathname]);
 
   function onLoadStart(this: HTMLVideoElement) {
     setControlsDimensions({

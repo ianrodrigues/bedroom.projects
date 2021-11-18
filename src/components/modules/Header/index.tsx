@@ -1,9 +1,9 @@
 import * as i from 'types';
 import React from 'react';
-import { Link, Route, useLocation } from 'react-router-dom';
-import { hotjar } from 'react-hotjar';
+import { Link, useLocation } from 'react-location';
 
 import useStore from 'state';
+import { useHotjar } from 'hooks';
 
 import HomeLink from './components/HomeLink';
 import GridLink from './components/GridLink';
@@ -15,14 +15,15 @@ import {
 const Header: React.VFC = () => {
   const location = useLocation();
   const state = useStore();
+  const hotjar = useHotjar();
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
     state.ui.closeMenus();
 
-    const visible = location.pathname !== '/grid';
+    const visible = location.current.pathname !== '/grid';
     setVisible(visible);
-  }, [location.pathname]);
+  }, [location.current.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
     state.media.setMedia(type, media);
@@ -35,13 +36,13 @@ const Header: React.VFC = () => {
   function onMouseLeaveList() {
     state.ui.setFullscreen(false);
 
-    if (location.pathname !== '/') {
+    if (location.current.pathname !== '/') {
       state.ui.closeMenus();
     }
   }
 
   function onMouseEnterNav(tag: 'container' | 'title', side: i.Side) {
-    if (tag === 'title' || (tag === 'container' && location.pathname === '/')) {
+    if (tag === 'title' || (tag === 'container' && location.current.pathname === '/')) {
       if (visible) {
         state.ui.setMenuOpen(side, true);
       }
@@ -49,7 +50,7 @@ const Header: React.VFC = () => {
   }
 
   function onMouseLeaveNavContainer() {
-    if (state.ui.isAnyMenuOpen() && location.pathname !== '/') {
+    if (state.ui.isAnyMenuOpen() && location.current.pathname !== '/') {
       state.ui.closeMenus();
     }
   }
@@ -74,7 +75,7 @@ const Header: React.VFC = () => {
               >
                 <Link
                   to={`/photos/${photo.slug}`}
-                  onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+                  onClick={hotjar.stateChange}
                 >
                   {photo.title}
                 </Link>
@@ -84,7 +85,9 @@ const Header: React.VFC = () => {
         </NavContainer>
 
         <HomeGridLinkContainer>
-          <Route path={['/', '/grid']} exact component={GridLink} />
+          {['/', '/grid'].includes(location.current.pathname) && (
+            <GridLink />
+          )}
           <HomeLink />
         </HomeGridLinkContainer>
 
@@ -105,7 +108,7 @@ const Header: React.VFC = () => {
               >
                 <Link
                   to={`/film/${video.slug}`}
-                  onClick={() => __PROD__ && hotjar.stateChange(location.pathname)}
+                  onClick={hotjar.stateChange}
                 >
                   {video.title}
                 </Link>

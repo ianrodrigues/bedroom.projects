@@ -1,11 +1,10 @@
 import * as i from 'types';
 import React from 'react';
-import { hotjar } from 'react-hotjar';
-import { useHistory, useParams, useLocation } from 'react-router';
+import { useMatch, useNavigate, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { usePageAssetLoadCounter, useQuery } from 'hooks';
+import { useHotjar, usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -26,10 +25,10 @@ export type GoingNext = false | 'starting' | 'ending';
 
 const VideoDetail: React.VFC = () => {
   const state = useStore();
-  const history = useHistory();
-  const queries = useQuery();
-  const location = useLocation();
-  const params = useParams<i.DetailPageParams>();
+  const navigate = useNavigate();
+  const search = useSearch<i.DetailPageGenerics>();
+  const hotjar = useHotjar();
+  const { params } = useMatch<i.DetailPageGenerics>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -44,6 +43,7 @@ const VideoDetail: React.VFC = () => {
   React.useEffect(() => {
     return function cleanup() {
       state.ui.setLoading(false);
+      scroller?.destroy();
     };
   }, []);
 
@@ -114,7 +114,7 @@ const VideoDetail: React.VFC = () => {
         titleRef.current.style.removeProperty('opacity');
       }
     }, 200);
-  }, [params.slug, state.media.allMedia?.video]);
+  }, [params.slug]);
 
   React.useEffect(() => {
     scroller = new SmoothScroll('#film-container');
@@ -199,19 +199,18 @@ const VideoDetail: React.VFC = () => {
           }, 2100);
 
           setTimeout(() => {
-            if (__PROD__) {
-              hotjar.stateChange(location.pathname);
-            }
+            hotjar.stateChange();
 
-            history.push(`/film/${detail?.next}?next=1`);
+            navigate({
+              to: `/film/${detail?.next}`,
+              search: {
+                next: 1,
+              },
+            });
           }, 2500);
         }
       }
     });
-
-    return function cleanup() {
-      scroller?.destroy();
-    };
   }, [detail, isGoingNext, state.videoPlayer.isPlaying]);
 
   return (
@@ -225,7 +224,7 @@ const VideoDetail: React.VFC = () => {
         <div ref={bodyRef} id="film-container__body">
           <DetailPlayerContainer
             isReady={loader.allLoaded && state.videoPlayer.isReady}
-            isNext={queries.has('next')}
+            isNext={!!search.next}
           >
             {detail && (
               <>
