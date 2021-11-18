@@ -1,6 +1,6 @@
 import React from 'react';
 
-
+// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 function usePageLoader() {
   const [amount, setAmount] = React.useState(0);
   const [loaded, setLoaded] = React.useState(0);

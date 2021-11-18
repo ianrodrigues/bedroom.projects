@@ -28,18 +28,23 @@ const Grid: React.VFC<Props> = () => {
 
     return function cleanup() {
       scroller?.destroy();
+      loader?.pageLoader.reset();
     };
   }, []);
 
   React.useEffect(() => {
-    if (loader.allLoaded) {
+    if (combinedMedia.current.length === 0 || !loader) {
+      return;
+    }
+
+    if (loader.pageLoader.loaded === combinedMedia.current.length) {
       state.ui.setLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
       }, 750);
     }
-  }, [loader.allLoaded]);
+  }, [combinedMedia.current, loader?.pageLoader.loaded]);
 
   React.useEffect(() => {
     if (!state.media.allMedia) {
@@ -48,20 +53,20 @@ const Grid: React.VFC<Props> = () => {
 
     combinedMedia.current = [...state.media.allMedia.photo, ...state.media.allMedia.video];
 
-    if (!loader.allLoaded) {
-      if (state.ui.loading === false) {
-        state.ui.setLoading('page');
-      }
+    if (state.ui.loading === false) {
+      state.ui.setLoading('page');
+    }
 
-      for (const media of combinedMedia.current) {
-        loader.addImageAsset((img) => {
+    for (const media of combinedMedia.current) {
+      loader
+        ?.addImageAsset((img) => {
           if (isStatePhotoObject(media)) {
             img.src = CMS_URL + media.media_cover.formats!.small.url;
           } else {
             img.src = CMS_URL + media.video_poster.formats!.small.url;
           }
-        });
-      }
+        })
+        .then(loader?.pageLoader.addLoaded);
     }
   }, [state.media.allMedia]);
 
