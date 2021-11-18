@@ -2,12 +2,15 @@ import React from 'react';
 
 import { isHTMLVideoElement } from 'services/typeguards';
 
+import usePageLoader from './usePageLoader';
+
 
 export type AssetsLoaderContextProps = {
   addImageAsset(cb: AddAssetCb<HTMLImageElement>): Promise<HTMLImageElement>;
   addVideoAsset(cb: AddAssetCb<HTMLVideoElement>): Promise<HTMLVideoElement>;
   onAssetLoaded(): void;
   allLoaded: boolean;
+  pageLoader: ReturnType<typeof usePageLoader>;
 };
 
 type AddAssetCb<El> = (htmlElement: El) => void;
@@ -20,9 +23,14 @@ const AssetsLoaderProvider: React.FC = (props) => {
   const [amount, setAmount] = React.useState(0);
   const [amountLoaded, setAmountLoaded] = React.useState(0);
   const [done, setDone] = React.useState(false);
+  const pageLoader = usePageLoader();
 
   React.useEffect(() => {
     if (done) {
+      if (__DEV__) {
+        console.info('All loaded');
+      }
+
       setAmount(0);
       setAmountLoaded(0);
     }
@@ -89,6 +97,7 @@ const AssetsLoaderProvider: React.FC = (props) => {
       addImageAsset,
       addVideoAsset,
       onAssetLoaded,
+      pageLoader,
       allLoaded: done,
     }}>
       {props.children}

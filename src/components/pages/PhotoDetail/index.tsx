@@ -51,7 +51,12 @@ const PhotoDetail: React.VFC = () => {
     queries.has('next') ? 'ending' : false,
   );
   const loader = React.useContext(AssetsLoaderContext);
-  const [pageAssetsLoaded, setPageAssetsLoaded] = React.useState(0);
+
+  React.useEffect(() => {
+    return function cleanup() {
+      loader?.pageLoader.reset();
+    };
+  }, []);
 
   // Initialise
   React.useEffect(() => {
@@ -62,11 +67,15 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     if (detail) {
-      if (pageAssetsLoaded === detail.bedroom_media_layouts.length) {
+      if (loader?.pageLoader.loaded === detail.bedroom_media_layouts.length) {
+        if (__DEV__) {
+          console.info('page loaded');
+        }
+
         state.ui.setLoading(false);
       }
     }
-  }, [pageAssetsLoaded, detail]);
+  }, [loader?.pageLoader.loaded, detail]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -169,7 +178,7 @@ const PhotoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
-          setPageAssetsLoaded(0);
+          loader?.pageLoader.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
@@ -253,7 +262,7 @@ const PhotoDetail: React.VFC = () => {
       ?.addImageAsset((img) => {
         img.src = CMS_URL + head!.media[0]!.url;
       })
-      .then(() => setPageAssetsLoaded((num) => num + 1));
+      .then(loader?.pageLoader.addLoaded);
 
     const body: i.Layout[] = [];
     for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
@@ -266,7 +275,7 @@ const PhotoDetail: React.VFC = () => {
           ?.addImageAsset((img) => {
             img.src = CMS_URL + photo.url;
           })
-          .then(() => setPageAssetsLoaded((num) => num + 1));
+          .then(loader?.pageLoader.addLoaded);
       }
     }
 
