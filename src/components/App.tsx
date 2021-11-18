@@ -7,6 +7,7 @@ import { hotjar } from 'react-hotjar';
 import GlobalStyle from 'styles';
 import useStore from 'state';
 import { fetchMedia } from 'state/utils';
+import AssetsLoaderProvider from 'context/assetsLoaderProvider';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -80,19 +81,21 @@ const App: React.VFC<RouteComponentProps> = () => {
   return (
     <main>
       <GlobalStyle />
-      <React.Suspense fallback={<div />}>
-        <Switch>
-          <Route path="/photos/:slug" component={PhotoDetail} />
-          <Route path="/film/:slug" component={VideoDetail} />
-          <Route path="/grid" component={Grid} />
-          <Route path="/info" component={Info} />
-        </Switch>
-      </React.Suspense>
-      <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
-      <Header />
-      <Name show={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
-      <Loader />
-      <Footer />
+      <AssetsLoaderProvider>
+        <React.Suspense fallback={<div />}>
+          <Switch>
+            <Route path="/photos/:slug" component={PhotoDetail} />
+            <Route path="/film/:slug" component={VideoDetail} />
+            <Route path="/grid" component={Grid} />
+            <Route path="/info" component={Info} />
+          </Switch>
+        </React.Suspense>
+        <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
+        <Header />
+        <Name show={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
+        <Loader />
+        <Footer />
+      </AssetsLoaderProvider>
     </main>
   );
 };

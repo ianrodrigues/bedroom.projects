@@ -5,6 +5,8 @@ import Showdown from 'showdown';
 
 import useStore from 'state';
 import { SmoothScroll } from 'services';
+import { usePageAssetLoadCounter } from 'hooks';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
 
@@ -12,13 +14,13 @@ import { InfoContainer, InfoDescription, InfoFigure } from './styled';
 
 
 let scroller: SmoothScroll | undefined;
-let loaded = 0;
-const LOADED_AMT = 1;
 
 const Info: React.VFC = () => {
   const state = useStore();
   const [visible, setVisible] = React.useState(false);
   const descriptionRef = React.useRef<HTMLDivElement>(null);
+  const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
   const { data } = useQuery<i.APIInfoObject, Error>('info', () =>
     fetch(CMS_URL + '/bedroom-infos/1')
       .then((res) => res.json())
@@ -30,13 +32,31 @@ const Info: React.VFC = () => {
           description: html,
         };
 
-        const img = document.createElement('img');
-        img.onload = handleLoaded;
-        img.src = CMS_URL + newData.image.url;
+        loader
+          ?.addImageAsset((img) => {
+            img.src = CMS_URL + newData.image.url;
+          })
+          .then(assetLoadCounter.addLoaded);
 
         return newData;
       }),
   );
+
+  React.useEffect(() => {
+    return function cleanup() {
+      assetLoadCounter.reset();
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (assetLoadCounter.loaded === 1) {
+      state.ui.setLoading(false);
+
+      setTimeout(() => {
+        setVisible(true);
+      }, 500);
+    }
+  }, [assetLoadCounter.loaded]);
 
   React.useEffect(() => {
     if (!data && !state.ui.loading) {
@@ -51,18 +71,6 @@ const Info: React.VFC = () => {
       scroller?.destroy();
     };
   }, [data, state.ui.loading]);
-
-  function handleLoaded() {
-    loaded++;
-
-    if (loaded >= LOADED_AMT) {
-      state.ui.setLoading(false);
-
-      setTimeout(() => {
-        setVisible(true);
-      }, 500);
-    }
-  }
 
   if (!data || state.ui.loading) {
     return null;

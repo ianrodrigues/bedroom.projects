@@ -4,8 +4,9 @@ import { useHistory, useParams } from 'react-router';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery } from 'hooks';
+import { usePageAssetLoadCounter, useQuery } from 'hooks';
 import { SmoothScroll } from 'services';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import SEO from 'common/SEO';
@@ -18,8 +19,6 @@ import {
 } from './styled';
 
 
-const loadAmt = 2; // Video poster & video canplay event
-let loaded = 0;
 let scroller: SmoothScroll | undefined;
 
 export type GoingNext = false | 'starting' | 'ending';
@@ -37,6 +36,14 @@ const VideoDetail: React.VFC = () => {
   const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
   const [nextDetail, setNextDetail] = React.useState(getMediaObjectBySlug(detail?.next || '', 'video'));
   const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
+  const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
+
+  React.useEffect(() => {
+    return function cleanup() {
+      state.ui.setLoading(false);
+    };
+  }, []);
 
   // Initialise
   React.useEffect(() => {
@@ -46,6 +53,16 @@ const VideoDetail: React.VFC = () => {
   }, [state.media.allMedia]);
 
   React.useEffect(() => {
+    if (assetLoadCounter.loaded === 3) {
+      if (__DEV__) {
+        console.info('page loaded');
+      }
+
+      state.ui.setLoading(false);
+    }
+  }, [assetLoadCounter.loaded]);
+
+  React.useEffect(() => {
     if (detail) {
       setNextDetail(getMediaObjectBySlug(detail.next, 'video'));
 
@@ -53,20 +70,31 @@ const VideoDetail: React.VFC = () => {
         state.ui.setLoading('page');
       }
 
-      const img = document.createElement('img');
-      img.onload = handleLoad;
-      img.src = CMS_URL + detail.video_poster.url;
+      // Current video + poster
+      loader
+        ?.addVideoAsset((video) => {
+          video.src = CMS_URL + detail.full_video!.url;
+        })
+        .then(assetLoadCounter.addLoaded);
 
-      const vid = document.createElement('video');
-      vid.oncanplay = handleLoad;
-      vid.src = CMS_URL + detail.full_video!.url;
+      loader
+        ?.addImageAsset((img) => {
+          img.src = CMS_URL + detail.video_poster.url;
+        })
+        .then(assetLoadCounter.addLoaded);
     }
-
-    return function cleanup() {
-      loaded = 0;
-      state.ui.setLoading(false);
-    };
   }, [detail]);
+
+  React.useEffect(() => {
+    if (nextDetail) {
+      // Next video poster
+      loader
+        ?.addImageAsset((img) => {
+          img.src = CMS_URL + nextDetail.video_poster?.url;
+        })
+        .then(assetLoadCounter.addLoaded);
+    }
+  }, [nextDetail]);
 
   React.useEffect(() => {
     const bodyEl = bodyRef.current;
@@ -142,6 +170,7 @@ const VideoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
+          assetLoadCounter.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
@@ -179,14 +208,6 @@ const VideoDetail: React.VFC = () => {
     };
   }, [detail, isGoingNext, state.videoPlayer.isPlaying]);
 
-  function handleLoad() {
-    loaded++;
-
-    if (loaded >= loadAmt) {
-      state.ui.setLoading(false);
-    }
-  }
-
   return (
     <VideoDetailContainer isNext={isGoingNext}>
       <SEO
@@ -196,7 +217,10 @@ const VideoDetail: React.VFC = () => {
       />
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
-          <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
+          <DetailPlayerContainer
+            isReady={loader.allLoaded && state.videoPlayer.isReady}
+            isNext={queries.has('next')}
+          >
             {detail && (
               <>
                 <VideoPoster $src={CMS_URL + detail.video_poster?.url} />
