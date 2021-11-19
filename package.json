@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@types/body-scroll-lock": "3.1.0",
-    "@types/node": "16.11.7",
+    "@types/node": "16.11.9",
     "@types/react": "^17.0.35",
     "@types/react-dom": "^17.0.11",
     "@types/react-helmet": "6.1.4",
@@ -43,7 +43,7 @@
     "eslint-plugin-flowtype": "8.0.3",
     "eslint-plugin-import": "2.25.3",
     "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "7.27.0",
+    "eslint-plugin-react": "7.27.1",
     "eslint-plugin-react-hooks": "4.3.0",
     "stylelint": "14.1.0",
     "stylelint-config-standard": "^24.0.0",
