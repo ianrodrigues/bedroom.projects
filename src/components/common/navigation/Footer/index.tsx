@@ -9,13 +9,8 @@ import { InfoLink, SocialMediaLink } from './styled';
 
 const Footer: React.VFC = () => {
   const { multiMatchRoute } = useMultiMatchRoute();
-  const [visible, setVisible] = React.useState(false);
   const hotjar = useHotjar();
-
-  React.useEffect(() => {
-    const visible = !multiMatchRoute(['grid', 'info']);
-    setVisible(visible);
-  }, [multiMatchRoute]);
+  const visible = !multiMatchRoute(['grid', 'info']);
 
   return (
     <>

@@ -13,19 +13,16 @@ import {
 
 
 const Header: React.VFC = () => {
-  const location = useLocation();
   const state = useStore();
-  const { multiMatchRoute } = useMultiMatchRoute();
+  const location = useLocation();
+  const { multiMatchRoute, matchRoute } = useMultiMatchRoute();
   const hotjar = useHotjar();
-  const [visible, setVisible] = React.useState(false);
+  const visible = !matchRoute({ to: '/grid' });
 
   React.useEffect(() => {
     setTimeout(() => {
       state.ui.closeMenus();
     }, 300); // Small delay for animations
-
-    const visible = location.current.pathname !== '/grid';
-    setVisible(visible);
   }, [location.current.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
@@ -38,22 +35,17 @@ const Header: React.VFC = () => {
 
   function onMouseLeaveList() {
     state.ui.setFullscreen(false);
-
-    if (location.current.pathname !== '/') {
-      state.ui.closeMenus();
-    }
+    state.ui.closeMenus();
   }
 
-  function onMouseEnterNav(tag: 'container' | 'title', side: i.Side) {
-    if (tag === 'title' || (tag === 'container' && location.current.pathname === '/')) {
-      if (visible) {
-        state.ui.setMenuOpen(side, true);
-      }
+  function onMouseEnterNav(side: i.Side) {
+    if (visible) {
+      state.ui.setMenuOpen(side, true);
     }
   }
 
   function onMouseLeaveNavContainer() {
-    if (state.ui.isAnyMenuOpen() && location.current.pathname !== '/') {
+    if (state.ui.isAnyMenuOpen()) {
       state.ui.closeMenus();
     }
   }
@@ -64,22 +56,16 @@ const Header: React.VFC = () => {
         <NavContainer
           isOpen={state.ui.isMenuOpen.L}
           visible={visible}
-          onMouseEnter={() => onMouseEnterNav('container', 'L')}
+          onMouseEnter={() => onMouseEnterNav('L')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2 onMouseEnter={() => onMouseEnterNav('title', 'L')}>
+          <H2 onMouseEnter={() => onMouseEnterNav('L')}>
             Photo
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia && state.media.allMedia.photo.map((photo) => (
-              <ListItem
-                key={photo.id}
-                onMouseEnter={() => onMouseEnter('photo', photo)}
-              >
-                <Link
-                  to={`/photos/${photo.slug}`}
-                  onClick={hotjar.stateChange}
-                >
+            {state.media.allMedia?.photo.map((photo) => (
+              <ListItem key={photo.id} onMouseEnter={() => onMouseEnter('photo', photo)}>
+                <Link to={`/photos/${photo.slug}`} onClick={hotjar.stateChange}>
                   {photo.title}
                 </Link>
               </ListItem>
@@ -98,22 +84,16 @@ const Header: React.VFC = () => {
         <NavContainer
           isOpen={state.ui.isMenuOpen.R}
           visible={visible}
-          onMouseEnter={() => onMouseEnterNav('container', 'R')}
+          onMouseEnter={() => onMouseEnterNav('R')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2 onMouseEnter={() => onMouseEnterNav('title', 'R')}>
+          <H2 onMouseEnter={() => onMouseEnterNav('R')}>
             Film
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia && state.media.allMedia.video.map((video) => (
-              <ListItem
-                key={video.id}
-                onMouseEnter={() => onMouseEnter('video', video)}
-              >
-                <Link
-                  to={`/film/${video.slug}`}
-                  onClick={hotjar.stateChange}
-                >
+            {state.media.allMedia?.video.map((video) => (
+              <ListItem key={video.id} onMouseEnter={() => onMouseEnter('video', video)}>
+                <Link to={`/film/${video.slug}`} onClick={hotjar.stateChange}>
                   {video.title}
                 </Link>
               </ListItem>
