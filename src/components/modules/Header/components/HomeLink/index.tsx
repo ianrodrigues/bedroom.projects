@@ -1,16 +1,15 @@
 import React from 'react';
-import { useLocation } from 'react-location';
 
-import { useHotjar } from 'hooks';
+import { useHotjar, useMultiMatchRoute } from 'hooks';
 
 import { HomeLinkAnchor } from './styled';
 
 
 const HomeLink: React.VFC = () => {
-  const location = useLocation();
   const hotjar = useHotjar();
+  const { multiMatchRoute } = useMultiMatchRoute();
 
-  if (['/', '/grid'].includes(location.current.pathname)) {
+  if (multiMatchRoute(['/', 'grid'])) {
     return null;
   }
 

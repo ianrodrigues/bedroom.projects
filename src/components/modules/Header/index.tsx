@@ -19,7 +19,9 @@ const Header: React.VFC = () => {
   const [visible, setVisible] = React.useState(false);
 
   React.useEffect(() => {
-    state.ui.closeMenus();
+    setTimeout(() => {
+      state.ui.closeMenus();
+    }, 300); // Small delay for animations
 
     const visible = location.current.pathname !== '/grid';
     setVisible(visible);

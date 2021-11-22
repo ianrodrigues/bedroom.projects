@@ -1,7 +1,6 @@
 import React from 'react';
-import { useLocation } from 'react-location';
 
-import { useHotjar } from 'services/hooks';
+import { useHotjar, useMultiMatchRoute } from 'services/hooks';
 import InstagramSvg from 'vectors/instagram-brands.svg';
 import VimeoSvg from 'vectors/vimeo-v-brands.svg';
 
@@ -9,23 +8,19 @@ import { InfoLink, SocialMediaLink } from './styled';
 
 
 const Footer: React.VFC = () => {
-  const location = useLocation();
+  const { multiMatchRoute } = useMultiMatchRoute();
   const [visible, setVisible] = React.useState(false);
   const hotjar = useHotjar();
 
   React.useEffect(() => {
-    const visible = !['/grid', '/info'].includes(location.current.pathname);
+    const visible = !multiMatchRoute(['/grid', '/info']);
     setVisible(visible);
-  }, [location.current.pathname]);
+  }, [multiMatchRoute]);
 
   return (
     <>
-      <InfoLink
-        to="/info"
-        $visible={visible}
-        onClick={hotjar.stateChange}
-      >
-          Info
+      <InfoLink to="/info" $visible={visible} onClick={hotjar.stateChange}>
+        Info
       </InfoLink>
       <SocialMediaLink href="https://www.instagram.com/bedroom.projects/" $visible={visible}>
         <InstagramSvg />

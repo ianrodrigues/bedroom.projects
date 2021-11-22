@@ -1,11 +1,12 @@
 import * as i from 'types';
 import React from 'react';
-import { Outlet, useLocation } from 'react-location';
+import { Outlet } from 'react-location';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
 import useStore from 'state';
 import { fetchMedia } from 'state/utils';
+import { useMultiMatchRoute } from 'hooks';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -17,8 +18,8 @@ import Loader from './common/presentation/Loader';
 
 const App: React.VFC = () => {
   const state = useStore();
-  const location = useLocation();
-  const [isHomepage, setIsHomepage] = React.useState(location.current.pathname === '/');
+  const { matchRoute, multiMatchRoute } = useMultiMatchRoute();
+  const [isHomepage, setIsHomepage] = React.useState(!!matchRoute({ to: '/' }));
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
   const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.ui.isAnyMenuOpen());
 
@@ -27,14 +28,14 @@ const App: React.VFC = () => {
   }, []);
 
   React.useEffect(() => {
-    setIsHomepage(location.current.pathname === '/');
+    setIsHomepage(!!matchRoute({ to: '/' }));
 
-    if (['/', '/grid'].includes(location.current.pathname)) {
+    if (multiMatchRoute(['/', 'grid'])) {
       state.ui.setShowName(true);
     } else {
       state.ui.setShowName(false);
     }
-  }, [location.current.pathname]);
+  }, [multiMatchRoute]);
 
   React.useEffect(() => {
     setShowCanvas(isHomepage || state.ui.isAnyMenuOpen());
