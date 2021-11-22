@@ -4,7 +4,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && NODE_ENV=production APP_ENV=production vite build",
-    "serve": "vite preview",
+    "serve": "vite preview --port 3000",
     "postinstall": "npx patch-package",
     "typecheck": "tsc --noEmit",
     "tc": "npm run typecheck",

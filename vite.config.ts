@@ -24,4 +24,9 @@ export default defineConfig({
     }),
   ],
   define: globals,
+  server: {
+    hmr: {
+      clientPort: 443,
+    },
+  },
 });
