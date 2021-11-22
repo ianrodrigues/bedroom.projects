@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-location';
 
 import useStore from 'state';
-import { useHotjar } from 'hooks';
+import { useHotjar, useMultiMatchRoute } from 'hooks';
 
 import HomeLink from './components/HomeLink';
 import GridLink from './components/GridLink';
@@ -15,6 +15,7 @@ import {
 const Header: React.VFC = () => {
   const location = useLocation();
   const state = useStore();
+  const { multiMatchRoute } = useMultiMatchRoute();
   const hotjar = useHotjar();
   const [visible, setVisible] = React.useState(false);
 
@@ -87,10 +88,11 @@ const Header: React.VFC = () => {
         </NavContainer>
 
         <HomeGridLinkContainer>
-          {['/', '/grid'].includes(location.current.pathname) && (
+          {multiMatchRoute(['/', 'grid']) ? (
             <GridLink />
+          ) : (
+            <HomeLink />
           )}
-          <HomeLink />
         </HomeGridLinkContainer>
 
         <NavContainer

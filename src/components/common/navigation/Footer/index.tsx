@@ -13,7 +13,7 @@ const Footer: React.VFC = () => {
   const hotjar = useHotjar();
 
   React.useEffect(() => {
-    const visible = !multiMatchRoute(['/grid', '/info']);
+    const visible = !multiMatchRoute(['grid', 'info']);
     setVisible(visible);
   }, [multiMatchRoute]);
 
