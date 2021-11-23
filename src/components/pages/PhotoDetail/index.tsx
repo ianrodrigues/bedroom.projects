@@ -4,7 +4,7 @@ import { useNavigate, useMatch, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useHotjar, usePageAssetLoadCounter } from 'hooks';
+import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -31,7 +31,6 @@ const PhotoDetail: React.VFC = () => {
   const { params } = useMatch<i.DetailPageGenerics>();
   const search = useSearch<i.DetailPageGenerics>();
   const navigate = useNavigate();
-  const hotjar = useHotjar();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -241,8 +240,6 @@ const PhotoDetail: React.VFC = () => {
 
             // Route to next page
             setTimeout(() => {
-              hotjar.stateChange();
-
               navigate({
                 to: `/photos/${detail?.next}`,
                 search: {

@@ -1,6 +1,7 @@
 import * as i from 'types';
 import React from 'react';
-import { Outlet } from 'react-location';
+import { hotjar } from 'react-hotjar';
+import { Outlet, useLocation } from 'react-location';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
@@ -19,17 +20,16 @@ import Loader from './common/presentation/Loader';
 const App: React.VFC = () => {
   const state = useStore();
   const { matchRoute, multiMatchRoute } = useMultiMatchRoute();
-  const [isHomepage, setIsHomepage] = React.useState(!!matchRoute({ to: '/' }));
+  const location = useLocation();
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
-  const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.ui.isAnyMenuOpen());
+  const isHomepage = !!matchRoute({ to: '/' });
+  const canvasVisible = isHomepage || state.ui.isAnyMenuOpen();
 
   React.useEffect(() => {
     fetchMedia();
   }, []);
 
   React.useEffect(() => {
-    setIsHomepage(!!matchRoute({ to: '/' }));
-
     if (multiMatchRoute(['/', 'grid'])) {
       state.ui.setShowName(true);
     } else {
@@ -38,8 +38,6 @@ const App: React.VFC = () => {
   }, [multiMatchRoute]);
 
   React.useEffect(() => {
-    setShowCanvas(isHomepage || state.ui.isAnyMenuOpen());
-
     if (isHomepage || !state.ui.isAnyMenuOpen()) {
       setFullscreenMedia(undefined);
     } else if (state.ui.isMenuOpen.L) {
@@ -47,7 +45,7 @@ const App: React.VFC = () => {
     } else if (state.ui.isMenuOpen.R) {
       setFullscreenMedia('video');
     }
-  }, [isHomepage, state.ui.isMenuOpen]);
+  }, [state.ui.isMenuOpen]);
 
   React.useEffect(() => {
     const body = document.querySelector('body');
@@ -67,13 +65,19 @@ const App: React.VFC = () => {
     };
   }, [state.ui.loading]);
 
+  React.useEffect(() => {
+    if (__PROD__) {
+      hotjar.stateChange(location.current.pathname);
+    }
+  }, [location.current.pathname]);
+
   return (
     <main>
       <GlobalStyle />
       <Outlet /> {/** Renders matching paths from react-location */}
-      <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
+      <RenderCanvas visible={canvasVisible} fullscreen={fullscreenMedia} />
       <Header />
-      <Name show={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
+      <Name $visible={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
       <Loader />
       <Footer />
     </main>

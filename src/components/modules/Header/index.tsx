@@ -3,7 +3,7 @@ import React from 'react';
 import { Link, useLocation } from 'react-location';
 
 import useStore from 'state';
-import { useHotjar, useMultiMatchRoute } from 'hooks';
+import { useMultiMatchRoute } from 'hooks';
 
 import HomeLink from './components/HomeLink';
 import GridLink from './components/GridLink';
@@ -16,7 +16,6 @@ const Header: React.VFC = () => {
   const state = useStore();
   const location = useLocation();
   const { multiMatchRoute, matchRoute } = useMultiMatchRoute();
-  const hotjar = useHotjar();
   const visible = !matchRoute({ to: '/grid' });
 
   React.useEffect(() => {
@@ -65,7 +64,7 @@ const Header: React.VFC = () => {
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
             {state.media.allMedia?.photo.map((photo) => (
               <ListItem key={photo.id} onMouseEnter={() => onMouseEnter('photo', photo)}>
-                <Link to={`/photos/${photo.slug}`} onClick={hotjar.stateChange}>
+                <Link to={`/photos/${photo.slug}`}>
                   {photo.title}
                 </Link>
               </ListItem>
@@ -93,7 +92,7 @@ const Header: React.VFC = () => {
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
             {state.media.allMedia?.video.map((video) => (
               <ListItem key={video.id} onMouseEnter={() => onMouseEnter('video', video)}>
-                <Link to={`/film/${video.slug}`} onClick={hotjar.stateChange}>
+                <Link to={`/film/${video.slug}`}>
                   {video.title}
                 </Link>
               </ListItem>

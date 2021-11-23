@@ -123,7 +123,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
 
-    if (!props.show || !canvas || !ctx) {
+    if (!props.visible || !canvas || !ctx) {
       return;
     }
 
@@ -207,7 +207,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         );
       }
     }
-  }), [sizeData, state.media.photo, state.media.video, props.fullscreen, props.show]);
+  }), [sizeData, state.media.photo, state.media.video, props.fullscreen, props.visible]);
 
   // Add mouseover events
   useEventListener('mousemove', (e: MouseEvent) => {
@@ -326,19 +326,19 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
   return (
     <>
-      <FullscreenCanvas ref={canvasRef} show={props.show} />
+      <FullscreenCanvas ref={canvasRef} visible={props.visible} />
       <MediaTitleOverlay />
     </>
   );
 };
 
 RenderCanvas.defaultProps = {
-  show: true,
+  visible: true,
 };
 
 interface Props {
   fullscreen?: i.MediaType;
-  show?: boolean;
+  visible?: boolean;
 }
 
 function easeOutQuart(t: number, b: number, c: number, d: number): number {

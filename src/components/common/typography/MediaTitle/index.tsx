@@ -48,7 +48,7 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
   return (
     <MediaTitleContainer>
       <MediaTitleInner>
-        <Title ref={ref} show={show && props.visible} side={props.side} {...props.dataset}>
+        <Title ref={ref} $visible={show && props.visible} side={props.side} {...props.dataset}>
           {props.children}
         </Title>
       </MediaTitleInner>

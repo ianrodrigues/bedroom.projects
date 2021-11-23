@@ -18,11 +18,11 @@ export const Name = styled.h1<NameProps>((props) => css`
   user-select: none;
   pointer-events: none;
 
-  ${props.show && css`
+  ${props.$visible && css`
     opacity: 1;
   `}
 `);
 
 interface NameProps {
-  show: boolean;
+  $visible: boolean;
 }

@@ -4,7 +4,7 @@ import { useMatch, useNavigate, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useHotjar, usePageAssetLoadCounter } from 'hooks';
+import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -27,7 +27,6 @@ const VideoDetail: React.VFC = () => {
   const state = useStore();
   const navigate = useNavigate();
   const search = useSearch<i.DetailPageGenerics>();
-  const hotjar = useHotjar();
   const { params } = useMatch<i.DetailPageGenerics>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
@@ -199,8 +198,6 @@ const VideoDetail: React.VFC = () => {
           }, 2100);
 
           setTimeout(() => {
-            hotjar.stateChange();
-
             navigate({
               to: `/film/${detail?.next}`,
               search: {

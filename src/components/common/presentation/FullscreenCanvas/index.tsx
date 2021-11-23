@@ -43,16 +43,16 @@ const FullscreenCanvas = React.forwardRef<HTMLCanvasElement, Props>((props, ref)
   }, [canvasRef, ref]);
 
   return (
-    <Canvas ref={ref || canvasRef} show={props.show!} />
+    <Canvas ref={ref || canvasRef} $visible={props.visible!} />
   );
 });
 
 FullscreenCanvas.defaultProps = {
-  show: true,
+  visible: true,
 };
 
 interface Props {
-  show?: boolean;
+  visible?: boolean;
   height?: number;
 }
 

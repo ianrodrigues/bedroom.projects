@@ -67,18 +67,10 @@ const Player: React.VFC<Props> = (props) => {
       height: this.clientHeight,
     });
 
-    // Wait a bit for everything to load
-    // setTimeout(() => {
-    //   state.videoPlayer.setReady(true);
-    // }, 1000);
-
     this.removeEventListener('loadstart', onLoadStart);
   }
 
   function onPlaying(this: HTMLVideoElement) {
-    // state.ui.setLoading(false);
-    // state.videoPlayer.setPlaying(true);
-
     setVideoStartStatus((obj) => {
       obj.videoLoaded = true;
       return obj;
@@ -95,12 +87,6 @@ const Player: React.VFC<Props> = (props) => {
       obj.videoLoaded = true;
       return obj;
     });
-
-    // state.ui.setLoading(false);
-
-    // setTimeout(() => {
-    //   state.videoPlayer.setPlaying(true);
-    // }, 2200);
   }
 
   function onWindowResize() {
