@@ -26,13 +26,13 @@ const Player: React.VFC<Props> = (props) => {
   const loader = React.useContext(AssetsLoaderContext);
 
   React.useEffect(() => {
-    if (loader.allLoaded) {
+    if (loader?.allLoaded) {
       setVideoStartStatus((obj) => {
         obj.appLoaded = true;
         return obj;
       });
     }
-  }, [loader.allLoaded]);
+  }, [loader?.allLoaded]);
 
   React.useEffect(() => {
     if (videoStartStatus.appLoaded && videoStartStatus.videoLoaded) {

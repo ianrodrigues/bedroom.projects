@@ -220,7 +220,7 @@ const VideoDetail: React.VFC = () => {
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
           <DetailPlayerContainer
-            isReady={loader.allLoaded && state.videoPlayer.isReady}
+            isReady={loader?.allLoaded && state.videoPlayer.isReady}
             isNext={!!search.next}
           >
             {detail && (

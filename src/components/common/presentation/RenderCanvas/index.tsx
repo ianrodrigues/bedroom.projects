@@ -46,12 +46,12 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   const loader = React.useContext(AssetsLoaderContext);
 
   React.useEffect(() => {
-    if (loader.allLoaded) {
+    if (loader?.allLoaded) {
       setTimeout(() => {
         state.ui.setLoading(false);
       }, 1000);
     }
-  }, [loader.allLoaded]);
+  }, [loader?.allLoaded]);
 
   // Ugly but works for now :)
   function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
@@ -268,7 +268,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       const videoMedia = videoData?.media_cover;
 
       if (videoData && isVideo(videoMedia)) {
-        loader.addVideoAsset((video) => {
+        loader?.addVideoAsset((video) => {
           video.src = CMS_URL + videoMedia.url;
           video.autoplay = true;
           video.loop = true;
@@ -285,7 +285,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       const photoMedia = photoData?.media_cover;
 
       if (photoData && isPhoto(photoMedia)) {
-        loader.addImageAsset((img) => {
+        loader?.addImageAsset((img) => {
           img.src = CMS_URL + photoMedia.url;
 
           photos[photoData.id] = {
@@ -295,7 +295,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         });
       }
     }
-  }, [state.media.allMedia]);
+  }, [state.media.allMedia, loader?.allLoaded]);
 
   // Show "bedroom" title
   React.useEffect(() => {

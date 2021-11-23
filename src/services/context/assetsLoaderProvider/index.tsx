@@ -12,9 +12,8 @@ export type AssetsLoaderContextProps = {
 
 type AddAssetCb<El> = (htmlElement: El) => void;
 
-export const AssetsLoaderContext = React.createContext<AssetsLoaderContextProps>(
-  {} as AssetsLoaderContextProps,
-);
+export const AssetsLoaderContext = React.createContext<AssetsLoaderContextProps | null>(null);
+
 
 const AssetsLoaderProvider: React.FC = (props) => {
   const [amount, setAmount] = React.useState(0);
