@@ -1,14 +1,14 @@
 import React from 'react';
-import { Link, useLocation } from 'react-location';
+import { Link, useMatchRoute } from 'react-location';
 
 import { useHotjar } from 'hooks';
 import { GridPart, GridToggleContainer } from './styled';
 
 
 const GridLink: React.VFC = () => {
-  const location = useLocation();
+  const matchRoute = useMatchRoute();
   const hotjar = useHotjar();
-  const isGridPage = location.current.pathname.includes('grid');
+  const isGridPage = !!matchRoute({ to: 'grid' });
 
   return (
     <Link to={isGridPage ? '/' : '/grid'} onClick={hotjar.stateChange}>
