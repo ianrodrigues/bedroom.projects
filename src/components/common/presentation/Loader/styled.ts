@@ -18,6 +18,7 @@ export const LoaderContainer = styled.div<LoaderContainerProps>((props) => css`
   `}
 
   ${props.$visible && css`
+    pointer-events: auto;
     transition: opacity 0s;
     opacity: 1;
   `}
