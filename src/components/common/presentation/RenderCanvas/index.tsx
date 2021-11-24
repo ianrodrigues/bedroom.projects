@@ -321,8 +321,10 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
   // Init divider position
   React.useEffect(() => {
-    dividerPos = canvasRef.current!.width * 0.5;
-  }, [canvasRef, location.current.pathname]);
+    if (location.current.pathname === '/') {
+      dividerPos = canvasRef.current!.width * 0.5;
+    }
+  }, [canvasRef.current, location.current.pathname]);
 
   return (
     <>
