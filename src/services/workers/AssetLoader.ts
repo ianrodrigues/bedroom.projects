@@ -6,14 +6,14 @@ self.addEventListener('message', async (evt: MessageEvent<string>): Promise<void
   const url = evt.data;
 
   try {
-    const response = await fetch(url);
-    const blob = await response.blob();
+    // Start downloading image and wait for it to be done
+    await fetch(url);
 
     const msg: i.AssetLoaderWorkerMessage = {
       url,
-      blobUrl: URL.createObjectURL(blob),
     };
 
+    // Send message to event handlers
     self.postMessage(msg);
   } catch (e) {
     console.error(e);
