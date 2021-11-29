@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
 
 import { SeekbarContainer, SeekbarInner, SeekbarTimeIndicator } from './styled';
 
@@ -12,7 +12,7 @@ const Seekbar: React.VFC<Props> = (props) => {
   React.useEffect(() => {
     setProgress(0);
     setTime(0);
-  }, [location.pathname]);
+  }, [location.current.pathname]);
 
   React.useEffect(() => {
     const video = props.videoRef?.current;

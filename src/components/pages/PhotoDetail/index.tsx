@@ -1,11 +1,12 @@
 import * as i from 'types';
 import React from 'react';
-import { useHistory, useLocation, useParams } from 'react-router';
+import { useNavigate, useMatch, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery } from 'hooks';
+import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import SEO from 'common/SEO';
@@ -17,8 +18,6 @@ import { PhotoDetailContainer, FullContentContainer, NextContainer, Row } from '
 
 let scroller: SmoothScroll | undefined;
 let observers: IntersectionObserver[] = [];
-let loaded = 0;
-let photosAmt = 0;
 
 interface Sections {
   head?: i.Layout;
@@ -29,10 +28,9 @@ type GoingNextPhases = false | 'starting' | 'ending';
 
 const PhotoDetail: React.VFC = () => {
   const state = useStore();
-  const params = useParams<i.DetailPageParams>();
-  const history = useHistory();
-  const location = useLocation();
-  const queries = useQuery();
+  const { params } = useMatch<i.DetailPageGenerics>();
+  const search = useSearch<i.DetailPageGenerics>();
+  const navigate = useNavigate();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const scrollContainerRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -49,8 +47,22 @@ const PhotoDetail: React.VFC = () => {
     getMediaObjectBySlug(detail?.next || '', 'photo'),
   );
   const [isGoingNext, setGoingNext] = React.useState<GoingNextPhases>(
-    queries.has('next') ? 'ending' : false,
+    !!search.next ? 'ending' : false,
   );
+  const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
+
+
+  React.useEffect(() => {
+    return function cleanup() {
+      state.ui.setLoading(false);
+      scroller?.destroy();
+
+      for (const observer of observers) {
+        observer.disconnect();
+      }
+    };
+  }, []);
 
   // Initialise
   React.useEffect(() => {
@@ -58,6 +70,18 @@ const PhotoDetail: React.VFC = () => {
       setDetail(getMediaObjectBySlug(params.slug, 'photo'));
     }
   }, [state.media.allMedia]);
+
+  React.useEffect(() => {
+    if (detail) {
+      if (assetLoadCounter.loaded === detail.bedroom_media_layouts.length) {
+        if (__DEV__) {
+          console.info('page loaded');
+        }
+
+        state.ui.setLoading(false);
+      }
+    }
+  }, [assetLoadCounter.loaded, detail?.bedroom_media_layouts.length]);
 
   // Route change transition/reset
   React.useEffect(() => {
@@ -100,7 +124,7 @@ const PhotoDetail: React.VFC = () => {
         titleRef.current.style.transition += ', opacity 300ms';
       }
     }, 200);
-  }, [location.pathname]);
+  }, [params.slug]);
 
   // Scroll logic
   React.useEffect(() => {
@@ -160,6 +184,7 @@ const PhotoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
+          assetLoadCounter.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
@@ -215,16 +240,17 @@ const PhotoDetail: React.VFC = () => {
 
             // Route to next page
             setTimeout(() => {
-              history.push(`/photos/${detail?.next}?next=1`);
-            }, 2000);
-          }, 1500);
+              navigate({
+                to: `/photos/${detail?.next}`,
+                search: {
+                  next: 1,
+                },
+              });
+            }, 500);
+          }, 1000);
         }
       });
     }
-
-    return function cleanup() {
-      scroller?.destroy();
-    };
   }, [containerRef, state.ui.loading, isGoingNext]);
 
   React.useEffect(() => {
@@ -239,10 +265,11 @@ const PhotoDetail: React.VFC = () => {
     }
 
     const head = detail.bedroom_media_layouts[0];
-    const img = document.createElement('img');
-    img.onload = handleLoad;
-    img.src = CMS_URL + head!.media[0]!.url;
-    photosAmt++;
+    loader
+      ?.addImageAsset((img) => {
+        img.src = CMS_URL + head!.media[0]!.url;
+      })
+      .then(assetLoadCounter.addLoaded);
 
     const body: i.Layout[] = [];
     for (let i = 1; i < detail.bedroom_media_layouts.length; i++) {
@@ -251,10 +278,11 @@ const PhotoDetail: React.VFC = () => {
       body.push(row);
 
       for (const photo of row.media) {
-        const img = document.createElement('img');
-        img.onload = handleLoad;
-        img.src = CMS_URL + photo.url;
-        photosAmt++;
+        loader
+          ?.addImageAsset((img) => {
+            img.src = CMS_URL + photo.url;
+          })
+          .then(assetLoadCounter.addLoaded);
       }
     }
 
@@ -265,11 +293,6 @@ const PhotoDetail: React.VFC = () => {
     setTimeout(() => {
       setSections({ head, body });
     }, 100);
-
-    return function cleanup() {
-      loaded = 0;
-      photosAmt = 0;
-    };
   }, [detail]);
 
   React.useEffect(() => {
@@ -339,21 +362,7 @@ const PhotoDetail: React.VFC = () => {
         }
       }
     }, 500);
-
-    return function cleanup() {
-      for (const observer of observers) {
-        observer.disconnect();
-      }
-    };
   }, [sections, state.ui.loading]);
-
-  function handleLoad() {
-    loaded++;
-
-    if (loaded >= photosAmt) {
-      state.ui.setLoading(false);
-    }
-  }
 
   return (
     <PhotoDetailContainer>
@@ -369,7 +378,7 @@ const PhotoDetail: React.VFC = () => {
               <RowImg
                 id="current-cover"
                 layout={sections.head}
-                isNextHeader={!!isGoingNext || queries.has('next')}
+                isNextHeader={!!isGoingNext || !!search.next}
                 photo={sections.head.media[0]!}
               />
             </Row>

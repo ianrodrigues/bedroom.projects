@@ -26,6 +26,10 @@ const PlayerControls: React.FC<Props> = (props) => {
 
   React.useEffect(() => {
     handleAutoHide();
+
+    return function cleanup() {
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   useEventListener('mouseover', setAllVisible, gridRef.current);

@@ -1,7 +1,7 @@
 import React from 'react';
-import { useLocation } from 'react-router';
 
 import useStore from 'state';
+import { useMultiMatchRoute } from 'hooks';
 import MediaTitle from 'common/typography/MediaTitle';
 
 import { MediaTitleOverlayContainer } from './styled';
@@ -9,18 +9,9 @@ import { MediaTitleOverlayContainer } from './styled';
 
 const MediaTitleOverlay: React.VFC = () => {
   const state = useStore();
-  const location = useLocation();
+  const { multiMatchRoute } = useMultiMatchRoute();
 
-  React.useEffect(() => {
-    if (location.pathname === '/' && !state.ui.showName) {
-      state.ui.setShowName(true);
-    }
-  }, [location.pathname]);
-
-
-  const containerVisible =
-    state.ui.isAnyMenuOpen() ||
-    (!location.pathname.includes('info') && !location.pathname.includes('grid'));
+  const containerVisible = state.ui.isAnyMenuOpen() || !multiMatchRoute(['info', 'grid']);
 
   return (
     <MediaTitleOverlayContainer $visible={containerVisible}>

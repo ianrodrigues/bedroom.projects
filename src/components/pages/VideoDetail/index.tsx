@@ -1,11 +1,12 @@
 import * as i from 'types';
 import React from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useMatch, useNavigate, useSearch } from 'react-location';
 
 import useStore from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { useQuery } from 'hooks';
+import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
 import SEO from 'common/SEO';
@@ -18,17 +19,15 @@ import {
 } from './styled';
 
 
-const loadAmt = 2; // Video poster & video canplay event
-let loaded = 0;
 let scroller: SmoothScroll | undefined;
 
 export type GoingNext = false | 'starting' | 'ending';
 
 const VideoDetail: React.VFC = () => {
   const state = useStore();
-  const history = useHistory();
-  const queries = useQuery();
-  const params = useParams<i.DetailPageParams>();
+  const navigate = useNavigate();
+  const search = useSearch<i.DetailPageGenerics>();
+  const { params } = useMatch<i.DetailPageGenerics>();
   const containerRef = React.useRef<HTMLDivElement>(null);
   const bodyRef = React.useRef<HTMLDivElement>(null);
   const titleRef = React.useRef<HTMLHeadingElement>(null);
@@ -37,6 +36,15 @@ const VideoDetail: React.VFC = () => {
   const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
   const [nextDetail, setNextDetail] = React.useState(getMediaObjectBySlug(detail?.next || '', 'video'));
   const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
+  const loader = React.useContext(AssetsLoaderContext);
+  const assetLoadCounter = usePageAssetLoadCounter();
+
+  React.useEffect(() => {
+    return function cleanup() {
+      state.ui.setLoading(false);
+      scroller?.destroy();
+    };
+  }, []);
 
   // Initialise
   React.useEffect(() => {
@@ -46,6 +54,16 @@ const VideoDetail: React.VFC = () => {
   }, [state.media.allMedia]);
 
   React.useEffect(() => {
+    if (assetLoadCounter.loaded === 3) {
+      if (__DEV__) {
+        console.info('page loaded');
+      }
+
+      state.ui.setLoading(false);
+    }
+  }, [assetLoadCounter.loaded]);
+
+  React.useEffect(() => {
     if (detail) {
       setNextDetail(getMediaObjectBySlug(detail.next, 'video'));
 
@@ -53,20 +71,31 @@ const VideoDetail: React.VFC = () => {
         state.ui.setLoading('page');
       }
 
-      const img = document.createElement('img');
-      img.onload = handleLoad;
-      img.src = CMS_URL + detail.video_poster.url;
+      // Current video + poster
+      loader
+        ?.addVideoAsset((video) => {
+          video.src = CMS_URL + detail.full_video!.url;
+        })
+        .then(assetLoadCounter.addLoaded);
 
-      const vid = document.createElement('video');
-      vid.oncanplay = handleLoad;
-      vid.src = CMS_URL + detail.full_video!.url;
+      loader
+        ?.addImageAsset((img) => {
+          img.src = CMS_URL + detail.video_poster.url;
+        })
+        .then(assetLoadCounter.addLoaded);
     }
-
-    return function cleanup() {
-      loaded = 0;
-      state.ui.setLoading(false);
-    };
   }, [detail]);
+
+  React.useEffect(() => {
+    if (nextDetail) {
+      // Next video poster
+      loader
+        ?.addImageAsset((img) => {
+          img.src = CMS_URL + nextDetail.video_poster?.url;
+        })
+        .then(assetLoadCounter.addLoaded);
+    }
+  }, [nextDetail]);
 
   React.useEffect(() => {
     const bodyEl = bodyRef.current;
@@ -84,7 +113,7 @@ const VideoDetail: React.VFC = () => {
         titleRef.current.style.removeProperty('opacity');
       }
     }, 200);
-  }, [params.slug, state.media.allMedia?.video]);
+  }, [params.slug]);
 
   React.useEffect(() => {
     scroller = new SmoothScroll('#film-container');
@@ -142,6 +171,7 @@ const VideoDetail: React.VFC = () => {
           }
 
           setGoingNext('starting');
+          assetLoadCounter.reset();
 
           if (state.ui.loading === false) {
             state.ui.setLoading('page');
@@ -168,24 +198,17 @@ const VideoDetail: React.VFC = () => {
           }, 2100);
 
           setTimeout(() => {
-            history.push(`/film/${detail?.next}?next=1`);
+            navigate({
+              to: `/film/${detail?.next}`,
+              search: {
+                next: 1,
+              },
+            });
           }, 2500);
         }
       }
     });
-
-    return function cleanup() {
-      scroller?.destroy();
-    };
   }, [detail, isGoingNext, state.videoPlayer.isPlaying]);
-
-  function handleLoad() {
-    loaded++;
-
-    if (loaded >= loadAmt) {
-      state.ui.setLoading(false);
-    }
-  }
 
   return (
     <VideoDetailContainer isNext={isGoingNext}>
@@ -196,7 +219,10 @@ const VideoDetail: React.VFC = () => {
       />
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
-          <DetailPlayerContainer isReady={state.videoPlayer.isReady} isNext={queries.has('next')}>
+          <DetailPlayerContainer
+            isReady={loader?.allLoaded && state.videoPlayer.isReady}
+            isNext={!!search.next}
+          >
             {detail && (
               <>
                 <VideoPoster $src={CMS_URL + detail.video_poster?.url} />

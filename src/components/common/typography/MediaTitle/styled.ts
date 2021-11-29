@@ -39,12 +39,12 @@ export const Title = styled.h3<TitleProps>((props) => css`
     text-align: right;
   `}
 
-  ${props.show && css`
+  ${props.$visible && css`
     opacity: 1;
   `}
 `);
 
 interface TitleProps {
   side: i.Side;
-  show?: boolean;
+  $visible?: boolean;
 }

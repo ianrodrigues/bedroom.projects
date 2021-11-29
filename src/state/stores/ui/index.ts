@@ -15,6 +15,11 @@ const state: State = {
 
 const actions: i.ActionsCreator<Actions> = (set, get) => ({
   setLoading: (loading) => set((state) => {
+    // Setting the loading state again can cause visual glitching
+    if (get().ui.loading === loading) {
+      return;
+    }
+
     state.ui.loading = loading;
   }),
   setShowName: (showName) => set((state) => {

@@ -1,11 +1,12 @@
 import React from 'react';
-import { Link, RouteProps } from 'react-router-dom';
+import { Link, useMatchRoute } from 'react-location';
 
 import { GridPart, GridToggleContainer } from './styled';
 
 
-const GridLink: React.VFC<RouteProps> = (props) => {
-  const isGridPage = props.location?.pathname === '/grid';
+const GridLink: React.VFC = () => {
+  const matchRoute = useMatchRoute();
+  const isGridPage = !!matchRoute({ to: 'grid' });
 
   return (
     <Link to={isGridPage ? '/' : '/grid'}>

@@ -1,12 +1,13 @@
 import * as i from 'types';
 import React from 'react';
-import { Switch, Route, withRouter, RouteComponentProps, useLocation } from 'react-router-dom';
-import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 import { hotjar } from 'react-hotjar';
+import { Outlet, useLocation } from 'react-location';
+import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
 import useStore from 'state';
 import { fetchMedia } from 'state/utils';
+import { useMultiMatchRoute } from 'hooks';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -15,41 +16,28 @@ import RenderCanvas from 'common/presentation/RenderCanvas';
 import { Name } from 'common/presentation/Name';
 import Loader from './common/presentation/Loader';
 
-const PhotoDetail = React.lazy(() => import('pages/PhotoDetail'));
-const VideoDetail = React.lazy(() => import('pages/VideoDetail'));
-const Grid = React.lazy(() => import('pages/Grid'));
-const Info = React.lazy(() => import('pages/Info'));
 
-
-if (__PROD__) {
-  hotjar.initialize(HOTJAR_ID, HOTJAR_SNIPPET_V);
-}
-
-
-const App: React.VFC<RouteComponentProps> = () => {
+const App: React.VFC = () => {
   const state = useStore();
+  const { matchRoute, multiMatchRoute } = useMultiMatchRoute();
   const location = useLocation();
-  const [isHomepage, setIsHomepage] = React.useState(location.pathname === '/');
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
-  const [showCanvas, setShowCanvas] = React.useState(isHomepage || state.ui.isAnyMenuOpen());
+  const isHomepage = !!matchRoute({ to: '/' });
+  const canvasVisible = isHomepage || state.ui.isAnyMenuOpen();
 
   React.useEffect(() => {
     fetchMedia();
   }, []);
 
   React.useEffect(() => {
-    setIsHomepage(location.pathname === '/');
-
-    if (['/', '/grid'].includes(location.pathname)) {
+    if (multiMatchRoute(['/', 'grid'])) {
       state.ui.setShowName(true);
     } else {
       state.ui.setShowName(false);
     }
-  }, [location.pathname]);
+  }, [multiMatchRoute]);
 
   React.useEffect(() => {
-    setShowCanvas(isHomepage || state.ui.isAnyMenuOpen());
-
     if (isHomepage || !state.ui.isAnyMenuOpen()) {
       setFullscreenMedia(undefined);
     } else if (state.ui.isMenuOpen.L) {
@@ -57,7 +45,7 @@ const App: React.VFC<RouteComponentProps> = () => {
     } else if (state.ui.isMenuOpen.R) {
       setFullscreenMedia('video');
     }
-  }, [isHomepage, state.ui.isMenuOpen]);
+  }, [state.ui.isMenuOpen]);
 
   React.useEffect(() => {
     const body = document.querySelector('body');
@@ -77,24 +65,23 @@ const App: React.VFC<RouteComponentProps> = () => {
     };
   }, [state.ui.loading]);
 
+  React.useEffect(() => {
+    if (__PROD__) {
+      hotjar.stateChange(location.current.pathname);
+    }
+  }, [location.current.pathname]);
+
   return (
     <main>
       <GlobalStyle />
-      <React.Suspense fallback={<div />}>
-        <Switch>
-          <Route path="/photos/:slug" component={PhotoDetail} />
-          <Route path="/film/:slug" component={VideoDetail} />
-          <Route path="/grid" component={Grid} />
-          <Route path="/info" component={Info} />
-        </Switch>
-      </React.Suspense>
-      <RenderCanvas show={showCanvas} fullscreen={fullscreenMedia} />
+      <Outlet /> {/** Renders matching paths from react-location */}
+      <RenderCanvas visible={canvasVisible} fullscreen={fullscreenMedia} />
       <Header />
-      <Name show={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
+      <Name $visible={state.ui.loading === 'site' || state.ui.showName}>bedroom</Name>
       <Loader />
       <Footer />
     </main>
   );
 };
 
-export default withRouter(App);
+export default App;

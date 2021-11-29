@@ -44,7 +44,7 @@
         "case": { "after": true }
       }
     }],
-    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 1 }],
+    "no-multiple-empty-lines": ["error", { "max": 2, "maxEOF": 0 }],
     "no-console": [2, { "allow": ["info", "error"]}],
     "no-trailing-spaces": ["error"],
     "object-curly-spacing": ["error", "always"],

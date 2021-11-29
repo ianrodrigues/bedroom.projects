@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
-import { Link, Route, useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-location';
 
 import useStore from 'state';
+import { useMultiMatchRoute } from 'hooks';
 
 import HomeLink from './components/HomeLink';
 import GridLink from './components/GridLink';
@@ -12,16 +13,16 @@ import {
 
 
 const Header: React.VFC = () => {
-  const location = useLocation();
   const state = useStore();
-  const [visible, setVisible] = React.useState(false);
+  const location = useLocation();
+  const { multiMatchRoute, matchRoute } = useMultiMatchRoute();
+  const visible = !matchRoute({ to: '/grid' });
 
   React.useEffect(() => {
-    state.ui.closeMenus();
-
-    const visible = location.pathname !== '/grid';
-    setVisible(visible);
-  }, [location.pathname]);
+    setTimeout(() => {
+      state.ui.closeMenus();
+    }, 300); // Small delay for animations
+  }, [location.current.pathname]);
 
   function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
     state.media.setMedia(type, media);
@@ -33,22 +34,17 @@ const Header: React.VFC = () => {
 
   function onMouseLeaveList() {
     state.ui.setFullscreen(false);
-
-    if (location.pathname !== '/') {
-      state.ui.closeMenus();
-    }
+    state.ui.closeMenus();
   }
 
-  function onMouseEnterNav(tag: 'container' | 'title', side: i.Side) {
-    if (tag === 'title' || (tag === 'container' && location.pathname === '/')) {
-      if (visible) {
-        state.ui.setMenuOpen(side, true);
-      }
+  function onMouseEnterNav(side: i.Side) {
+    if (visible) {
+      state.ui.setMenuOpen(side, true);
     }
   }
 
   function onMouseLeaveNavContainer() {
-    if (state.ui.isAnyMenuOpen() && location.pathname !== '/') {
+    if (state.ui.isAnyMenuOpen()) {
       state.ui.closeMenus();
     }
   }
@@ -59,18 +55,15 @@ const Header: React.VFC = () => {
         <NavContainer
           isOpen={state.ui.isMenuOpen.L}
           visible={visible}
-          onMouseEnter={() => onMouseEnterNav('container', 'L')}
+          onMouseEnter={() => onMouseEnterNav('L')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2 onMouseEnter={() => onMouseEnterNav('title', 'L')}>
+          <H2 onMouseEnter={() => onMouseEnterNav('L')}>
             Photo
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia && state.media.allMedia.photo.map((photo) => (
-              <ListItem
-                key={photo.id}
-                onMouseEnter={() => onMouseEnter('photo', photo)}
-              >
+            {state.media.allMedia?.photo.map((photo) => (
+              <ListItem key={photo.id} onMouseEnter={() => onMouseEnter('photo', photo)}>
                 <Link to={`/photos/${photo.slug}`}>
                   {photo.title}
                 </Link>
@@ -80,25 +73,25 @@ const Header: React.VFC = () => {
         </NavContainer>
 
         <HomeGridLinkContainer>
-          <Route path={['/', '/grid']} exact component={GridLink} />
-          <HomeLink />
+          {multiMatchRoute(['/', 'grid']) ? (
+            <GridLink />
+          ) : (
+            <HomeLink />
+          )}
         </HomeGridLinkContainer>
 
         <NavContainer
           isOpen={state.ui.isMenuOpen.R}
           visible={visible}
-          onMouseEnter={() => onMouseEnterNav('container', 'R')}
+          onMouseEnter={() => onMouseEnterNav('R')}
           onMouseLeave={onMouseLeaveNavContainer}
         >
-          <H2 onMouseEnter={() => onMouseEnterNav('title', 'R')}>
+          <H2 onMouseEnter={() => onMouseEnterNav('R')}>
             Film
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia && state.media.allMedia.video.map((video) => (
-              <ListItem
-                key={video.id}
-                onMouseEnter={() => onMouseEnter('video', video)}
-              >
+            {state.media.allMedia?.video.map((video) => (
+              <ListItem key={video.id} onMouseEnter={() => onMouseEnter('video', video)}>
                 <Link to={`/film/${video.slug}`}>
                   {video.title}
                 </Link>

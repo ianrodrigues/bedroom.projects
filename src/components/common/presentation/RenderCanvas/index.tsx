@@ -1,11 +1,12 @@
 import * as i from 'types';
 import React from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-location';
 
 import useStore from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
-import { isVideo, isPhoto, isHTMLVideoElement } from 'services/typeguards';
+import { isVideo, isPhoto } from 'services/typeguards';
+import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitleOverlay from 'pages/Home/components/MediaTitleOverlay';
 import FullscreenCanvas from 'common/presentation/FullscreenCanvas';
@@ -24,7 +25,6 @@ let startTime = 0;
 let transitionStartTime = 0;
 let prevPhoto: i.APIMediaObject | undefined;
 let prevVideo: i.APIMediaObject | undefined;
-let loaded = 0;
 
 // We keep all videos and photos in memory with these objects for super fast switching between
 // different photos/films
@@ -43,6 +43,15 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     R: null,
   });
   const prevSideSize = usePrevious(sizeData);
+  const loader = React.useContext(AssetsLoaderContext);
+
+  React.useEffect(() => {
+    if (loader?.allLoaded) {
+      setTimeout(() => {
+        state.ui.setLoading(false);
+      }, 1000);
+    }
+  }, [loader?.allLoaded]);
 
   // Ugly but works for now :)
   function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
@@ -114,7 +123,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     const canvas = canvasRef.current;
     const ctx = canvas?.getContext('2d');
 
-    if (!props.show || !canvas || !ctx) {
+    if (!props.visible || !canvas || !ctx) {
       return;
     }
 
@@ -198,7 +207,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         );
       }
     }
-  }), [sizeData, state.media.photo, state.media.video, props.fullscreen, props.show]);
+  }), [sizeData, state.media.photo, state.media.video, props.fullscreen, props.visible]);
 
   // Add mouseover events
   useEventListener('mousemove', (e: MouseEvent) => {
@@ -229,7 +238,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   });
 
   React.useEffect(() => {
-    if (location.pathname !== '/') {
+    if (location.current.pathname !== '/') {
       return;
     }
 
@@ -259,38 +268,38 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       const videoMedia = videoData?.media_cover;
 
       if (videoData && isVideo(videoMedia)) {
-        const video = document.createElement('video');
-        video.oncanplaythrough = handleMediaLoaded;
-        video.autoplay = true;
-        video.loop = true;
-        video.muted = true;
-        video.src = CMS_URL + videoMedia.url;
+        loader?.addVideoAsset((video) => {
+          video.src = CMS_URL + videoMedia.url;
+          video.autoplay = true;
+          video.loop = true;
+          video.muted = true;
 
-        videos[videoData.id] = {
-          ...videoData,
-          element: video,
-        };
+          videos[videoData.id] = {
+            ...videoData,
+            element: video,
+          };
+        });
       }
 
       const photoData = state.media.allMedia.photo[i];
       const photoMedia = photoData?.media_cover;
 
       if (photoData && isPhoto(photoMedia)) {
-        const img = document.createElement('img');
-        img.onload = handleMediaLoaded;
-        img.src = CMS_URL + photoMedia.url;
+        loader?.addImageAsset((img) => {
+          img.src = CMS_URL + photoMedia.url;
 
-        photos[photoData.id] = {
-          ...photoData,
-          element: img,
-        };
+          photos[photoData.id] = {
+            ...photoData,
+            element: img,
+          };
+        });
       }
     }
-  }, [state.media.allMedia]);
+  }, [state.media.allMedia, loader?.allLoaded]);
 
   // Show "bedroom" title
   React.useEffect(() => {
-    if (location.pathname !== '/') {
+    if (location.current.pathname !== '/') {
       return;
     }
 
@@ -312,41 +321,26 @@ const RenderCanvas: React.VFC<Props> = (props) => {
 
   // Init divider position
   React.useEffect(() => {
-    dividerPos = canvasRef.current!.width * 0.5;
-  }, [canvasRef, location.pathname]);
-
-  function handleMediaLoaded(this: GlobalEventHandlers) {
-    const maxLoaded = Object.keys(videos).length + Object.keys(photos).length;
-    loaded++;
-
-    if (loaded === maxLoaded) {
-      setTimeout(() => {
-        state.ui.setLoading(false);
-      }, 1000);
+    if (location.current.pathname === '/') {
+      dividerPos = canvasRef.current!.width * 0.5;
     }
-
-    // Chrome muted autoplay bugfix
-    if (isHTMLVideoElement(this)) {
-      this.muted = true;
-      this.play();
-    }
-  }
+  }, [canvasRef.current, location.current.pathname]);
 
   return (
     <>
-      <FullscreenCanvas ref={canvasRef} show={props.show} />
+      <FullscreenCanvas ref={canvasRef} visible={props.visible} />
       <MediaTitleOverlay />
     </>
   );
 };
 
 RenderCanvas.defaultProps = {
-  show: true,
+  visible: true,
 };
 
 interface Props {
   fullscreen?: i.MediaType;
-  show?: boolean;
+  visible?: boolean;
 }
 
 function easeOutQuart(t: number, b: number, c: number, d: number): number {

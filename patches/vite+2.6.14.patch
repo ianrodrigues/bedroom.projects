@@ -1,8 +1,8 @@
 diff --git a/node_modules/vite/client.d.ts b/node_modules/vite/client.d.ts
-index c4777b7..0ecaf13 100644
+index 2586f07..f3fe7c4 100644
 --- a/node_modules/vite/client.d.ts
 +++ b/node_modules/vite/client.d.ts
-@@ -131,7 +131,7 @@ declare module '*.gif' {
+@@ -84,7 +84,7 @@ declare module '*.gif' {
    export default src
  }
  declare module '*.svg' {
