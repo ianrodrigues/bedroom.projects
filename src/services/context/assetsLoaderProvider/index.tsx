@@ -4,6 +4,7 @@ import React from 'react';
 import { isHTMLVideoElement } from 'services/typeguards';
 import AssetLoaderWorker from 'workers/AssetLoader?worker';
 
+
 export const AssetsLoaderContext = React.createContext<AssetsLoaderContextProps | null>(null);
 
 // Web Worker to load images in a different thread from UI
@@ -12,12 +13,14 @@ const assetLoaderWorker = new AssetLoaderWorker();
 // Keep track of URLs that we have already loaded
 const loadedList: Record<string, boolean> = {};
 
+// Store Promise resolvers: workers can not clone these constructs, so we store them here
+const resolvers = {} as Resolvers;
+
 
 const AssetsLoaderProvider: React.FC = (props) => {
   const [amount, setAmount] = React.useState(0);
   const [amountLoaded, setAmountLoaded] = React.useState(0);
   const [done, setDone] = React.useState(false);
-  const resolvers = {} as Resolvers;
 
   React.useEffect(() => {
     assetLoaderWorker.addEventListener('message', onWorkerDone);
@@ -61,7 +64,7 @@ const AssetsLoaderProvider: React.FC = (props) => {
     onAssetLoaded(url);
 
     // Resolve the promise for this URL with its element
-    resolvers[url]?.resolve(resolvers[url]!.el as any); // eslint-disable-line
+    resolvers[url]?.resolve(resolvers[url]!.el as HTMLImageElement);
 
     // Remove from memory
     delete resolvers[url];
@@ -173,7 +176,8 @@ export interface AssetsLoaderContextProps {
 
 type AddAssetCb<El> = (htmlElement: El) => void;
 
-type Resolvers = Resolver<HTMLImageElement> | Resolver<HTMLVideoElement>;
+// @TODO only images are supported atm
+type Resolvers = Resolver<HTMLImageElement>; // | Resolver<HTMLVideoElement>;
 
 interface Resolver<T extends HTMLElement> {
   [assetUrl: string]: {
