@@ -26,9 +26,9 @@ const PreloadLink: React.FC<LinkPropsType> = (props) => {
       return;
     }
 
-    const [, type, slug] = props.to.match(/(photos\/|film\/)(.+)/) || [];
+    const [, type, slug] = props.to.match(/(photos|film)\/(.+)/) || [];
 
-    if (!slug || !type!.includes('photos')) {
+    if (!slug || type !== 'photos') {
       return;
     }
 
