@@ -4,7 +4,7 @@ import { useMultiMatchRoute } from 'services/hooks';
 import InstagramSvg from 'vectors/instagram-brands.svg';
 import VimeoSvg from 'vectors/vimeo-v-brands.svg';
 
-import { InfoLink, SocialMediaLink } from './styled';
+import { GitHash, InfoLink, SocialMediaLink } from './styled';
 
 
 const Footer: React.VFC = () => {
@@ -22,6 +22,10 @@ const Footer: React.VFC = () => {
       <SocialMediaLink href="https://vimeo.com/bedroomprojects" $visible={visible}>
         <VimeoSvg />
       </SocialMediaLink>
+
+      {(__DEV__ || window.location.host.includes('-dev')) && (
+        <GitHash>{LATEST_GIT_HASH}</GitHash>
+      )}
     </>
   );
 };
