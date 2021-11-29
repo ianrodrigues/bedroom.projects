@@ -1,10 +1,11 @@
 import * as i from 'types';
 import React from 'react';
-import { Link, useLocation } from 'react-location';
+import { useLocation } from 'react-location';
 
 import useStore from 'state';
 import { useMultiMatchRoute } from 'hooks';
 
+import PreloadLink from 'common/navigation/PreloadLink';
 import HomeLink from './components/HomeLink';
 import GridLink from './components/GridLink';
 import {
@@ -64,9 +65,9 @@ const Header: React.VFC = () => {
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
             {state.media.allMedia?.photo.map((photo) => (
               <ListItem key={photo.id} onMouseEnter={() => onMouseEnter('photo', photo)}>
-                <Link to={`/photos/${photo.slug}`}>
+                <PreloadLink to={`/photos/${photo.slug}`}>
                   {photo.title}
-                </Link>
+                </PreloadLink>
               </ListItem>
             ))}
           </List>
@@ -92,9 +93,9 @@ const Header: React.VFC = () => {
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
             {state.media.allMedia?.video.map((video) => (
               <ListItem key={video.id} onMouseEnter={() => onMouseEnter('video', video)}>
-                <Link to={`/film/${video.slug}`}>
+                <PreloadLink to={`/film/${video.slug}`}>
                   {video.title}
-                </Link>
+                </PreloadLink>
               </ListItem>
             ))}
           </List>

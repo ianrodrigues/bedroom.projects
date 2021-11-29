@@ -4,9 +4,14 @@ import React from 'react';
 import { isHTMLVideoElement } from 'services/typeguards';
 import AssetLoaderWorker from 'workers/AssetLoader?worker';
 
+export const AssetsLoaderContext = React.createContext<AssetsLoaderContextProps | null>(null);
+
+// Web Worker to load images in a different thread from UI
 const assetLoaderWorker = new AssetLoaderWorker();
 
-export const AssetsLoaderContext = React.createContext<AssetsLoaderContextProps | null>(null);
+// Keep track of URLs that we have already loaded
+const loadedList: Record<string, boolean> = {};
+
 
 const AssetsLoaderProvider: React.FC = (props) => {
   const [amount, setAmount] = React.useState(0);
@@ -44,15 +49,16 @@ const AssetsLoaderProvider: React.FC = (props) => {
     setAmount((amt) => amt + 1);
   }
 
-  function onAssetLoaded() {
+  function onAssetLoaded(url: string) {
     setAmountLoaded((amt) => amt + 1);
+    loadedList[url] = true;
   }
 
   async function onWorkerDone(evt: MessageEvent<i.AssetLoaderWorkerMessage>) {
     const { url } = evt.data;
 
     // +1 assets loaded
-    onAssetLoaded();
+    onAssetLoaded(url);
 
     // Resolve the promise for this URL with its element
     resolvers[url]?.resolve(resolvers[url]!.el as any); // eslint-disable-line
@@ -69,6 +75,17 @@ const AssetsLoaderProvider: React.FC = (props) => {
 
       // Let callback do stuff with img element
       cb(img);
+
+      // If src in memory is done, we return
+      if (loadedList[img.src]) {
+        resolve(img);
+        onAssetLoaded(img.src);
+
+        return;
+      }
+
+      // Add src to memory
+      loadedList[img.src] = false;
 
       // Dev server web worker only works in Chrome
       if (__DEV__ && 'chrome' in window) {
@@ -88,7 +105,7 @@ const AssetsLoaderProvider: React.FC = (props) => {
         }
       } else {
         function onLoad() {
-          onAssetLoaded();
+          onAssetLoaded(img.src);
           img.removeEventListener('load', onLoad);
           resolve(img);
         }
@@ -103,14 +120,27 @@ const AssetsLoaderProvider: React.FC = (props) => {
       AddAsset();
 
       const video = document.createElement('video');
+
+      // Let callback do stuff with video element
       cb(video);
 
-      function onCanPlay(this: GlobalEventHandlers) {
-        onAssetLoaded();
-        video.removeEventListener('canplay', onCanPlay);
+      // If src in memory is done, we return
+      if (loadedList[video.src]) {
+        resolve(video);
+        onAssetLoaded(video.src);
 
-        // Chrome muted autoplay bugfix
+        return;
+      }
+
+      // Add src to memory
+      loadedList[video.src] = false;
+
+      function onCanPlay(this: GlobalEventHandlers) {
         if (isHTMLVideoElement(this)) {
+          onAssetLoaded(this.src);
+          this.removeEventListener('canplay', onCanPlay);
+
+          // Chrome muted autoplay bugfix
           this.muted = true;
           this.play();
         }
@@ -126,7 +156,6 @@ const AssetsLoaderProvider: React.FC = (props) => {
     <AssetsLoaderContext.Provider value={{
       addImageAsset,
       addVideoAsset,
-      onAssetLoaded,
       allLoaded: done,
     }}>
       {props.children}
@@ -139,7 +168,6 @@ export default AssetsLoaderProvider;
 export interface AssetsLoaderContextProps {
   addImageAsset(cb: AddAssetCb<HTMLImageElement>): Promise<HTMLImageElement>;
   addVideoAsset(cb: AddAssetCb<HTMLVideoElement>): Promise<HTMLVideoElement>;
-  onAssetLoaded(): void;
   allLoaded: boolean;
 }
 
