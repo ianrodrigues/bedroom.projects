@@ -6,12 +6,23 @@ import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 
 const PreloadLink: React.FC<LinkPropsType> = (props) => {
-  const [isHovered, setIsHovered] = React.useState(false);
+  const LinkRef = React.useRef<HTMLAnchorElement>(null);
   const loader = React.useContext(AssetsLoaderContext);
   const { children, ...rest } = props;
 
   React.useEffect(() => {
-    if (!isHovered || typeof props.to !== 'string') {
+    LinkRef.current?.addEventListener('mouseover', onMouseOver);
+
+    return function cleanup() {
+      LinkRef.current?.removeEventListener('mouseover', onMouseOver);
+    };
+  }, [LinkRef.current]);
+
+  function onMouseOver() {
+    // Remove to prevent future mouseover events
+    LinkRef.current?.removeEventListener('mouseover', onMouseOver);
+
+    if (typeof props.to !== 'string') {
       return;
     }
 
@@ -34,10 +45,10 @@ const PreloadLink: React.FC<LinkPropsType> = (props) => {
         });
       }
     }
-  }, [isHovered]);
+  }
 
   return (
-    <Link {...rest} onMouseOver={() => setIsHovered(true)}>
+    <Link {...rest} _ref={LinkRef}>
       {children}
     </Link>
   );
