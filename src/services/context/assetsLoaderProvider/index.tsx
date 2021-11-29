@@ -103,7 +103,7 @@ const AssetsLoaderProvider: React.FC = (props) => {
 
 
       // Dev server web worker only works in Chrome
-      if (__DEV__ && 'chrome' in window) {
+      if (__PROD__ || (__DEV__ && 'chrome' in window)) {
         if (img.src.length > 0) {
           // Load image with worker
           assetLoaderWorker.postMessage(img.src);
