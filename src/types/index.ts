@@ -5,3 +5,4 @@ export * from './router';
 
 export * from 'styles/types';
 export * from 'state/types';
+export * from 'workers/types';

@@ -1,6 +1,5 @@
 import * as i from 'types';
 import React from 'react';
-import { Link } from 'react-location';
 
 import useStore from 'state';
 import { usePageAssetLoadCounter } from 'hooks';
@@ -8,6 +7,7 @@ import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
+import PreloadLink from 'common/navigation/PreloadLink';
 import {
   Figure, FilterContainer, GridContainer, GridPageContainer, GridTile, Title, FilterButton,
 } from './styled';
@@ -98,10 +98,10 @@ const Grid: React.VFC = () => {
 
       return (
         <GridTile key={media.id} visible={visible}>
-          <Link to={`../${linkPrefix}/${media.slug}`}>
+          <PreloadLink to={`../${linkPrefix}/${media.slug}`}>
             <Figure src={CMS_URL + previewUrl} />
             <Title>{media.title}</Title>
-          </Link>
+          </PreloadLink>
         </GridTile>
       );
     });
