@@ -47,9 +47,26 @@ const AssetsLoaderProvider: React.FC = (props) => {
     }
   }, [amount, amountLoaded]);
 
-  function AddAsset() {
+  function AddAsset(url: string): { loaded: boolean } {
+    // Invalid url
+    if (url.length === 0) {
+      return { loaded: true };
+    }
+
     setDone(false);
     setAmount((amt) => amt + 1);
+
+    // If src in memory is done, we return
+    if (loadedList[url]) {
+      onAssetLoaded(url);
+
+      return { loaded: true };
+    }
+
+    // Add src to memory
+    loadedList[url] = false;
+
+    return { loaded: false };
   }
 
   function onAssetLoaded(url: string) {
@@ -72,23 +89,18 @@ const AssetsLoaderProvider: React.FC = (props) => {
 
   async function addImageAsset(cb: AddAssetCb<HTMLImageElement>): Promise<HTMLImageElement> {
     return new Promise((resolve) => {
-      AddAsset();
-
       const img = document.createElement('img');
 
       // Let callback do stuff with img element
       cb(img);
 
-      // If src in memory is done, we return
-      if (loadedList[img.src]) {
-        resolve(img);
-        onAssetLoaded(img.src);
 
-        return;
+      const { loaded } = AddAsset(img.src);
+
+      if (loaded) {
+        return resolve(img);
       }
 
-      // Add src to memory
-      loadedList[img.src] = false;
 
       // Dev server web worker only works in Chrome
       if (__DEV__ && 'chrome' in window) {
@@ -120,23 +132,18 @@ const AssetsLoaderProvider: React.FC = (props) => {
 
   function addVideoAsset(cb: AddAssetCb<HTMLVideoElement>): Promise<HTMLVideoElement> {
     return new Promise((resolve) => {
-      AddAsset();
-
       const video = document.createElement('video');
 
       // Let callback do stuff with video element
       cb(video);
 
-      // If src in memory is done, we return
-      if (loadedList[video.src]) {
-        resolve(video);
-        onAssetLoaded(video.src);
 
-        return;
+      const { loaded } = AddAsset(video.src);
+
+      if (loaded) {
+        return resolve(video);
       }
 
-      // Add src to memory
-      loadedList[video.src] = false;
 
       function onCanPlay(this: GlobalEventHandlers) {
         if (isHTMLVideoElement(this)) {
