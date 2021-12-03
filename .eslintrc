@@ -115,7 +115,8 @@
         "getDerivedStateFromError",
         "UNSAFE_componentWillUpdate",
         "UNSAFE_componentWillReceiveProps",
-        "UNSAFE_componentWillMount"
+        "UNSAFE_componentWillMount",
+        "actions"
       ],
       "allowDirectConstAssertionInArrowFunctions": true
     }],

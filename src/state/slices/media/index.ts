@@ -2,20 +2,16 @@ import * as i from 'types';
 
 import { isStatePhotoObject, isStateVideoObject } from 'services/typeguards';
 
-import { State, Actions } from './types';
+import { State, MediaForType } from './types';
 
 
-const state: State = {
-  allMedia: undefined,
-  photo: undefined,
-  video: undefined,
-};
+const state: State = {};
 
-const actions: i.ActionsCreator<Actions> = (set) => ({
-  setAllMedia: (media) => set((state) => {
+const actions = (set: i.Set) => ({
+  setAllMedia: (media: i.AllMedia) => set((state) => {
     state.media.allMedia = media;
   }),
-  setMedia: (type, media) => set((state) => {
+  setMedia: <T extends i.MediaType>(type: T, media: MediaForType[T]) => set((state) => {
     if (type === 'photo' && isStatePhotoObject(media)) {
       state.media.photo = media;
     }
@@ -26,9 +22,9 @@ const actions: i.ActionsCreator<Actions> = (set) => ({
   }),
 });
 
-const store = {
+const slice: i.StoreSlice<State, typeof actions> = {
   state,
   actions,
 };
 
-export default store;
+export default slice;

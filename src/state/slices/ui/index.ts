@@ -1,6 +1,6 @@
 import * as i from 'types';
 
-import { State, Actions } from './types';
+import { State } from './types';
 
 
 const state: State = {
@@ -13,8 +13,8 @@ const state: State = {
   },
 };
 
-const actions: i.ActionsCreator<Actions> = (set, get) => ({
-  setLoading: (loading) => set((state) => {
+const actions = (set: i.Set, get: i.Get) => ({
+  setLoading: (loading: i.GlobalLoadingState) => set((state) => {
     // Setting the loading state again can cause visual glitching
     if (get().ui.loading === loading) {
       return;
@@ -22,13 +22,13 @@ const actions: i.ActionsCreator<Actions> = (set, get) => ({
 
     state.ui.loading = loading;
   }),
-  setShowName: (showName) => set((state) => {
+  setShowName: (showName: boolean) => set((state) => {
     state.ui.showName = showName;
   }),
-  setFullscreen: (isFullscreen) => set((state) => {
+  setFullscreen: (isFullscreen: boolean) => set((state) => {
     state.ui.isFullscreen = isFullscreen;
   }),
-  setMenuOpen: (side, open) => set((state) => {
+  setMenuOpen: (side: i.Side, open: boolean) => set((state) => {
     state.ui.isMenuOpen[side] = open;
   }),
   closeMenus: () => set((state) => {
@@ -40,9 +40,9 @@ const actions: i.ActionsCreator<Actions> = (set, get) => ({
   isAnyMenuOpen: () => get().ui.isMenuOpen.L || get().ui.isMenuOpen.R,
 });
 
-const store = {
+const slice: i.StoreSlice<State, typeof actions> = {
   state,
   actions,
 };
 
-export default store;
+export default slice;

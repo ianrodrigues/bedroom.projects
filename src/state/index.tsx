@@ -3,22 +3,25 @@ import create from 'zustand';
 
 import { immer } from './middleware';
 
-import * as stores from './stores';
+import * as slices from './slices';
+
 
 const useStore = create<i.AppState>(immer((set, get) => {
-  type storeKeys = keyof typeof stores;
-
   const state = {} as i.AppState;
 
-  let storeKey: storeKeys;
-  for (storeKey in stores) {
-    state[storeKey] = {
-      ...(stores as i.StringKeyObject)[storeKey].state,
-      ...(stores as i.StringKeyObject)[storeKey].actions(set, get),
+  let sliceKey: keyof typeof slices;
+  for (sliceKey in slices) {
+    state[sliceKey] = {
+      ...(slices as i.StringKeyObject)[sliceKey].state,
+      ...(slices as i.StringKeyObject)[sliceKey].actions(set, get),
     };
   }
 
   return state;
 }));
+
+export type AppState = {
+  [k in keyof typeof slices]: i.IntersectStoreSlice<typeof slices[k]>;
+}
 
 export default useStore;
