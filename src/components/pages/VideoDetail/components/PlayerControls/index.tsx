@@ -120,11 +120,11 @@ const PlayerControls: React.FC<Props> = (props) => {
   );
 };
 
-export type Props = {
+export interface Props {
   width?: number;
   height?: number;
   videoRef?: React.RefObject<HTMLVideoElement>;
   children: React.ReactElement;
-};
+}
 
 export default PlayerControls;

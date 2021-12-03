@@ -17,10 +17,10 @@ const SEO: React.VFC<SEOProps> = (props) => {
   );
 };
 
-export type SEOProps = {
+export interface SEOProps {
   pageTitle?: string;
   ogDescription?: string;
   ogImg: string;
-};
+}
 
 export default SEO;

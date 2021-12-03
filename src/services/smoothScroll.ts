@@ -4,7 +4,7 @@ import { isSafari } from './isSafari';
 
 type OnFn = (scrollY: number, containerBody: HTMLDivElement, bottomEdge: number) => void;
 
-type Elements = {
+interface Elements {
   container: HTMLDivElement | null;
   containerBody: HTMLDivElement | null;
   hitbox: HTMLDivElement | null;
@@ -19,13 +19,13 @@ export class SmoothScroll {
     hitbox: null,
     scrollContainers: null,
     scrollers: null,
-  }
+  };
 
   params = {
     containerHeight: 0,
     duration: 1000,
     timingFunction: 'cubic-bezier(0.23, 1, 0.32, 1)',
-  }
+  };
 
   private onFn?: () => void;
 
@@ -49,7 +49,7 @@ export class SmoothScroll {
     if (this.onFn) {
       window.removeEventListener('scroll', this.onFn);
     }
-  }
+  };
 
   on = (cb: OnFn): void => {
     this.onFn = () => {
@@ -57,7 +57,7 @@ export class SmoothScroll {
     };
 
     window.addEventListener('scroll', this.onFn);
-  }
+  };
 
   private initStyle = (): void => {
     // Set container style
@@ -105,16 +105,16 @@ export class SmoothScroll {
     });
 
     this.setHitboxHeight();
-  }
+  };
 
   private initListeners = (): void => {
     window.addEventListener('scroll', this.handleScroll);
     window.addEventListener('resize', this.setHitboxHeight);
-  }
+  };
 
   private handleScroll = (): void => {
     this.$.containerBody!.style.transform = `translate3d(0, ${-window.scrollY}px, 0)`;
-  }
+  };
 
   private setHitboxHeight = (): void => {
     let heightFromContainers = this.$.containerBody!.offsetHeight;
@@ -124,7 +124,7 @@ export class SmoothScroll {
     });
 
     this.$.hitbox!.style.height = `${heightFromContainers}px`;
-  }
+  };
 
   private loopScrollContainers = (cb: (el: HTMLDivElement) => void): void => {
     if (this.$.scrollContainers) {
@@ -132,7 +132,7 @@ export class SmoothScroll {
         cb(el);
       }
     }
-  }
+  };
 
   private loopScrollers = (cb: (el: HTMLDivElement) => void): void => {
     if (this.$.scrollers) {
@@ -140,5 +140,5 @@ export class SmoothScroll {
         cb(el);
       }
     }
-  }
+  };
 }

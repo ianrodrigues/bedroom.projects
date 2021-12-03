@@ -56,12 +56,12 @@ const MediaTitle = React.forwardRef<HTMLHeadingElement, Props>((props, ref) => {
   );
 });
 
-export type Props = {
+export interface Props {
   side: i.Side;
   visible: boolean;
   autoHide?: boolean;
   children?: string;
   dataset?: Record<string, true>;
-};
+}
 
 export default MediaTitle;

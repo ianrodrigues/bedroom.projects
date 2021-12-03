@@ -25,12 +25,12 @@ const RowImg: React.VFC<RowImgProps> = (props) => {
   );
 };
 
-export type RowImgProps = {
+export interface RowImgProps {
   layout: i.Layout;
   photo: i.PhotoMedia;
   isNextHeader?: boolean;
   id?: string;
   index?: number;
-};
+}
 
 export default RowImg;

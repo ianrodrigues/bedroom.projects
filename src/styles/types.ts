@@ -11,10 +11,10 @@ declare module 'styled-components' {
   export interface DefaultTheme extends i.Theme {}
 }
 
-export type BaseStyled = {
+export interface BaseStyled {
   theme?: i.Theme;
   className?: string;
-};
+}
 
 // Get color strings from theme
 export type ThemeColors = keyof typeof theme.colors;

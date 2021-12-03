@@ -41,9 +41,9 @@ const Volume: React.VFC<Props> = (props) => {
   );
 };
 
-export type Props = {
+export interface Props {
   videoRef?: React.RefObject<HTMLVideoElement>;
   visible?: boolean;
-};
+}
 
 export default Volume;

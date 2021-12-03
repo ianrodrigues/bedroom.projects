@@ -136,8 +136,8 @@ const Player: React.VFC<Props> = (props) => {
   );
 };
 
-export type Props = {
+export interface Props {
   videoObject: i.APIMediaObject;
-};
+}
 
 export default Player;

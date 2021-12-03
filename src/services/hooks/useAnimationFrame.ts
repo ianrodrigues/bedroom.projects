@@ -2,10 +2,6 @@
 // https://mobile.twitter.com/hieuhlc/status/1164369876825169920
 import { useEffect, useRef } from 'react';
 
-type CbParams = {
-  time: number;
-  delta: number;
-}
 
 // Reusable component that also takes dependencies
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -27,4 +23,9 @@ export function useAnimationFrame(cb: (params: CbParams) => void, deps: unknown[
     frame.current = requestAnimationFrame(animate);
     return () => cancelAnimationFrame(frame.current);
   }, deps); // Make sure to change it if the deps change
+}
+
+interface CbParams {
+  time: number;
+  delta: number;
 }

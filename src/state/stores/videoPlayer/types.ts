@@ -1,9 +1,9 @@
-export type State = {
+export interface State {
   isPlaying: boolean;
   isReady: boolean;
 }
 
-export type Actions = {
+export interface Actions {
   setPlaying: (isPlaying: boolean) => void;
   setReady: (isReady: boolean) => void;
 }

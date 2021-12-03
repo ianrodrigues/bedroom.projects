@@ -3,7 +3,7 @@ import { UiState } from './ui/types';
 import { VideoPlayerState } from './videoPlayer/types';
 
 
-export type AppState = {
+export interface AppState {
   media: MediaState;
   ui: UiState;
   videoPlayer: VideoPlayerState;

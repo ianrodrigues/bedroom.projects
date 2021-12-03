@@ -1,14 +1,14 @@
 import * as i from 'types';
 
 
-export type State = {
+export interface State {
   loading: i.GlobalLoadingState;
   showName: boolean;
   isFullscreen: boolean;
   isMenuOpen: Record<i.Side, boolean>;
 }
 
-export type Actions = {
+export interface Actions {
   setLoading: (loading: i.GlobalLoadingState) => void;
   setShowName: (showName: boolean) => void;
   setFullscreen: (isFullscreen: boolean) => void;
