@@ -53,7 +53,7 @@ export const SocialMediaLink = styled.a.attrs({
 export const GitHash = styled.span((props) => css`
   position: fixed;
   bottom: 15px;
-  left: calc(100vw/2 - 304px/2);
+  left: calc(100vw / 2 - 304px / 2);
   z-index: 99;
   color: #fff;
   font-size: 10px;

@@ -1,7 +1,7 @@
 import * as i from 'types';
 import create from 'zustand';
 
-import { log, immer } from './middleware';
+import { immer } from './middleware';
 
 import * as stores from './stores';
 

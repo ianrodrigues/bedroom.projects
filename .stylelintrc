@@ -1,16 +1,13 @@
 {
   "processors": [
-    ["stylelint-processor-styled-components",
-      { "parserPlugins": [
-          "jsx",
-          "exportDefaultFrom",
-          "dynamicImport"
-        ]
-      }
-    ]
+    "stylelint-processor-styled-components"
   ],
   "extends": [
-    "stylelint-config-standard",
+    "stylelint-config-recommended",
     "stylelint-config-styled-components"
-  ]
+  ],
+  "customSyntax": "postcss",
+  "rules": {
+    "no-descending-specificity": null
+  }
 }
