@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useLocation } from 'react-location';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { useAnimationFrame, useEventListener, usePrevious } from 'hooks';
 import { drawCoverFitImage, drawCoverFitVideo } from 'services';
 import { isVideo, isPhoto } from 'services/typeguards';
@@ -33,11 +34,17 @@ const photos: Media<HTMLImageElement> = {};
 
 
 const RenderCanvas: React.VFC<Props> = (props) => {
-  const state = useStore();
+  const {
+    setLoading: setAppLoading, isFullscreen: isCanvasFullscreen, isAnyMenuOpen, setMenuOpen,
+    closeMenus, showName, setShowName,
+  } = useStore(selectors.ui, shallow);
+  const {
+    photo: statePhoto, video: stateVideo, allMedia: allStateMedia,
+  } = useStore(selectors.media, shallow);
   const location = useLocation();
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
-  const tempPrevPhoto = usePrevious(state.media.photo);
-  const tempPrevVideo = usePrevious(state.media.video);
+  const tempPrevPhoto = usePrevious(statePhoto);
+  const tempPrevVideo = usePrevious(stateVideo);
   const [sizeData, setSizeData] = React.useState<i.SizeData>({
     L: null,
     R: null,
@@ -48,19 +55,19 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   React.useEffect(() => {
     if (loader?.allLoaded) {
       setTimeout(() => {
-        state.ui.setLoading(false);
+        setAppLoading(false);
       }, 1000);
     }
-  }, [loader?.allLoaded]);
+  }, [loader?.allLoaded, setAppLoading]);
 
   // Ugly but works for now :)
   function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
-    if (!state.media.photo || !state.media.video) {
+    if (!statePhoto || !stateVideo) {
       return;
     }
 
     const collection = mediaType === 'photo' ? photos : videos;
-    const media = mediaType === 'photo' ? photos[state.media.photo.id] : videos[state.media.video.id];
+    const media = mediaType === 'photo' ? photos[statePhoto.id] : videos[stateVideo.id];
     const prevMedia = mediaType === 'photo' ? prevPhoto : prevVideo;
 
     if (!media) {
@@ -165,8 +172,8 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       }
     }
 
-    if (state.media.video && props.fullscreen !== 'photo') {
-      const video = videos[state.media.video.id];
+    if (stateVideo && props.fullscreen !== 'photo') {
+      const video = videos[stateVideo.id];
 
       // Don't render video if photo is fullscreen
       if (video && dividerPos !== window.innerWidth) {
@@ -184,8 +191,8 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       }
     }
 
-    if (state.media.photo && props.fullscreen !== 'video') {
-      const photo = photos[state.media.photo.id];
+    if (statePhoto && props.fullscreen !== 'video') {
+      const photo = photos[statePhoto.id];
 
       // Don't render photo if video is fullscreen
       if (photo && dividerPos !== 0) {
@@ -207,7 +214,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         );
       }
     }
-  }), [sizeData, state.media.photo, state.media.video, props.fullscreen, props.visible]);
+  }), [sizeData, statePhoto, stateVideo, props.fullscreen, props.visible]);
 
   // Add mouseover events
   useEventListener('mousemove', (e: MouseEvent) => {
@@ -221,13 +228,13 @@ const RenderCanvas: React.VFC<Props> = (props) => {
     if (e.clientX < canvas.width * 0.3) {
       setSizeData((prev) => ({
         ...prev,
-        L: state.ui.isFullscreen ? 'full' : 'large',
+        L: isCanvasFullscreen ? 'full' : 'large',
       }));
     // Right side
     } else if (e.clientX > canvas.width * 0.7) {
       setSizeData((prev) => ({
         ...prev,
-        R: state.ui.isFullscreen ? 'full' : 'large',
+        R: isCanvasFullscreen ? 'full' : 'large',
       }));
     } else {
       setSizeData({
@@ -242,20 +249,20 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       return;
     }
 
-    if (!state.ui.isAnyMenuOpen()) {
+    if (!isAnyMenuOpen()) {
       if (sizeData.L) {
-        state.ui.setMenuOpen('L', true);
+        setMenuOpen('L', true);
       } else if (sizeData.R) {
-        state.ui.setMenuOpen('R', true);
+        setMenuOpen('R', true);
       }
     } else if (!sizeData.L && !sizeData.R) {
-      state.ui.closeMenus();
+      closeMenus();
     }
-  }, [sizeData.L, sizeData.R]);
+  }, [sizeData.L, sizeData.R, isAnyMenuOpen, setMenuOpen, closeMenus]);
 
   // Init photo/video into memory
   React.useEffect(() => {
-    if (!state.media.allMedia) {
+    if (!allStateMedia) {
       return;
     }
 
@@ -263,8 +270,8 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       return;
     }
 
-    for (let i = 0; i < Math.max(state.media.allMedia.video.length, state.media.allMedia.photo.length); i++) {
-      const videoData = state.media.allMedia.video[i];
+    for (let i = 0; i < Math.max(allStateMedia.video.length, allStateMedia.photo.length); i++) {
+      const videoData = allStateMedia.video[i];
       const videoMedia = videoData?.media_cover;
 
       if (videoData && isVideo(videoMedia)) {
@@ -281,7 +288,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         });
       }
 
-      const photoData = state.media.allMedia.photo[i];
+      const photoData = allStateMedia.photo[i];
       const photoMedia = photoData?.media_cover;
 
       if (photoData && isPhoto(photoMedia)) {
@@ -295,7 +302,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         });
       }
     }
-  }, [state.media.allMedia, loader?.allLoaded]);
+  }, [allStateMedia, loader?.allLoaded]);
 
   // Show "bedroom" title
   React.useEffect(() => {
@@ -303,21 +310,21 @@ const RenderCanvas: React.VFC<Props> = (props) => {
       return;
     }
 
-    if (state.ui.isFullscreen && state.ui.showName) {
-      state.ui.setShowName(false);
-    } else if (!state.ui.isFullscreen && !state.ui.showName) {
-      state.ui.setShowName(true);
+    if (isCanvasFullscreen && showName) {
+      setShowName(false);
+    } else if (!isCanvasFullscreen && !showName) {
+      setShowName(true);
     }
-  }, [state.ui.isFullscreen]);
+  }, [location.current.pathname, isCanvasFullscreen, showName, setShowName]);
 
   // Used for transitions between media
   React.useEffect(() => {
     prevPhoto = tempPrevPhoto;
-  }, [state.media.photo]);
+  }, [statePhoto]);
 
   React.useEffect(() => {
     prevVideo = tempPrevVideo;
-  }, [state.media.video]);
+  }, [stateVideo]);
 
   // Init divider position
   React.useEffect(() => {

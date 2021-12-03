@@ -24,4 +24,6 @@ export type AppState = {
   [k in keyof typeof slices]: i.IntersectStoreSlice<typeof slices[k]>;
 }
 
+export * as selectors from './selectors';
+
 export default useStore;

@@ -1,6 +1,7 @@
 import React from 'react';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { useMultiMatchRoute } from 'hooks';
 import MediaTitle from 'common/typography/MediaTitle';
 
@@ -8,18 +9,19 @@ import { MediaTitleOverlayContainer } from './styled';
 
 
 const MediaTitleOverlay: React.VFC = () => {
-  const state = useStore();
+  const { isFullscreen: isCanvasFullscreen, isMenuOpen, isAnyMenuOpen } = useStore(selectors.ui, shallow);
+  const { photo, video } = useStore(selectors.media, shallow);
   const { multiMatchRoute } = useMultiMatchRoute();
 
-  const containerVisible = state.ui.isAnyMenuOpen() || !multiMatchRoute(['info', 'grid']);
+  const containerVisible = isAnyMenuOpen() || !multiMatchRoute(['info', 'grid']);
 
   return (
     <MediaTitleOverlayContainer $visible={containerVisible}>
-      <MediaTitle visible={state.ui.isFullscreen && state.ui.isMenuOpen.L} side="L">
-        {state.media.photo?.title}
+      <MediaTitle visible={isCanvasFullscreen && isMenuOpen.L} side="L">
+        {photo?.title}
       </MediaTitle>
-      <MediaTitle visible={state.ui.isFullscreen && state.ui.isMenuOpen.R} side="R">
-        {state.media.video?.title}
+      <MediaTitle visible={isCanvasFullscreen && isMenuOpen.R} side="R">
+        {video?.title}
       </MediaTitle>
     </MediaTitleOverlayContainer>
   );

@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useNavigate, useMatch, useSearch } from 'react-location';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
 import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
@@ -27,7 +28,8 @@ interface Sections {
 type GoingNextPhases = false | 'starting' | 'ending';
 
 const PhotoDetail: React.VFC = () => {
-  const state = useStore();
+  const { setLoading: setAppLoading, loading: appLoading, isAnyMenuOpen } = useStore(selectors.ui, shallow);
+  const { allMedia: allStateMedia } = useStore(selectors.media, shallow);
   const { params } = useMatch<i.DetailPageGenerics>();
   const search = useSearch<i.DetailPageGenerics>();
   const navigate = useNavigate();
@@ -55,7 +57,7 @@ const PhotoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     return function cleanup() {
-      state.ui.setLoading(false);
+      setAppLoading(false);
       scroller?.destroy();
 
       for (const observer of observers) {
@@ -69,7 +71,7 @@ const PhotoDetail: React.VFC = () => {
     if (!detail) {
       setDetail(getMediaObjectBySlug(params.slug, 'photo'));
     }
-  }, [state.media.allMedia]);
+  }, [allStateMedia]);
 
   React.useEffect(() => {
     if (detail) {
@@ -78,7 +80,7 @@ const PhotoDetail: React.VFC = () => {
           console.info('page loaded');
         }
 
-        state.ui.setLoading(false);
+        setAppLoading(false);
       }
     }
   }, [assetLoadCounter.loaded, detail?.bedroom_media_layouts.length]);
@@ -128,7 +130,7 @@ const PhotoDetail: React.VFC = () => {
 
   // Scroll logic
   React.useEffect(() => {
-    if (containerRef.current && !state.ui.loading) {
+    if (containerRef.current && !appLoading) {
       scroller = new SmoothScroll('#photos-container');
 
       scroller.on((scrollY, bodyEl, bottomEdge) => {
@@ -186,8 +188,8 @@ const PhotoDetail: React.VFC = () => {
           setGoingNext('starting');
           assetLoadCounter.reset();
 
-          if (state.ui.loading === false) {
-            state.ui.setLoading('page');
+          if (appLoading === false) {
+            setAppLoading('page');
           }
 
           // Fade out current title
@@ -251,7 +253,7 @@ const PhotoDetail: React.VFC = () => {
         }
       });
     }
-  }, [containerRef, state.ui.loading, isGoingNext]);
+  }, [containerRef, appLoading, isGoingNext]);
 
   React.useEffect(() => {
     if (!detail) {
@@ -260,8 +262,8 @@ const PhotoDetail: React.VFC = () => {
 
     setNextDetail(getMediaObjectBySlug(detail.next, 'photo'));
 
-    if (state.ui.loading === false) {
-      state.ui.setLoading('page');
+    if (appLoading === false) {
+      setAppLoading('page');
     }
 
     const head = detail.bedroom_media_layouts[0];
@@ -296,7 +298,7 @@ const PhotoDetail: React.VFC = () => {
   }, [detail]);
 
   React.useEffect(() => {
-    if (state.ui.loading) {
+    if (appLoading) {
       return;
     }
 
@@ -362,7 +364,7 @@ const PhotoDetail: React.VFC = () => {
         }
       }
     }, 500);
-  }, [sections, state.ui.loading]);
+  }, [sections, appLoading]);
 
   return (
     <PhotoDetailContainer>
@@ -417,7 +419,7 @@ const PhotoDetail: React.VFC = () => {
             <MediaTitle
               ref={nextTitleRef}
               side="L"
-              visible={!state.ui.isAnyMenuOpen() && sections.body.length > 0}
+              visible={!isAnyMenuOpen() && sections.body.length > 0}
               dataset={{ 'data-scroll': true }}
             >
               {nextDetail.title}
@@ -429,7 +431,7 @@ const PhotoDetail: React.VFC = () => {
       <MediaTitle
         ref={titleRef}
         side="L"
-        visible={!state.ui.isAnyMenuOpen()}
+        visible={!isAnyMenuOpen()}
         dataset={{ 'data-scroll': true }}
       >
         {isGoingNext === 'ending' ? nextDetail?.title || '' : detail?.title || ''}

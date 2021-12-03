@@ -1,17 +1,18 @@
 import React from 'react';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 
 
 // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
 export function usePageAssetLoadCounter() {
-  const state = useStore();
+  const { setLoading: setAppLoading } = useStore(selectors.ui, shallow);
   const [amount, setAmount] = React.useState(0);
   const [loaded, setLoaded] = React.useState(0);
 
   React.useEffect(() => {
     return function cleanup() {
-      state.ui.setLoading(false);
+      setAppLoading(false);
       reset();
     };
   }, []);

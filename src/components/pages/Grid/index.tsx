@@ -1,7 +1,7 @@
 import * as i from 'types';
 import React from 'react';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
@@ -16,7 +16,8 @@ import {
 let scroller: SmoothScroll | undefined;
 
 const Grid: React.VFC = () => {
-  const state = useStore();
+  const { loading: appLoading, setLoading: setAppLoading } = useStore(selectors.ui);
+  const { allMedia: allStateMedia } = useStore(selectors.media);
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
@@ -38,7 +39,7 @@ const Grid: React.VFC = () => {
     }
 
     if (assetLoadCounter.loaded === combinedMedia.current.length) {
-      state.ui.setLoading(false);
+      setAppLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
@@ -47,14 +48,14 @@ const Grid: React.VFC = () => {
   }, [combinedMedia.current, assetLoadCounter.loaded]);
 
   React.useEffect(() => {
-    if (!state.media.allMedia) {
+    if (!allStateMedia) {
       return;
     }
 
-    combinedMedia.current = [...state.media.allMedia.photo, ...state.media.allMedia.video];
+    combinedMedia.current = [...allStateMedia.photo, ...allStateMedia.video];
 
-    if (state.ui.loading === false) {
-      state.ui.setLoading('page');
+    if (appLoading === false) {
+      setAppLoading('page');
     }
 
     for (const media of combinedMedia.current) {
@@ -68,7 +69,7 @@ const Grid: React.VFC = () => {
         })
         .then(assetLoadCounter.addLoaded);
     }
-  }, [state.media.allMedia]);
+  }, [allStateMedia]);
 
   function toggleFilter(type: i.MediaType) {
     if (filtered === type) {
@@ -114,10 +115,10 @@ const Grid: React.VFC = () => {
           <GridPageContainer ref={containerRef} $visible={fadeIn}>
             <FilterContainer>
               <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
-              Photos ({state.media.allMedia?.photo.length})
+              Photos ({allStateMedia?.photo.length})
               </FilterButton>
               <FilterButton onClick={() => toggleFilter('video')} toggled={filtered === 'video'}>
-              Films ({state.media.allMedia?.video.length})
+              Films ({allStateMedia?.video.length})
               </FilterButton>
             </FilterContainer>
 

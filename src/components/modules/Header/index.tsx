@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useLocation } from 'react-location';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { useMultiMatchRoute } from 'hooks';
 
 import PreloadLink from 'common/navigation/PreloadLink';
@@ -14,47 +15,50 @@ import {
 
 
 const Header: React.VFC = () => {
-  const state = useStore();
+  const {
+    closeMenus, setMenuOpen, isAnyMenuOpen, isMenuOpen, setFullscreen: setCanvasFullscreen,
+  } = useStore(selectors.ui, shallow);
+  const { setMedia, allMedia: allStateMedia } = useStore(selectors.media, shallow);
   const location = useLocation();
   const { multiMatchRoute, matchRoute } = useMultiMatchRoute();
   const visible = !matchRoute({ to: '/grid' });
 
   React.useEffect(() => {
     setTimeout(() => {
-      state.ui.closeMenus();
+      closeMenus();
     }, 300); // Small delay for animations
-  }, [location.current.pathname]);
+  }, [location.current.pathname, closeMenus]);
 
   function onMouseEnter(type: i.MediaType, media: i.StatePhotoObject | i.StateVideoObject) {
-    state.media.setMedia(type, media);
+    setMedia(type, media);
   }
 
   function onMouseEnterList() {
-    state.ui.setFullscreen(true);
+    setCanvasFullscreen(true);
   }
 
   function onMouseLeaveList() {
-    state.ui.setFullscreen(false);
-    state.ui.closeMenus();
+    setCanvasFullscreen(false);
+    closeMenus();
   }
 
   function onMouseEnterNav(side: i.Side) {
     if (visible) {
-      state.ui.setMenuOpen(side, true);
+      setMenuOpen(side, true);
     }
   }
 
   function onMouseLeaveNavContainer() {
-    if (state.ui.isAnyMenuOpen()) {
-      state.ui.closeMenus();
+    if (isAnyMenuOpen()) {
+      closeMenus();
     }
   }
 
   return (
-    <HeaderContainer isOpen={state.ui.isAnyMenuOpen()}>
+    <HeaderContainer isOpen={isAnyMenuOpen()}>
       <Nav>
         <NavContainer
-          isOpen={state.ui.isMenuOpen.L}
+          isOpen={isMenuOpen.L}
           visible={visible}
           onMouseEnter={() => onMouseEnterNav('L')}
           onMouseLeave={onMouseLeaveNavContainer}
@@ -63,7 +67,7 @@ const Header: React.VFC = () => {
             Photo
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia?.photo.map((photo) => (
+            {allStateMedia?.photo.map((photo) => (
               <ListItem key={photo.id} onMouseEnter={() => onMouseEnter('photo', photo)}>
                 <PreloadLink to={`/photos/${photo.slug}`}>
                   {photo.title}
@@ -82,7 +86,7 @@ const Header: React.VFC = () => {
         </HomeGridLinkContainer>
 
         <NavContainer
-          isOpen={state.ui.isMenuOpen.R}
+          isOpen={isMenuOpen.R}
           visible={visible}
           onMouseEnter={() => onMouseEnterNav('R')}
           onMouseLeave={onMouseLeaveNavContainer}
@@ -91,7 +95,7 @@ const Header: React.VFC = () => {
             Film
           </H2>
           <List onMouseEnter={onMouseEnterList} onMouseLeave={onMouseLeaveList}>
-            {state.media.allMedia?.video.map((video) => (
+            {allStateMedia?.video.map((video) => (
               <ListItem key={video.id} onMouseEnter={() => onMouseEnter('video', video)}>
                 <PreloadLink to={`/film/${video.slug}`}>
                   {video.title}

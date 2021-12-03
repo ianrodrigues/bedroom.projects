@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useMatch, useNavigate, useSearch } from 'react-location';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
 import { usePageAssetLoadCounter } from 'hooks';
 import { SmoothScroll } from 'services';
@@ -24,7 +25,11 @@ let scroller: SmoothScroll | undefined;
 export type GoingNext = false | 'starting' | 'ending';
 
 const VideoDetail: React.VFC = () => {
-  const state = useStore();
+  const { setLoading: setAppLoading, loading: appLoading, isAnyMenuOpen } = useStore(selectors.ui, shallow);
+  const { allMedia: allStateMedia } = useStore(selectors.media, shallow);
+  const {
+    isPlaying: videoIsPlaying, setPlaying: setVideoPlaying, isReady: isVideoReady,
+  } = useStore(selectors.videoPlayer, shallow);
   const navigate = useNavigate();
   const search = useSearch<i.DetailPageGenerics>();
   const { params } = useMatch<i.DetailPageGenerics>();
@@ -41,7 +46,7 @@ const VideoDetail: React.VFC = () => {
 
   React.useEffect(() => {
     return function cleanup() {
-      state.ui.setLoading(false);
+      setAppLoading(false);
       scroller?.destroy();
     };
   }, []);
@@ -51,7 +56,7 @@ const VideoDetail: React.VFC = () => {
     if (!detail) {
       setDetail(getMediaObjectBySlug(params.slug, 'video'));
     }
-  }, [state.media.allMedia]);
+  }, [allStateMedia]);
 
   React.useEffect(() => {
     if (assetLoadCounter.loaded === 3) {
@@ -59,7 +64,7 @@ const VideoDetail: React.VFC = () => {
         console.info('page loaded');
       }
 
-      state.ui.setLoading(false);
+      setAppLoading(false);
     }
   }, [assetLoadCounter.loaded]);
 
@@ -67,8 +72,8 @@ const VideoDetail: React.VFC = () => {
     if (detail) {
       setNextDetail(getMediaObjectBySlug(detail.next, 'video'));
 
-      if (state.ui.loading === false) {
-        state.ui.setLoading('page');
+      if (appLoading === false) {
+        setAppLoading('page');
       }
 
       // Current video + poster
@@ -123,8 +128,8 @@ const VideoDetail: React.VFC = () => {
         nextVideoRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
       }
 
-      if (state.videoPlayer.isPlaying && scrollY >= window.innerHeight * .75) {
-        state.videoPlayer.setPlaying(false);
+      if (videoIsPlaying && scrollY >= window.innerHeight * .75) {
+        setVideoPlaying(false);
       }
 
       if (titleRef.current) {
@@ -173,8 +178,8 @@ const VideoDetail: React.VFC = () => {
           setGoingNext('starting');
           assetLoadCounter.reset();
 
-          if (state.ui.loading === false) {
-            state.ui.setLoading('page');
+          if (appLoading === false) {
+            setAppLoading('page');
           }
 
           // Fade out current title
@@ -208,7 +213,7 @@ const VideoDetail: React.VFC = () => {
         }
       }
     });
-  }, [detail, isGoingNext, state.videoPlayer.isPlaying]);
+  }, [detail, isGoingNext, videoIsPlaying]);
 
   return (
     <VideoDetailContainer isNext={isGoingNext}>
@@ -220,7 +225,7 @@ const VideoDetail: React.VFC = () => {
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
           <DetailPlayerContainer
-            isReady={loader?.allLoaded && state.videoPlayer.isReady}
+            isReady={loader?.allLoaded && isVideoReady}
             isNext={!!search.next}
           >
             {detail && (
@@ -250,7 +255,7 @@ const VideoDetail: React.VFC = () => {
             <MediaTitle
               ref={nextTitleRef}
               side="R"
-              visible={!state.ui.isAnyMenuOpen()}
+              visible={!isAnyMenuOpen()}
               dataset={{ 'data-scroll': true }}
             >
               {nextDetail.title}
@@ -262,7 +267,7 @@ const VideoDetail: React.VFC = () => {
       <MediaTitle
         ref={titleRef}
         side="R"
-        visible={!state.ui.isAnyMenuOpen() && !state.videoPlayer.isPlaying && !isGoingNext}
+        visible={!isAnyMenuOpen() && !videoIsPlaying && !isGoingNext}
         autoHide
         dataset={{ 'data-scroll': true }}
       >

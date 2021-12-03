@@ -1,8 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useLocation } from 'react-location';
+import shallow from 'zustand/shallow';
 
-import useStore from 'state';
+import useStore, { selectors } from 'state';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import PlayerControls from '../PlayerControls';
@@ -12,7 +13,7 @@ import { PlayerContainer } from './styled';
 
 
 const Player: React.VFC<Props> = (props) => {
-  const state = useStore();
+  const { setReady, setPlaying, isPlaying } = useStore(selectors.videoPlayer, shallow);
   const location = useLocation();
   const videoRef = React.useRef<HTMLVideoElement>(null);
   const [controlsDimensions, setControlsDimensions] = React.useState({
@@ -37,11 +38,11 @@ const Player: React.VFC<Props> = (props) => {
   React.useEffect(() => {
     if (videoStartStatus.appLoaded && videoStartStatus.videoLoaded) {
       setTimeout(() => {
-        state.videoPlayer.setReady(true);
+        setReady(true);
       }, 1000);
 
       setTimeout(() => {
-        state.videoPlayer.setPlaying(true);
+        setPlaying(true);
       }, 2200);
     }
   }, [videoStartStatus.appLoaded, videoStartStatus.videoLoaded]);
@@ -53,8 +54,8 @@ const Player: React.VFC<Props> = (props) => {
       height: 0,
     });
 
-    state.videoPlayer.setReady(false);
-    state.videoPlayer.setPlaying(false);
+    setReady(false);
+    setPlaying(false);
     setVideoStartStatus({
       appLoaded: false,
       videoLoaded: false,
@@ -120,12 +121,12 @@ const Player: React.VFC<Props> = (props) => {
       return;
     }
 
-    if (video.paused && state.videoPlayer.isPlaying) {
+    if (video.paused && isPlaying) {
       video.play();
-    } else if (!video.paused && !state.videoPlayer.isPlaying) {
+    } else if (!video.paused && !isPlaying) {
       video.pause();
     }
-  }, [state.videoPlayer.isPlaying]);
+  }, [isPlaying]);
 
   return (
     <PlayerContainer id="player-container">
