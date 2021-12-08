@@ -61,7 +61,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
   }, [loader?.allLoaded, setAppLoading]);
 
   // Ugly but works for now :)
-  function mediaTransition(ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) {
+  const mediaTransition = React.useCallback((ctx: CanvasRenderingContext2D, mediaType: i.MediaType, timestamp: number) => {
     if (!statePhoto || !stateVideo) {
       return;
     }
@@ -122,7 +122,7 @@ const RenderCanvas: React.VFC<Props> = (props) => {
         prevPhoto = undefined;
       }
     }
-  }
+  }, [statePhoto, stateVideo, props.fullscreen]);
 
   // Rendering the canvas
   useAnimationFrame(((animProps) => {
