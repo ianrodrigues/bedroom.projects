@@ -8,8 +8,5 @@ declare const CMS_URL: string;
 declare const LATEST_GIT_HASH: string;
 declare const HOTJAR_ID: number;
 declare const HOTJAR_SNIPPET_V: number;
-
-// extend window object
-interface Window {
-  __REDUX_DEVTOOLS_EXTENSION__: () => () => void;
-}
+/** NPM Package name */
+declare const PROJECT_NAME: string;

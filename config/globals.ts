@@ -11,6 +11,7 @@ const globals = {
   __TEST__: appEnv === 'test',
   __ACC__: appEnv === 'acceptation',
   __PROD__: appEnv === 'production',
+  PROJECT_NAME: JSON.stringify(process.env.npm_package_name),
   CMS_URL: JSON.stringify('https://cms.sandervispoel.com'),
   HOTJAR_ID: JSON.stringify(2357623),
   HOTJAR_SNIPPET_V: JSON.stringify(6),

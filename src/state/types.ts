@@ -1,8 +1,16 @@
 import * as i from 'types';
-import { GetState } from 'zustand';
+import { Draft } from 'immer';
+import { GetState, StateCreator as ZustandStateCreator } from 'zustand';
 
 
 export { AppState } from './index';
+
+export type StateCreator = ZustandStateCreator<i.AppState>;
+
+export type StateCreatorImmer = ZustandStateCreator<
+i.AppState,
+(fn: (draft: Draft<i.AppState>) => void) => void
+>;
 
 export type IntersectStoreSlice<Slice extends i.StoreSlice> =
   & Slice['state']
