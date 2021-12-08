@@ -10,7 +10,8 @@
     "tc": "npm run typecheck",
     "lint": "npm run lint:code && npm run lint:style",
     "lint:code": "eslint --ext .js --ext .jsx --ext .ts --ext .tsx src/",
-    "lint:style": "stylelint --config .stylelintrc src/{styles/*.ts,**/styled.ts,**/styled/index.ts}"
+    "lint:style": "stylelint --config .stylelintrc src/{styles/*.ts,**/styled.ts,**/styled/index.ts}",
+    "test": "npm run tc && npm run lint"
   },
   "dependencies": {
     "@welldone-software/why-did-you-render": "6.2.3",
