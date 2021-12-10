@@ -1,12 +1,13 @@
 import * as i from 'types';
 import React from 'react';
 
-import { useEventListener } from 'hooks';
+import { useEventListener, useShallowStore } from 'hooks';
 
 import { Video } from './styled';
 
 
 const Display = React.forwardRef<HTMLVideoElement, Props>((props, ref) => {
+  const ui = useShallowStore('ui', ['interacted']);
   const [videoSize, setVideoSize] = React.useState(window.innerHeight - 50);
 
   useEventListener('resize', () => {
@@ -21,6 +22,7 @@ const Display = React.forwardRef<HTMLVideoElement, Props>((props, ref) => {
       poster={CMS_URL + props.videoObject.video_poster?.url}
       disablePictureInPicture
       loop
+      muted={!ui.interacted}
     />
   );
 });

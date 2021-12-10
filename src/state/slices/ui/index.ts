@@ -11,6 +11,7 @@ const state: State = {
     L: false,
     R: false,
   },
+  interacted: false,
 };
 
 const actions = (set: i.Set, get: i.Get) => ({
@@ -38,6 +39,9 @@ const actions = (set: i.Set, get: i.Get) => ({
     };
   }),
   isAnyMenuOpen: () => get().ui.isMenuOpen.L || get().ui.isMenuOpen.R,
+  setInteracted: () => set((state) => {
+    state.ui.interacted = true;
+  }),
 });
 
 const slice: i.StoreSlice<State, typeof actions> = {

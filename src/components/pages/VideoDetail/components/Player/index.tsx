@@ -41,7 +41,7 @@ const Player: React.VFC<Props> = (props) => {
       }, 1000);
 
       setTimeout(() => {
-        videoPlayer.setPlaying(true);
+        videoRef?.current?.play();
       }, 2200);
     }
   }, [videoStartStatus.appLoaded, videoStartStatus.videoLoaded]);
@@ -80,6 +80,8 @@ const Player: React.VFC<Props> = (props) => {
       width: this.clientWidth,
       height: this.clientHeight,
     });
+
+    videoPlayer.setPlaying(!this.paused);
   }
 
   function onCanPlay() {

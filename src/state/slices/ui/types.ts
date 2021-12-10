@@ -6,4 +6,5 @@ export interface State {
   showName: boolean;
   isFullscreen: boolean;
   isMenuOpen: Record<i.Side, boolean>;
+  interacted: boolean;
 }

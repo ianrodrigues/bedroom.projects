@@ -6,7 +6,7 @@ import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
 
 import GlobalStyle from 'styles';
 import { fetchMedia } from 'state/utils';
-import { useMultiMatchRoute, useShallowStore } from 'hooks';
+import { useEventListener, useMultiMatchRoute, useShallowStore } from 'hooks';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -19,7 +19,7 @@ import Loader from './common/presentation/Loader';
 const App: React.VFC = () => {
   const ui = useShallowStore(
     'ui',
-    ['setShowName', 'isAnyMenuOpen', 'isMenuOpen', 'loading', 'showName'],
+    ['setShowName', 'isAnyMenuOpen', 'isMenuOpen', 'loading', 'showName', 'setInteracted'],
   );
   const { matchRoute, multiMatchRoute } = useMultiMatchRoute();
   const location = useLocation();
@@ -72,6 +72,14 @@ const App: React.VFC = () => {
       hotjar.stateChange(location.current.pathname);
     }
   }, [location.current.pathname]);
+
+  // Check if user has interacted with the page to give JS access to more video functions
+  useEventListener('click', onInteraction);
+
+  function onInteraction() {
+    ui.setInteracted();
+    window.removeEventListener('click', onInteraction);
+  }
 
   return (
     <main>

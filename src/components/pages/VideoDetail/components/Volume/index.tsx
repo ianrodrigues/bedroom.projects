@@ -1,20 +1,29 @@
 import React from 'react';
 
+import { useShallowStore } from 'hooks';
+
 import { VolumeBar, VolumeContainer } from './styled';
+
 
 const NUM_BARS = 5;
 
 const Volume: React.VFC<Props> = (props) => {
-  const [volume, setVolume] = React.useState(props.videoRef?.current?.volume ?? 0);
+  const ui = useShallowStore('ui', ['interacted']);
+  const [volume, setVolume] = React.useState(ui.interacted ? .3 : 0);
   const containerRef = React.useRef<HTMLButtonElement>(null);
 
   React.useEffect(() => {
-    props.videoRef?.current?.addEventListener('volumechange', handleVolumeChange);
+    if (!props.videoRef?.current) {
+      return;
+    }
+
+    props.videoRef.current.volume = volume;
+    props.videoRef?.current.addEventListener('volumechange', handleVolumeChange);
 
     return function cleanup() {
       props.videoRef?.current?.removeEventListener('volumechange', handleVolumeChange);
     };
-  }, [props.videoRef]);
+  }, [props.videoRef?.current]);
 
   function handleVolumeChange(this: HTMLVideoElement) {
     setVolume(this.volume);
@@ -30,6 +39,7 @@ const Volume: React.VFC<Props> = (props) => {
     const prct = clickX / bounds.width;
 
     props.videoRef.current.volume = prct;
+    props.videoRef.current.muted = false;
   }
 
   return (

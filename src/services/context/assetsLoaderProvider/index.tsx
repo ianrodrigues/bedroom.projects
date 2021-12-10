@@ -133,6 +133,7 @@ const AssetsLoaderProvider: React.FC = (props) => {
   function addVideoAsset(cb: AddAssetCb<HTMLVideoElement>): Promise<HTMLVideoElement> {
     return new Promise((resolve) => {
       const video = document.createElement('video');
+      video.muted = true;
 
       // Let callback do stuff with video element
       cb(video);
@@ -149,10 +150,6 @@ const AssetsLoaderProvider: React.FC = (props) => {
         if (isHTMLVideoElement(this)) {
           onAssetLoaded(this.src);
           this.removeEventListener('canplay', onCanPlay);
-
-          // Chrome muted autoplay bugfix
-          this.muted = true;
-          this.play();
         }
 
         resolve(video);
