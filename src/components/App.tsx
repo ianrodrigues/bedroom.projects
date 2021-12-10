@@ -3,12 +3,10 @@ import React from 'react';
 import { hotjar } from 'react-hotjar';
 import { Outlet, useLocation } from 'react-location';
 import { enableBodyScroll, disableBodyScroll } from 'body-scroll-lock';
-import shallow from 'zustand/shallow';
 
 import GlobalStyle from 'styles';
-import useStore, { selectors } from 'state';
 import { fetchMedia } from 'state/utils';
-import { useMultiMatchRoute } from 'hooks';
+import { useMultiMatchRoute, useShallowStore } from 'hooks';
 
 import Header from 'modules/Header';
 import Footer from 'common/navigation/Footer';
@@ -19,14 +17,15 @@ import Loader from './common/presentation/Loader';
 
 
 const App: React.VFC = () => {
-  const {
-    setShowName, isAnyMenuOpen, isMenuOpen, loading: appLoading, showName,
-  } = useStore(selectors.ui, shallow);
+  const ui = useShallowStore(
+    'ui',
+    ['setShowName', 'isAnyMenuOpen', 'isMenuOpen', 'loading', 'showName'],
+  );
   const { matchRoute, multiMatchRoute } = useMultiMatchRoute();
   const location = useLocation();
   const [fullscreenMedia, setFullscreenMedia] = React.useState<i.MediaType | undefined>();
   const isHomepage = !!matchRoute({ to: '/' });
-  const canvasVisible = isHomepage || isAnyMenuOpen();
+  const canvasVisible = isHomepage || ui.isAnyMenuOpen();
 
   React.useEffect(() => {
     fetchMedia();
@@ -34,27 +33,27 @@ const App: React.VFC = () => {
 
   React.useEffect(() => {
     if (multiMatchRoute(['/', 'grid'])) {
-      setShowName(true);
+      ui.setShowName(true);
     } else {
-      setShowName(false);
+      ui.setShowName(false);
     }
   }, [multiMatchRoute]);
 
   React.useEffect(() => {
-    if (isHomepage || !isAnyMenuOpen()) {
+    if (isHomepage || !ui.isAnyMenuOpen()) {
       setFullscreenMedia(undefined);
-    } else if (isMenuOpen.L) {
+    } else if (ui.isMenuOpen.L) {
       setFullscreenMedia('photo');
-    } else if (isMenuOpen.R) {
+    } else if (ui.isMenuOpen.R) {
       setFullscreenMedia('video');
     }
-  }, [isMenuOpen]);
+  }, [ui.isMenuOpen]);
 
   React.useEffect(() => {
     const body = document.querySelector('body');
 
     if (body) {
-      if (appLoading) {
+      if (ui.loading) {
         disableBodyScroll(body);
       } else {
         enableBodyScroll(body);
@@ -66,7 +65,7 @@ const App: React.VFC = () => {
         enableBodyScroll(body);
       }
     };
-  }, [appLoading]);
+  }, [ui.loading]);
 
   React.useEffect(() => {
     if (__PROD__) {
@@ -80,7 +79,7 @@ const App: React.VFC = () => {
       <Outlet /> {/** Renders matching paths from react-location */}
       <RenderCanvas visible={canvasVisible} fullscreen={fullscreenMedia} />
       <Header />
-      <Name $visible={appLoading === 'site' || showName}>bedroom</Name>
+      <Name $visible={ui.loading === 'site' || ui.showName}>bedroom</Name>
       <Loader />
       <Footer />
     </main>

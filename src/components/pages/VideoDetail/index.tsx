@@ -1,11 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useMatch, useNavigate, useSearch } from 'react-location';
-import shallow from 'zustand/shallow';
 
-import useStore, { selectors } from 'state';
 import { getMediaObjectBySlug } from 'state/utils';
-import { usePageAssetLoadCounter } from 'hooks';
+import { usePageAssetLoadCounter, useShallowStore } from 'hooks';
 import { SmoothScroll } from 'services';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
@@ -22,14 +20,10 @@ import {
 
 let scroller: SmoothScroll | undefined;
 
-export type GoingNext = false | 'starting' | 'ending';
-
 const VideoDetail: React.VFC = () => {
-  const { setLoading: setAppLoading, loading: appLoading, isAnyMenuOpen } = useStore(selectors.ui, shallow);
-  const { allMedia: allStateMedia } = useStore(selectors.media, shallow);
-  const {
-    isPlaying: videoIsPlaying, setPlaying: setVideoPlaying, isReady: isVideoReady,
-  } = useStore(selectors.videoPlayer, shallow);
+  const ui = useShallowStore('ui', ['loading', 'setLoading', 'isAnyMenuOpen']);
+  const media = useShallowStore('media', ['allMedia']);
+  const videoPlayer = useShallowStore('videoPlayer', ['isPlaying', 'setPlaying', 'isReady']);
   const navigate = useNavigate();
   const search = useSearch<i.DetailPageGenerics>();
   const { params } = useMatch<i.DetailPageGenerics>();
@@ -38,15 +32,19 @@ const VideoDetail: React.VFC = () => {
   const titleRef = React.useRef<HTMLHeadingElement>(null);
   const nextVideoRef = React.useRef<HTMLDivElement>(null);
   const nextTitleRef = React.useRef<HTMLHeadingElement>(null);
-  const [detail, setDetail] = React.useState(getMediaObjectBySlug(params.slug, 'video'));
-  const [nextDetail, setNextDetail] = React.useState(getMediaObjectBySlug(detail?.next || '', 'video'));
-  const [isGoingNext, setGoingNext] = React.useState<GoingNext>(false);
+  const [detail, setDetail] = React.useState<i.StateVideoObject | undefined>(
+    getMediaObjectBySlug(params.slug, 'video'),
+  );
+  const [nextDetail, setNextDetail] = React.useState<i.StateVideoObject | undefined>(
+    getMediaObjectBySlug(detail?.next || '', 'video'),
+  );
+  const [isGoingNext, setGoingNext] = React.useState<i.GoingNextPhases>(false);
   const loader = React.useContext(AssetsLoaderContext);
   const assetLoadCounter = usePageAssetLoadCounter();
 
   React.useEffect(() => {
     return function cleanup() {
-      setAppLoading(false);
+      ui.setLoading(false);
       scroller?.destroy();
     };
   }, []);
@@ -56,7 +54,7 @@ const VideoDetail: React.VFC = () => {
     if (!detail) {
       setDetail(getMediaObjectBySlug(params.slug, 'video'));
     }
-  }, [allStateMedia]);
+  }, [media.allMedia]);
 
   React.useEffect(() => {
     if (assetLoadCounter.loaded === 3) {
@@ -64,7 +62,7 @@ const VideoDetail: React.VFC = () => {
         console.info('page loaded');
       }
 
-      setAppLoading(false);
+      ui.setLoading(false);
     }
   }, [assetLoadCounter.loaded]);
 
@@ -72,8 +70,8 @@ const VideoDetail: React.VFC = () => {
     if (detail) {
       setNextDetail(getMediaObjectBySlug(detail.next, 'video'));
 
-      if (appLoading === false) {
-        setAppLoading('page');
+      if (ui.loading === false) {
+        ui.setLoading('page');
       }
 
       // Current video + poster
@@ -128,8 +126,8 @@ const VideoDetail: React.VFC = () => {
         nextVideoRef.current.style.transform = `translate3d(0, ${-scrollY}px, 0)`;
       }
 
-      if (videoIsPlaying && scrollY >= window.innerHeight * .75) {
-        setVideoPlaying(false);
+      if (videoPlayer.isPlaying && scrollY >= window.innerHeight * .75) {
+        videoPlayer.setPlaying(false);
       }
 
       if (titleRef.current) {
@@ -178,8 +176,8 @@ const VideoDetail: React.VFC = () => {
           setGoingNext('starting');
           assetLoadCounter.reset();
 
-          if (appLoading === false) {
-            setAppLoading('page');
+          if (ui.loading === false) {
+            ui.setLoading('page');
           }
 
           // Fade out current title
@@ -213,7 +211,7 @@ const VideoDetail: React.VFC = () => {
         }
       }
     });
-  }, [detail, isGoingNext, videoIsPlaying]);
+  }, [detail, isGoingNext, videoPlayer.isPlaying]);
 
   return (
     <VideoDetailContainer isNext={isGoingNext}>
@@ -225,7 +223,7 @@ const VideoDetail: React.VFC = () => {
       <DetailContainer id="film-container" ref={containerRef}>
         <div ref={bodyRef} id="film-container__body">
           <DetailPlayerContainer
-            isReady={loader?.allLoaded && isVideoReady}
+            isReady={loader?.allLoaded && videoPlayer.isReady}
             isNext={!!search.next}
           >
             {detail && (
@@ -255,7 +253,7 @@ const VideoDetail: React.VFC = () => {
             <MediaTitle
               ref={nextTitleRef}
               side="R"
-              visible={!isAnyMenuOpen()}
+              visible={!ui.isAnyMenuOpen()}
               dataset={{ 'data-scroll': true }}
             >
               {nextDetail.title}
@@ -267,7 +265,7 @@ const VideoDetail: React.VFC = () => {
       <MediaTitle
         ref={titleRef}
         side="R"
-        visible={!isAnyMenuOpen() && !videoIsPlaying && !isGoingNext}
+        visible={!ui.isAnyMenuOpen() && !videoPlayer.isPlaying && !isGoingNext}
         autoHide
         dataset={{ 'data-scroll': true }}
       >

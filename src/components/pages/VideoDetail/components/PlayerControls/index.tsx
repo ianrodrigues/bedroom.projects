@@ -1,11 +1,9 @@
 import React from 'react';
-import shallow from 'zustand/shallow';
 
-import useStore, { selectors } from 'state';
 import PlaySvg from 'vectors/play-solid.svg';
 import PauseSvg from 'vectors/pause-solid.svg';
 
-import { useEventListener } from 'hooks';
+import { useEventListener, useShallowStore } from 'hooks';
 
 import Seekbar from '../Seekbar';
 import Volume from '../Volume';
@@ -18,7 +16,7 @@ import {
 let timeoutId = -1;
 
 const PlayerControls: React.FC<Props> = (props) => {
-  const { isPlaying, setPlaying } = useStore(selectors.videoPlayer, shallow);
+  const videoPlayer = useShallowStore('videoPlayer', ['isPlaying', 'setPlaying']);
   const [visible, setVisible] = React.useState({
     play: true,
     other: true,
@@ -92,10 +90,10 @@ const PlayerControls: React.FC<Props> = (props) => {
   }
 
   function onPlayPauseClick() {
-    if (isPlaying) {
-      setPlaying(false);
+    if (videoPlayer.isPlaying) {
+      videoPlayer.setPlaying(false);
     } else {
-      setPlaying(true);
+      videoPlayer.setPlaying(true);
     }
   }
 
@@ -108,7 +106,7 @@ const PlayerControls: React.FC<Props> = (props) => {
             <VideoArea onClick={onPlayPauseClick} />
 
             <PlayPauseIcon onClick={onPlayPauseClick} visible={visible.play}>
-              {isPlaying ? <PauseSvg /> : <PlaySvg />}
+              {videoPlayer.isPlaying ? <PauseSvg /> : <PlaySvg />}
             </PlayPauseIcon>
 
             <Seekbar videoRef={props.videoRef} visible={visible.other} />

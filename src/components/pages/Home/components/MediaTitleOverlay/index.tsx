@@ -1,27 +1,25 @@
 import React from 'react';
-import shallow from 'zustand/shallow';
 
-import useStore, { selectors } from 'state';
-import { useMultiMatchRoute } from 'hooks';
+import { useMultiMatchRoute, useShallowStore } from 'hooks';
 import MediaTitle from 'common/typography/MediaTitle';
 
 import { MediaTitleOverlayContainer } from './styled';
 
 
 const MediaTitleOverlay: React.VFC = () => {
-  const { isFullscreen: isCanvasFullscreen, isMenuOpen, isAnyMenuOpen } = useStore(selectors.ui, shallow);
-  const { photo, video } = useStore(selectors.media, shallow);
+  const ui = useShallowStore('ui', ['isFullscreen', 'isMenuOpen', 'isAnyMenuOpen']);
+  const media = useShallowStore('media', ['photo', 'video']);
   const { multiMatchRoute } = useMultiMatchRoute();
 
-  const containerVisible = isAnyMenuOpen() || !multiMatchRoute(['info', 'grid']);
+  const containerVisible = ui.isAnyMenuOpen() || !multiMatchRoute(['info', 'grid']);
 
   return (
     <MediaTitleOverlayContainer $visible={containerVisible}>
-      <MediaTitle visible={isCanvasFullscreen && isMenuOpen.L} side="L">
-        {photo?.title}
+      <MediaTitle visible={ui.isFullscreen && ui.isMenuOpen.L} side="L">
+        {media.photo?.title}
       </MediaTitle>
-      <MediaTitle visible={isCanvasFullscreen && isMenuOpen.R} side="R">
-        {video?.title}
+      <MediaTitle visible={ui.isFullscreen && ui.isMenuOpen.R} side="R">
+        {media.video?.title}
       </MediaTitle>
     </MediaTitleOverlayContainer>
   );

@@ -1,31 +1,30 @@
 import * as i from 'types';
 import React from 'react';
-import shallow from 'zustand/shallow';
 
-import useStore, { selectors } from 'state';
+import { useShallowStore } from 'hooks';
 
 import { LoaderContainer, LoaderInner } from './styled';
 
 
 const Loader: React.VFC = () => {
-  const { loading: appLoading } = useStore(selectors.ui, shallow);
+  const ui = useShallowStore('ui', ['loading']);
   const [visible, setVisible] = React.useState(true);
   const [loadType, setLoadType] = React.useState<i.GlobalLoadingState>('site');
 
   React.useEffect(() => {
-    if (!appLoading) {
+    if (!ui.loading) {
       setTimeout(() => {
         setVisible(false);
       }, 300);
     } else {
-      setLoadType(appLoading);
+      setLoadType(ui.loading);
       setVisible(true);
     }
-  }, [appLoading]);
+  }, [ui.loading]);
 
   return (
     <LoaderContainer $visible={visible} $type={loadType}>
-      <LoaderInner done={!appLoading} />
+      <LoaderInner done={!ui.loading} />
     </LoaderContainer>
   );
 };

@@ -1,8 +1,7 @@
 import * as i from 'types';
 import React from 'react';
 
-import useStore, { selectors } from 'state';
-import { usePageAssetLoadCounter } from 'hooks';
+import { usePageAssetLoadCounter, useShallowStore } from 'hooks';
 import { SmoothScroll } from 'services';
 import { isStatePhotoObject } from 'services/typeguards';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
@@ -16,8 +15,8 @@ import {
 let scroller: SmoothScroll | undefined;
 
 const Grid: React.VFC = () => {
-  const { loading: appLoading, setLoading: setAppLoading } = useStore(selectors.ui);
-  const { allMedia: allStateMedia } = useStore(selectors.media);
+  const ui = useShallowStore('ui', ['loading', 'setLoading']);
+  const media = useShallowStore('media', ['allMedia']);
   const combinedMedia = React.useRef<(i.StatePhotoObject | i.StateVideoObject)[]>([]);
   const containerRef = React.useRef<HTMLDivElement>(null);
   const [filtered, setFiltered] = React.useState<false | i.MediaType>(false);
@@ -38,25 +37,27 @@ const Grid: React.VFC = () => {
       return;
     }
 
-    if (assetLoadCounter.loaded === combinedMedia.current.length) {
-      setAppLoading(false);
+    // Set amount of assets to load
+    assetLoadCounter.setAmount(combinedMedia.current.length);
+
+    // Start load animation
+    if (!assetLoadCounter.done) {
+      ui.setLoading('page');
+    } else {
+      ui.setLoading(false);
 
       setTimeout(() => {
         setFadeIn(true);
       }, 750);
     }
-  }, [combinedMedia.current, assetLoadCounter.loaded]);
+  }, [combinedMedia.current, assetLoadCounter.done]);
 
   React.useEffect(() => {
-    if (!allStateMedia) {
+    if (!media.allMedia) {
       return;
     }
 
-    combinedMedia.current = [...allStateMedia.photo, ...allStateMedia.video];
-
-    if (appLoading === false) {
-      setAppLoading('page');
-    }
+    combinedMedia.current = [...media.allMedia.photo, ...media.allMedia.video];
 
     for (const media of combinedMedia.current) {
       loader
@@ -69,7 +70,7 @@ const Grid: React.VFC = () => {
         })
         .then(assetLoadCounter.addLoaded);
     }
-  }, [allStateMedia]);
+  }, [media.allMedia]);
 
   function toggleFilter(type: i.MediaType) {
     if (filtered === type) {
@@ -115,10 +116,10 @@ const Grid: React.VFC = () => {
           <GridPageContainer ref={containerRef} $visible={fadeIn}>
             <FilterContainer>
               <FilterButton onClick={() => toggleFilter('photo')} toggled={filtered === 'photo'}>
-              Photos ({allStateMedia?.photo.length})
+              Photos ({media.allMedia?.photo.length})
               </FilterButton>
               <FilterButton onClick={() => toggleFilter('video')} toggled={filtered === 'video'}>
-              Films ({allStateMedia?.video.length})
+              Films ({media.allMedia?.video.length})
               </FilterButton>
             </FilterContainer>
 

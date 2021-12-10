@@ -1,11 +1,9 @@
 import * as i from 'types';
 import React from 'react';
 import { useMatch } from 'react-location';
-import shallow from 'zustand/shallow';
 
-import useStore, { selectors } from 'state';
 import { SmoothScroll } from 'services';
-import { usePageAssetLoadCounter } from 'hooks';
+import { usePageAssetLoadCounter, useShallowStore } from 'hooks';
 import { AssetsLoaderContext } from 'context/assetsLoaderProvider';
 
 import MediaTitle from 'common/typography/MediaTitle';
@@ -16,7 +14,7 @@ import { InfoContainer, InfoDescription, InfoFigure } from './styled';
 let scroller: SmoothScroll | undefined;
 
 const Info: React.VFC = () => {
-  const { setLoading: setAppLoading, loading: appLoading } = useStore(selectors.ui, shallow);
+  const ui = useShallowStore('ui', ['loading', 'setLoading']);
   const { page } = useMatch<i.InfoPageGenerics>().data;
   const [visible, setVisible] = React.useState(false);
   const descriptionRef = React.useRef<HTMLDivElement>(null);
@@ -32,13 +30,13 @@ const Info: React.VFC = () => {
 
   React.useEffect(() => {
     if (assetLoadCounter.loaded === 1) {
-      setAppLoading(false);
+      ui.setLoading(false);
 
       setTimeout(() => {
         setVisible(true);
       }, 500);
     }
-  }, [assetLoadCounter.loaded, setAppLoading]);
+  }, [assetLoadCounter.loaded]);
 
   React.useEffect(() => {
     if (page) {
@@ -48,13 +46,13 @@ const Info: React.VFC = () => {
         })
         .then(assetLoadCounter.addLoaded);
 
-      if (!appLoading) {
+      if (!ui.loading) {
         scroller = new SmoothScroll('#info-container');
       }
     }
-  }, [page, appLoading]);
+  }, [page, ui.loading]);
 
-  if (!page || appLoading) {
+  if (!page || ui.loading) {
     return null;
   }
 

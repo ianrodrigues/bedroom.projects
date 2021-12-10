@@ -1,9 +1,9 @@
+import * as i from 'types';
 import styled, { css } from 'styled-components';
 
 import { MediaTitleContainer } from 'common/typography/MediaTitle/styled';
 import { DetailContainer } from 'common/presentation/DetailPage';
 
-import { GoingNext } from '.';
 import { PlayerContainer } from './components/Player/styled';
 
 
@@ -23,7 +23,7 @@ export const VideoDetailContainer = styled.div<VideoDetailContainerProps>((props
 `);
 
 interface VideoDetailContainerProps {
-  isNext?: GoingNext;
+  isNext?: i.GoingNextPhases;
 }
 
 export const DescriptionContainer = styled.div((props) => css`
@@ -161,5 +161,5 @@ export const NextContainer = styled.div<NextContainerProps>((props) => css`
 `);
 
 interface NextContainerProps {
-  isGoingNext?: GoingNext;
+  isGoingNext?: i.GoingNextPhases;
 }
